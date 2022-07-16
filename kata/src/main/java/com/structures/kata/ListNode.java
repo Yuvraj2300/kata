@@ -1,12 +1,12 @@
-package com.my.kata;
+package com.structures.kata;
 
 /**
  * @author yuvrajsharma
  * @implNote Definition of a singly linked list
  */
 public class ListNode {
-	int val;
-	ListNode next;
+	public int val;
+	public ListNode next;
 
 	ListNode() {
 	}
