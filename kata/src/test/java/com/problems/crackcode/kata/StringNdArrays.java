@@ -3,8 +3,12 @@ package com.problems.crackcode.kata;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 
 /**
  * @author yuvraj1.sharma
@@ -253,10 +257,184 @@ public class StringNdArrays {
 
 
 	@Test
-	void testName() throws Exception {
+	void testUrlify() throws Exception {
 		urlify_inPlace("I am will");
 		urlify_inPlace("Mr. John Smith");
 		urlify_inPlace("Hey how arey ya ?");
+	}
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 * @implNote I just got to know that palindromes have at most one character that
+	 *           has odd occurrence
+	 */
+	public boolean permutationOfPalindrome(String phrase) {
+		Map<Character, Integer> mapOfCharacterAndOccurrence = new HashMap<>();
+		char[] charArray = phrase.toLowerCase().toCharArray();
+
+		for (char c : charArray) {
+			if (c == ' ') {
+				continue;
+			}
+
+			if (!mapOfCharacterAndOccurrence.containsKey(c)) {
+				mapOfCharacterAndOccurrence.put(c, 1);
+				continue;
+			}
+
+			Integer ocurrence = mapOfCharacterAndOccurrence.get(c);
+			mapOfCharacterAndOccurrence.put(c, ocurrence + 1);
+		}
+
+
+		int oddCharCount = 0;
+
+		for (Map.Entry<Character, Integer> entry : mapOfCharacterAndOccurrence.entrySet()) {
+			if (entry.getValue() % 2 == 1) {
+				oddCharCount++;
+			}
+		}
+
+		if (oddCharCount > 1) {
+			return false;
+		}
+
+		return true;
+	}
+
+
+
+	@Test
+	void testPermutationPalindrome() throws Exception {
+		//TACO CAT
+		assertTrue(permutationOfPalindrome("Tact Coa"));
+	}
+
+
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         One Away: There are three types of edits that can be performed on
+	 *         strings: insert a character, remove a character, or replace a
+	 *         character. Given two strings, write a function to check if they are
+	 *         one edit (or zero edits) away. EXAMPLE pale, ple -> true pales, pale
+	 *         -> true pale, bale -> true pale, bae -> false
+	 */
+	public boolean oneAway(String originalString, String modifiedString) {
+		if (originalString.length() == modifiedString.length()) {
+			int changes = _checkForChangesInTheStrings(originalString, modifiedString);
+			if (changes > 1) {
+				return false;
+			}
+		} else if (originalString.length() + 1 == modifiedString.length()) {
+			return _checkForOnlyOneReplacement(originalString, modifiedString, "ONE_REPLACE");
+		} else if (originalString.length() - 1 == modifiedString.length()) {
+			return _checkForOnlyOneReplacement(originalString, modifiedString, "ONE_ADD");
+		}
+
+		return true;
+	}
+
+
+
+	private boolean _checkForOnlyOneReplacement(String s1, String s2, String scenario) {
+		//determing the shorter string
+		if (!(s1.length() < s2.length())) {
+			String temp = s1;
+			s1 = s2;
+			s2 = temp;
+		}
+
+		int indexForReplacement = 0;
+
+		for (int i = 0; i < s1.length(); i++) {
+
+			if (!(indexForReplacement > 0)) {
+				if (s1.charAt(i) != s2.charAt(i)) {
+					indexForReplacement++;
+				}
+			} else {
+				if (s1.charAt(i) != s2.charAt(indexForReplacement)) {
+					indexForReplacement++;
+				}
+			}
+		}
+
+		if (indexForReplacement > 1) {
+			return false;
+		} else if (indexForReplacement == 1) {
+			return true;
+		} else if (indexForReplacement == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private String _determineShorterString(String s1, String s2) {
+		if (s1.length() < s2.length()) {
+			return s1;
+		} else {
+			return s2;
+		}
+	}
+
+
+
+	private int _checkForChangesInTheStrings(String s1, String s2) {
+		int changeCount = 0;
+
+		if (!(s1.length() < s2.length())) {
+			String temp = s1;
+			s1 = s2;
+			s2 = temp;
+		}
+
+		for (int i = 0; i < s1.length(); i++) {
+			if (s1.charAt(i) != s2.charAt(i)) {
+				changeCount++;
+			}
+		}
+		return changeCount;
+	}
+
+
+	@Test
+	void testOneAwayOneEditInString() throws Exception {
+		assertTrue(oneAway("pale", "ple"));
+	}
+
+
+	@Test
+	void testOneAwayOneEditInString_1() throws Exception {
+		assertTrue(oneAway("pale", "pales"));
+	}
+
+
+
+	@Test
+	void testOneAwayOneEditInString_2() throws Exception {
+		assertFalse(oneAway("pale", "bae"));
+	}
+
+	@Test
+	void testOneAwayOneEditInString_3() throws Exception {
+		assertTrue(oneAway("pale", "bale"));
+	}
+
+	@Test
+	void testOneAwayOneEditInString_4() throws Exception {
+		assertTrue(oneAway("yuvraj", "yuvaraj"));
+	}
+
+
+	@Test
+	void testOneAwayOneEditInString_5() throws Exception {
+		assertFalse(oneAway("yuvraj", "buvaraj"));
 	}
 }
 
