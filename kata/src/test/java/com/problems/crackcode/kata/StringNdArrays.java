@@ -436,6 +436,118 @@ public class StringNdArrays {
 	void testOneAwayOneEditInString_5() throws Exception {
 		assertFalse(oneAway("yuvraj", "buvaraj"));
 	}
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         Find the number of lexographical pairs in a string
+	 */
+	public int getLexPairs(String s) {
+		int lexPairs = 0;
+		int i = 0;
+
+		while (i < s.length()) {
+			for (int j = i + 1; j < s.length(); j++) {
+				if (s.charAt(i) < s.charAt(j)) {
+					lexPairs++;
+				}
+			}
+			i++;
+		}
+
+		System.out.println("Number of Lex Pairs Found : " + lexPairs);
+		return lexPairs;
+	}
+
+
+	@Test
+	void testGetLexPairs() throws Exception {
+		assertEquals(6, getLexPairs("abcd"));
+	}
+
+
+
+	@Test
+	void testGetLexPainrs_1() throws Exception {
+		assertEquals(38, getLexPairs("cvfdghfsvsas"));
+	}
+
+
+	@Test
+	void testGetLexPainrs_2() throws Exception {
+		assertEquals(3, getLexPairs("hpwd"));
+	}
+
+
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         Implement a method to perform basic string compression using the
+	 *         counts of repeated characters. For example, the string aabcccccaaa
+	 *         would become a2blc5a3. If the "compressed" string would not become
+	 *         smaller than the original string, your method should return the
+	 *         original string. You can assume the string has only uppercase and
+	 *         lowercase letters (a - z).
+	 */
+	public String stringCompression(String s) {
+		//aaabbccc == a3b2c3
+		int i = 0;
+
+		StringBuilder sb = new StringBuilder();
+
+		while (i < s.length()) {
+			int occurence = 1;
+			int windowEnd = 0;
+
+			for (int j = i + 1; j < s.length(); j++) {
+				if (s.charAt(i) == s.charAt(j)) {
+					occurence++;
+				} else {
+					windowEnd = j;
+					break;
+				}
+			}
+
+			sb.append(s.charAt(i));
+			sb.append(occurence);
+
+			if (!(windowEnd == 0)) {
+				i = windowEnd;
+			} else {
+				break;
+			}
+
+		}
+
+		if (sb.toString().length() < s.length()) {
+			return sb.toString();
+		} else {
+			return s;
+		}
+	}
+
+
+	@Test
+	void testStringCompression() throws Exception {
+		String op = stringCompression("aaabbccc");
+		assertEquals("a3b2c3", op);
+	}
+
+	@Test
+	void testStringCompression_1() throws Exception {
+		String op = stringCompression("aabb");
+		assertEquals("aabb", op);
+	}
+
+	@Test
+	void testStringCompression_3() throws Exception {
+		String op = stringCompression("aaabb");
+		assertEquals("a3b2", op);
+	}
+
 }
 
 
