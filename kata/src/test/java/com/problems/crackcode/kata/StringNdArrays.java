@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -546,6 +545,226 @@ public class StringNdArrays {
 	void testStringCompression_3() throws Exception {
 		String op = stringCompression("aaabb");
 		assertEquals("a3b2", op);
+	}
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 * 
+	 *         2 X 3 ===> 3 X 2
+	 *
+	 */
+	public char[][] rotatePic(char[][] pic) {
+
+		int origRows = 0;
+		int origCols = 0;
+
+		while (origRows < pic.length) {
+			for (; origCols < pic[origRows].length; origCols++) {
+				//empty just to increment columns
+			}
+			origRows++;
+		}
+
+		char[][] rotatedPic = new char[origCols][origRows];
+
+
+		int i = 0;
+		while (i < pic.length) {
+			for (int j = 0; j < pic[i].length; j++) {
+				rotatedPic[j][i] = pic[i][j];
+			}
+			i++;
+		}
+
+		return rotatedPic;
+	}
+
+
+
+	@Test
+	void testRotatePic() throws Exception {
+		char[][] pic = { { 'a', 'b' }, { 'c', 'd' }, { 'e', 'f' } };
+		//		int length = pic[1].length;
+		//		System.out.println(length);
+
+		char[][] rotatedPic = rotatePic(pic);
+		//		System.out.println(rotatedPic);
+		//		assertEquals(1, rotatedPic.length);
+		//		assertEquals(2, rotatedPic[1].length);
+	}
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         correct impl
+	 */
+	public int[][] rotatePic(int[][] pic) {
+
+		int origRows = 0;
+		int origCols = 0;
+
+		while (origRows < pic.length) {
+			for (; origCols < pic[origRows].length; origCols++) {
+				//empty just to increment columns
+			}
+			origRows++;
+		}
+
+		int[][] rotatedPic = new int[origCols][origRows];
+
+
+		int i = pic.length - 1;
+
+		while (i >= 0) {
+			for (int j = 0; j < pic[i].length; j++) {
+				rotatedPic[j][pic.length - 1 - i] = pic[i][j];
+			}
+			i--;
+		}
+
+		return rotatedPic;
+	}
+
+
+	@Test
+	void testRotatePic_int() throws Exception {
+		// @formatter:off
+		
+		int nums[][] = { 
+					{ 1, 2, 3, 4 },
+					{ 5, 6, 7, 8 },
+					{ 9, 10, 11, 12 },
+					{ 13, 14, 15, 16 } 
+				};
+// @formatter:on
+
+		int[][] rotatedPic = rotatePic(nums);
+
+		System.out.println(rotatedPic);
+		//		assertEquals(1, rotatedPic.length);
+		//		assertEquals(2, rotatedPic[1].length);
+	}
+
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         Zero Matrix: Write an algorithm such that if an element in an MxN
+	 *         matrix is 0, its entire row and column are set to 0.
+	 */
+	public int[][] replaceWithZeros(int[][] pic) {
+		int[][] newPic = new int[pic.length][pic[0].length];
+		Map<Integer, Boolean> mapOfChangedRows = new HashMap<>();
+		Map<Integer, Boolean> mapOfChangedCols = new HashMap<>();
+		int j = 0;
+
+		while (j < pic[0].length) {
+			for (int i = 0; i < pic.length; i++) {
+				if (pic[i][j] == 0) {
+					_updateColumnToZero(newPic, j, mapOfChangedRows);
+					_updateRowToZero(newPic, i, mapOfChangedCols);
+				} else {
+					if (!(mapOfChangedCols.containsKey(i) && mapOfChangedRows.containsKey(j))) {
+						newPic[i][j] = pic[i][j];
+					}
+				}
+			}
+			j++;
+		}
+
+
+		return newPic;
+	}
+
+
+
+	private void _updateRowToZero(int[][] newPic, int row, Map<Integer, Boolean> mapOfChangedRows) {
+		for (int col = 0; col < newPic[row].length; col++) {
+			newPic[row][col] = 0;
+		}
+		mapOfChangedRows.put(row, true);
+	}
+
+
+
+	private void _updateColumnToZero(int[][] newPic, int cols, Map<Integer, Boolean> mapOfChangedCols) {
+		for (int rows = 0; rows < newPic.length; rows++) {
+			newPic[rows][cols] = 0;
+		}
+		mapOfChangedCols.put(cols, true);
+	}
+
+
+	@Test
+	void testReplaceWithZeros() throws Exception {
+		// @formatter:off
+		int nums[][] = { 
+					{ 1, 2, 0, 4 },
+					{ 5, 6, 7, 8 },
+					{ 9, 0, 11, 12 },
+					{ 13, 14, 15, 16 } 
+				};
+		// @formatter:on
+
+		int[][] updated = replaceWithZeros(nums);
+
+	}
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         String Rotation: Assumeyou have a method i5Sub 5tring which checks if
+	 *         one word is a substring of another. Given two strings, 51 and 52,
+	 *         write code to check if 52 is a rotation of 51 using only one call to
+	 *         i5SubString (e.g.,"waterbottle" is a rotation of"erbottlewat")
+	 *
+	 */
+	public boolean isRotation(String sample, String suspect) {
+
+		if (sample.length() == suspect.length()) {
+			String stringUpdatedSample = sample + sample;
+
+			return isSubstring(stringUpdatedSample, suspect);
+
+		}
+
+		return false;
+	}
+
+
+
+	private boolean isSubstring(String s1s1, String s2) {
+		// TODO Auto-generated method stub
+		int len = s2.length();
+		for (int i = 0; i < len; i++) {
+			System.out.println(s1s1.subSequence(i, i + len));
+			if (s1s1.subSequence(i, i + len).equals(s2))
+				return true;
+		}
+		return false;
+	}
+
+
+	@Test
+	void testIsRotation() throws Exception {
+		boolean rotationCheck = isRotation("waterbottle", "erbottlewat");
+		assertTrue(rotationCheck);
+	}
+
+	@Test
+	void testIsRotation_1() throws Exception {
+		boolean rotationCheck = isRotation("yuvraj", "vrajyu");
+		assertTrue(rotationCheck);
+	}
+
+	@Test
+	void testIsRotation_2() throws Exception {
+		boolean rotationCheck = isRotation("arpit", "pitar");
+		assertTrue(rotationCheck);
 	}
 
 }
