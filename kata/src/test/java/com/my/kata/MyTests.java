@@ -13,11 +13,15 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.structures.kata.ListNode;
+import com.structures.kata.TreeNode;
+
+
 public class MyTests {
 
 	int consecOnes() {
-//		failing case on leetcode with this logix : [1,0,1,1,0,1]
-//		List<Integer> l1 = Arrays.asList(1, 1, 1, 0, 1, 1);
+		//		failing case on leetcode with this logix : [1,0,1,1,0,1]
+		//		List<Integer> l1 = Arrays.asList(1, 1, 1, 0, 1, 1);
 		List<Integer> l1 = Arrays.asList(1, 0, 1, 1, 1, 1, 0, 1);
 
 		int count = 0;

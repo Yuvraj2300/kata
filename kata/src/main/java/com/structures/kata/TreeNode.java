@@ -1,9 +1,9 @@
-package com.my.kata;
+package com.structures.kata;
 
 public class TreeNode {
-	int val;
-	TreeNode left;
-	TreeNode right;
+	public int val;
+	public TreeNode left;
+	public TreeNode right;
 
 	TreeNode() {
 	}
@@ -12,7 +12,7 @@ public class TreeNode {
 		this.val = val;
 	}
 
-	TreeNode(int val, TreeNode left, TreeNode right) {
+	public TreeNode(int val, TreeNode left, TreeNode right) {
 		this.val = val;
 		this.left = left;
 		this.right = right;
