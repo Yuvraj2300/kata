@@ -26,7 +26,7 @@ public class InfiniteStack<E> implements Stack {
 
 
 
-	public E pop() throws Exception {
+	public E pop() {
 		if (size == 0) {
 			System.out.println("stack was empty");
 		}
