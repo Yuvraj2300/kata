@@ -40,6 +40,10 @@ public class InfiniteStack<E> implements Stack {
 
 
 	public E peek() {
+		if (size == 0) {
+			return null;
+		}
+
 		return elements[size - 1];
 	}
 
@@ -51,6 +55,21 @@ public class InfiniteStack<E> implements Stack {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sBldr = new StringBuilder();
+
+		for (E ele : elements) {
+
+			if (null != ele) {
+				sBldr.append(ele);
+				sBldr.append(" ");
+			}
+
+		}
+		return sBldr.toString();
 	}
 
 }
