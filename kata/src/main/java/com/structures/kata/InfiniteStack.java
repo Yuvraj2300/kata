@@ -48,6 +48,9 @@ public class InfiniteStack<E> implements Stack {
 	}
 
 
+	public int length() {
+		return size;
+	}
 
 	public boolean isEmpty() {
 		if (size == 0) {
