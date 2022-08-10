@@ -1,13 +1,14 @@
 package com.problems.crackcode.kata;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 
 /**
  * @author yuvraj1.sharma
@@ -526,6 +527,12 @@ public class StringNdArrays {
 		} else {
 			return s;
 		}
+	}
+
+	@Test
+	void testStringCompression_Check() {
+		String op = stringCompression("aaabbcccaaa");
+		assertEquals("a3b2c3a3", op);
 	}
 
 

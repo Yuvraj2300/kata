@@ -1,7 +1,6 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import com.structures.kata.TrieNode;
 
 public class TrieApi {
 	public List<Integer> contacts(List<List<String>> queries) {
-		System.out.println(queries);
 		List<Integer> listToReturn = new ArrayList<>();
 		TrieNode trie = null;
 
@@ -28,17 +26,7 @@ public class TrieApi {
 					System.out.println("Updating new value to trie");
 
 					TrieNode trieRefToIterate = trie;
-					TrieNode updatedTrieRef = _updateTrie(trieRefToIterate, requiredPartOfString);
-
-					TrieNode nodeToUpdate = _findPointOfDirvergence(trieRefToIterate, requiredPartOfString);
-
-					while (!(trieRefToIterate == nodeToUpdate)) {
-						trieRefToIterate = trieRefToIterate.next;
-					}
-
-					if (null != updatedTrieRef) {
-						trieRefToIterate.listOfNodesAttached.add(updatedTrieRef);
-					}
+					_updateTrieWitNewValues(requiredPartOfString, trieRefToIterate);
 				}
 				System.out.println("Trie Updated : \n\t" + trie);
 			} else if (query.get(0).equals("find")) {
@@ -53,6 +41,26 @@ public class TrieApi {
 			}
 		}
 		return listToReturn;
+	}
+
+
+
+
+	private void _updateTrieWitNewValues(String requiredPartOfString, TrieNode trieRefToIterate) {
+		TrieNode updatedTrieRef = _updateTrie(trieRefToIterate, requiredPartOfString);
+
+		TrieNode nodeToUpdate = _findPointOfDirvergence(trieRefToIterate, requiredPartOfString);
+
+		if (null != nodeToUpdate) {
+			while (!(trieRefToIterate == nodeToUpdate)) {
+				trieRefToIterate = trieRefToIterate.next;
+			}
+		}
+
+		if (null != updatedTrieRef) {
+			trieRefToIterate.listOfNodesAttached.add(updatedTrieRef);
+		}
+
 	}
 
 
@@ -330,4 +338,136 @@ public class TrieApi {
 		System.out.println(hits);
 		assertEquals(2, hits.get(0));
 	}
+
+
+
+
+	public String noPrefix(List<String> words) {
+		TrieNode trie = null;
+		for (String word : words) {
+			if (null == trie) {
+				trie = _createNewTrie(word);
+			} else {
+				String prefix = _validatePrefix(word, trie, 0);
+				if (prefix.length() == 0) {
+					_updateTrieWitNewValues(word, trie);
+				} else {
+					System.out.println("BAD SET");
+					return word;
+				}
+
+			}
+
+
+
+
+		}
+		System.out.println("GOOD SET");
+		System.out.println();
+		System.out.println("Trie looks like this : ");
+		System.out.println(trie);
+
+		return "";
+	}
+
+
+
+
+	private String _validatePrefix(String word, TrieNode trie, int count) {
+
+		int i = 0;
+
+		while (i < word.length() && trie.val != '*') {
+
+			if (trie.val == word.charAt(i)) {
+				count++;
+			}
+
+			if (!trie.listOfNodesAttached.isEmpty()) {
+				for (TrieNode node : trie.listOfNodesAttached) {
+					return _validatePrefix(word.substring(count), node, count);
+				}
+			}
+
+			i++;
+			trie = trie.next;
+		}
+		if (count >= 3) {
+			return word;
+		}
+
+		return "";
+	}
+
+
+	@Test
+	void testNoPrefix() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("abcd");
+		list.add("bcd");
+		list.add("abcde");
+		list.add("abcde");
+
+		String noPrefix = noPrefix(list);
+		assertEquals("abcde", noPrefix);
+	}
+
+
+	@Test
+	void testNoPrefix_1() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("aab");
+		list.add("defgab");
+		list.add("abcde");
+		list.add("aabcde");
+
+		list.add("cedaaa");
+		list.add("bbbbbbbbbb");
+		list.add("jabjjjad");
+
+
+		String noPrefix = noPrefix(list);
+		assertEquals("aabcde", noPrefix);
+	}
+
+
+	@Test
+	void testNoPrefix_2() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("aab");
+		list.add("aac");
+		list.add("aacghgh");
+		list.add("aabghgh");
+
+		String noPrefix = noPrefix(list);
+		System.out.println(noPrefix);
+		assertEquals("aacghgh", noPrefix);
+	}
+
+	//	aab
+	//	defgab
+	//	abcde
+	//	cedaaa
+	//	bbbbbbbbbb
+	//	jabjjjad
+
+	@Test
+	void testNoPrefix_3() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("aab");
+		list.add("defgab");
+		list.add("abcde");
+		list.add("cedaaa");
+		list.add("bbbbbbbbbb");
+		list.add("jabjjjad");
+
+		String noPrefix = noPrefix(list);
+		System.out.println(noPrefix);
+		assertEquals("", noPrefix);
+	}
+
 }
+
+
+
+
