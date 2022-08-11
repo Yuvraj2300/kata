@@ -1,7 +1,6 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,6 +12,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 
@@ -852,4 +852,184 @@ public class QueueApi {
 	}
 
 
+	class DecomposedForm {
+		private int subListOffset;
+		private List<Integer> listToProcess;
+		private List<List<Integer>> subList;
+		private List<Integer> listOfMaximasInSubList;
+
+		public DecomposedForm() {
+			super();
+		}
+
+
+		public List<Integer> getListToProcess() {
+			return listToProcess;
+		}
+
+
+		public void setListToProcess(List<Integer> listToProcess) {
+			this.listToProcess = listToProcess;
+		}
+
+
+		public int getSubListOffset() {
+			return subListOffset;
+		}
+
+
+		public void setSubListOffset(int subListOffset) {
+			this.subListOffset = subListOffset;
+		}
+
+
+		public List<List<Integer>> getSubList() {
+			return subList;
+		}
+
+		public void setSubList(List<List<Integer>> subList) {
+			this.subList = subList;
+		}
+
+		public List<Integer> getListOfMaximasInSubList() {
+			return listOfMaximasInSubList;
+		}
+
+		public void setListOfMaximasInSubList(List<Integer> listOfMaximasInSubList) {
+			this.listOfMaximasInSubList = listOfMaximasInSubList;
+		}
+
+
+		@Override
+		public String toString() {
+			return "DecomposedForm [subListOffset=" + subListOffset + ", listToProcess=" + listToProcess + ", subList=" + subList + ", listOfMaximasInSubList=" + listOfMaximasInSubList + "]";
+		}
+
+
+
+
+
+	}
+
+	public List<Integer> getMiniMa(List<Integer> arr, List<Integer> queries) {
+		List<Integer> opListMinima = new ArrayList<>();
+		Queue<DecomposedForm> processQueue = new LinkedList<>();
+
+		final BiFunction<List<Integer>, Integer, List<List<Integer>>> decomposeByN = (list, n) -> {
+			int h = n;
+			List<List<Integer>> listToReturn = new ArrayList<>();
+			int i = 0;
+			while (i < h && i < list.size() - 1) {
+				if (h > list.size()) {
+					break;
+				}
+
+				if (i != h && h - i == n) {
+					listToReturn.add(list.subList(i, h));
+					i++;
+				} else {
+					h++;
+				}
+			}
+
+			return listToReturn;
+		};
+
+		final Function<List<List<Integer>>, List<Integer>> maximaOfDecomoposition = (listOfDecomposed) -> {
+			List<Integer> listToReturn = new ArrayList<>();
+			int maxVal = 0;
+
+			for (List<Integer> list : listOfDecomposed) {
+				for (Integer i : list) {
+					if (maxVal < i) {
+						maxVal = i;
+					}
+				}
+				listToReturn.add(maxVal);
+			}
+
+
+			return listToReturn;
+		};
+
+
+		final Function<List<Integer>, Integer> minima = (listOfMaxima) -> {
+			int minimaToReturn = Integer.MAX_VALUE;
+
+			for (Integer i : listOfMaxima) {
+				if (i < minimaToReturn) {
+					minimaToReturn = i;
+				}
+			}
+
+
+			return minimaToReturn;
+		};
+
+
+
+		for (Integer subListOffset : queries) {
+			DecomposedForm decForm = new DecomposedForm();
+			decForm.setListToProcess(arr);
+			decForm.setSubListOffset(subListOffset);
+
+			processQueue.add(decForm);
+		}
+
+
+		while (!processQueue.isEmpty()) {
+			DecomposedForm toProcess = processQueue.remove();
+
+			toProcess.setSubList(decomposeByN.apply(toProcess.getListToProcess(), toProcess.getSubListOffset()));
+			toProcess.setListOfMaximasInSubList(maximaOfDecomoposition.apply(toProcess.getSubList()));
+			Integer minimaVal = minima.apply(toProcess.getListOfMaximasInSubList());
+
+			opListMinima.add(minimaVal);
+		}
+
+		System.out.println(opListMinima);
+		return opListMinima;
+	}
+
+
+	@Test
+	void testGetMiniMa() throws Exception {
+		List<Integer> array = new ArrayList<>();
+		array.add(2);
+		array.add(3);
+		array.add(4);
+		array.add(5);
+		array.add(6);
+
+		List<Integer> array2 = new ArrayList<>();
+		array2.add(2);
+		array2.add(3);
+
+		List<Integer> miniMa = getMiniMa(array, array2);
+		assertNotNull(miniMa);
+
+		assertEquals(3, miniMa.get(0));
+		assertEquals(4, miniMa.get(1));
+	}
+
+	@Test
+	void testGetMiniMa_1() throws Exception {
+		List<Integer> array = new ArrayList<>();
+		array.add(33);
+		array.add(11);
+		array.add(44);
+		array.add(11);
+		array.add(55);
+
+		List<Integer> array2 = new ArrayList<>();
+		array2.add(1);
+		array2.add(2);
+		array2.add(3);
+		array2.add(4);
+		array2.add(5);
+
+		List<Integer> miniMa = getMiniMa(array, array2);
+		assertNotNull(miniMa);
+
+	}
 }
