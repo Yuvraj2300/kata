@@ -3,131 +3,109 @@ package com.problems.crackcode.kata.sandbox;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
-/**
- * @author yuvraj1.sharma
- *
- *         Java program to find count of each capital letter from string st =
- *         “abcAABBCCACBBCAacbbbccaaAAC”
- * 
- *         Java program to check whether two strings are anagram or not
- * 
- *         Java 8 program to merge two lists into a third list with unique
- *         elements and in descending order
- * 
- *         Java 8 program to find third largest element from a list
- *
- *
- */
 public class Sandbox {
-	//abcAABBCCACBBCAacbbbccaaAAC
+	//25, 10, 2, 1
+
+	//125 	= 25*5
+	//120	= 25*4 10*2 = 120
+	//49 	= 25*1,10*2. 2*2
+	//56 	= 25*2, 2*3
 
 
-	public int numberOfCapitalLetters(String input) {
-		char[] strAsChar = input.toCharArray();
+	public Map<Integer, Integer> getDenomitions(int[] denominations, int val) {
 
-		int countForUpperCase = 0;
-		int charSeen = 0;
-		for (int i = 0; i < strAsChar.length; i++) {
-			if (strAsChar[i] >= 68 && strAsChar[i] <= 122) {
-				if (charSeen != strAsChar[i]) {
-					charSeen = strAsChar[i];
-					countForUpperCase++;
-				}
-			}
+		//		125/25= x;
+		//		125%25= 0;
+		//		120%25!=0
+		//		120/25=4{
+		//		
+		//		}
+		//				
+		Map<Integer, Integer> toReturn = new HashMap<Integer, Integer>();
+		//25,10,2,1
+
+		int valToCheck = val;//125   //120
+
+		for (int i = 0; i < denominations.length; i++) {
+			int remainder = valToCheck % denominations[i]; //125%25 = 0   120%25 = 20		100%10 = 0		
+			int quotient = valToCheck / denominations[i];// 125/25=5		120/25 = 4    100/10=
+			System.out.println(denominations[i] + "x" + quotient);
+			valToCheck = remainder;
+
+			//			if (remainder != 0) {
+			//				toReturn.put(denominations[i], quotient); //25,4 
+			//				valToCheck = remainder; // 100
+			//			} else {
+			//				toReturn.put(denominations[i], quotient);// 25,5
+			//				valToCheck = remainder;
+			//				//				if (valToCheck == 0) {
+			//				//					break;
+			//				//				}
+			//			}
 		}
 
-		System.err.println("Number of upper case characters in the given string : " + countForUpperCase);
-		return countForUpperCase;
+		return toReturn;
 	}
 
 
 	@Test
-	void testNumberOfUpperCaseChars() throws Exception {
-		int number = numberOfCapitalLetters("abcAABBCCACBBCAacbbbccaaAAC");
+	void tstGetDenominations() throws Exception {
+
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 125);
+		assertNotNull(output);
+		System.out.println(output);
+		//		assertEquals(null, null);
 	}
 
-
-	/**
-	 * @author yuvraj1.sharma
-	 *
-	 * 
-	 *         SUB <--> USB
-	 * 
-	 */
-	public boolean checkAnagram(String s1, String s2) {
-
-		if (s1.length() != s2.length()) {
-			return false;
-		}
-
-
-		char[] s1AsArray = s1.toCharArray();
-		char[] s2AsArray = s2.toCharArray();
-
-		Arrays.sort(s1AsArray);
-		Arrays.sort(s2AsArray);
-
-		for (int i = 0; i < s1AsArray.length; i++) {
-			if (s1AsArray[i] != s2AsArray[i]) {
-				return false;
-			}
-		}
-
-		return true;
-	}
 
 	@Test
-	void testCheckAnagram() throws Exception {
-		boolean result = checkAnagram("sub", "usb");
-		assertTrue(result);
-	}
+	void tstGetDenominations_1() throws Exception {
 
-
-	public List<Integer> mergeTwoListUniqueAndDescending(List<Integer> l1, List<Integer> l2) {
-		Set<Integer> l1AsSet = l1.stream().collect(Collectors.toSet());
-
-
-		// @formatter:off
-			Set<Integer> collectAsSet = l2.stream()
-			.filter(val -> l1AsSet.contains(val))
-			.collect(Collectors.toSet());
-		// @formatter:on
-		return collectAsSet.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 120);
+		System.out.println(output);
 	}
 
 
 
 	@Test
-	void testMergeTwoListUniqueAndDescending() throws Exception {
-		List<Integer> op = mergeTwoListUniqueAndDescending(Lists.list(1, 1, 2, 3, 5), Lists.list(2, 5, 3, 6, 5));
-		System.out.println(op);
+	void tstGetDenominations_2() throws Exception {
 
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 49);
+		System.out.println(output);
 	}
 
 
-	public int findThirdLargest(List<Integer> l1) {
+	@Test
+	void tstGetDenominations_3() throws Exception {
 
-		//1,2,3,4,5,6
-		// 	@formatter:off
-		return l1.stream()
-				.sorted(Comparator.reverseOrder())
-				.distinct()
-				.limit(2)
-				.skip(1)
-				.findFirst()
-			.get();
- 
-		// @formatter:on
-
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 56);
+		System.out.println(output);
 	}
 
+
+	@Test
+	void tstGetDenominations_4() throws Exception {
+
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 25);
+		System.out.println(output);
+	}
+
+	@Test
+	void tstGetDenominations_5() throws Exception {
+
+		int[] arr = { 25, 10, 2, 1 };
+		Map<Integer, Integer> output = getDenomitions(arr, 1);
+		System.out.println(output);
+	}
 }
