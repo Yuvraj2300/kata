@@ -1,15 +1,19 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 public class StackApi {
@@ -534,5 +538,218 @@ public class StackApi {
 
 		int op = twoStacks(maxSum, a, b);
 		System.out.println(op);
+	}
+
+
+	class Building {
+		private int height;
+		private int position;
+
+		public Building(int height) {
+			super();
+			this.height = height;
+		}
+
+
+		public Building(int height, int position) {
+			super();
+			this.height = height;
+			this.position = position;
+		}
+
+
+		public int getHeight() {
+			return height;
+		}
+
+		public void setHeight(int height) {
+			this.height = height;
+		}
+
+
+		public int getPosition() {
+			return position;
+		}
+
+
+		public void setPosition(int position) {
+			this.position = position;
+		}
+
+
+		@Override
+		public String toString() {
+			return "Building [height=" + height + ", position=" + position + "]";
+		}
+	}
+
+	class Area {
+		int ht;
+		int brdth;
+
+
+		public Area(int ht, int brdth) {
+			super();
+			this.ht = ht;
+			this.brdth = brdth;
+		}
+
+
+		public int getHt() {
+			return ht;
+		}
+
+
+		public void setHt(int ht) {
+			this.ht = ht;
+		}
+
+
+
+
+		public int getBrdth() {
+			return brdth;
+		}
+
+
+
+
+		public void setBrdth(int brdth) {
+			this.brdth = brdth;
+		}
+
+
+		@Override
+		public String toString() {
+			return "Area [ht=" + ht + " x brdth=" + brdth + "]";
+		}
+	}
+
+
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         https://www.hackerrank.com/challenges/largest-rectangle/problem?isFullScreen=true
+	 */
+	public long largestRectangle(List<Integer> h) {
+		Map<Area, Integer> mapOfAreaAndCalc = new LinkedHashMap<>();
+
+
+
+		BiFunction<List<Building>, Building, Integer> getBreadthForward = (buildings, buildingToCheck) -> {
+			int brdth = 1;
+			for (int i = buildingToCheck.getPosition() + 1; i < buildings.size(); i++) {
+				if (buildingToCheck.getHeight() < buildings.get(i).getHeight()) {
+					brdth++;
+				} else {
+					break;
+				}
+			}
+
+			return brdth;
+		};
+
+
+
+		BiFunction<List<Building>, Building, Integer> getBreadthBackwards = (buildings, buildingToCheck) -> {
+			int brdth = 0;
+			for (int i = buildingToCheck.getPosition() - 1; i >= 0; i--) {
+				if (buildingToCheck.getHeight() < buildings.get(i).getHeight()) {
+					brdth++;
+				} else {
+					break;
+				}
+			}
+
+			return brdth;
+		};
+
+
+		List<Building> listOfBuildings = new LinkedList<>();
+
+		for (int i = h.size() - 1; i >= 0; i--) {
+			listOfBuildings.add(new Building(h.get(i), i));
+		}
+
+		for (int i = 0; i < listOfBuildings.size(); i++) {
+			Building currentBuilding = listOfBuildings.get(i);
+
+			Integer applicableBreathForward = getBreadthForward.apply(listOfBuildings, currentBuilding);
+			Integer applicableBreathBackward = getBreadthBackwards.apply(listOfBuildings, currentBuilding);
+
+			Area areaObj = new Area(currentBuilding.getHeight(), applicableBreathForward + applicableBreathBackward);
+			mapOfAreaAndCalc.put(areaObj, areaObj.getBrdth() * areaObj.getHt());
+		}
+
+		System.out.println(mapOfAreaAndCalc);
+		// @formatter:off
+		Optional<java.util.Map.Entry<Area, Integer>> max = mapOfAreaAndCalc.entrySet()
+			.stream()
+			.max(Comparator.comparing(Map.Entry::getValue));
+ 
+		// @formatter:on
+
+		return max.get().getValue();
+	}
+
+	@Test
+	void testLargestRectangle() throws Exception {
+		List<Integer> l = new ArrayList<>();
+		l.add(3);
+		l.add(2);
+		l.add(3);
+		long area = largestRectangle(l);
+		assertEquals(6, area);
+	}
+
+	@Test
+	void testLargestRectangle_1() throws Exception {
+		List<Integer> l = new ArrayList<>();
+		l.add(1);
+		l.add(2);
+		l.add(3);
+		l.add(4);
+		l.add(5);
+		long area = largestRectangle(l);
+		assertEquals(9, area);
+	}
+
+
+
+
+	@Test
+	void testLargestRectangle_2() throws Exception {
+		List<Integer> l = new ArrayList<>();
+		l.add(8979);
+		l.add(4570);
+		l.add(6436);
+		l.add(5083);
+		l.add(7780);
+		l.add(3269);
+		l.add(5400);
+		l.add(7579);
+		l.add(2324);
+		l.add(2116);
+		long area = largestRectangle(l);
+		System.out.println(area);
+		assertEquals(26152, area);
+	}
+
+
+	@Test
+	void testLargestRectangle_3() throws Exception {
+		List<Integer> l = new ArrayList<>();
+		l.add(2);
+		l.add(6);
+		l.add(9);
+		l.add(18);
+		l.add(3);
+		l.add(4);
+		l.add(16);
+		long area = largestRectangle(l);
+		System.out.println(area);
+		assertEquals(16, area);
 	}
 }
