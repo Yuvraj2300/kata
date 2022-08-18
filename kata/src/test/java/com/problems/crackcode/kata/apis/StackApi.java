@@ -669,9 +669,14 @@ public class StackApi {
 
 		List<Building> listOfBuildings = new LinkedList<>();
 
-		for (int i = h.size() - 1; i >= 0; i--) {
+		//		for (int i = h.size() - 1; i >= 0; i--) {
+		//			listOfBuildings.add(new Building(h.get(i), i));
+		//		}
+
+		for (int i = 0; i < h.size(); i++) {
 			listOfBuildings.add(new Building(h.get(i), i));
 		}
+
 
 		for (int i = 0; i < listOfBuildings.size(); i++) {
 			Building currentBuilding = listOfBuildings.get(i);
@@ -750,6 +755,6 @@ public class StackApi {
 		l.add(16);
 		long area = largestRectangle(l);
 		System.out.println(area);
-		assertEquals(16, area);
+		assertEquals(18, area);
 	}
 }
