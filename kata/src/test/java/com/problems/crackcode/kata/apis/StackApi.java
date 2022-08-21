@@ -1106,6 +1106,10 @@ public class StackApi {
 	@Test
 	void testTowerOfHanoi() throws Exception {
 		Stack<Integer> src = new Stack<Integer>();
+		src.push(15);
+		src.push(12);
+		src.push(11);
+		src.push(10);
 		src.push(5);
 		src.push(3);
 		src.push(1);
