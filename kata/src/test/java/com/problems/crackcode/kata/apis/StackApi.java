@@ -1,14 +1,18 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.in;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -641,7 +645,7 @@ public class StackApi {
 		BiFunction<List<Building>, Building, Integer> getBreadthForward = (buildings, buildingToCheck) -> {
 			int brdth = 1;
 			for (int i = buildingToCheck.getPosition() + 1; i < buildings.size(); i++) {
-				if (buildingToCheck.getHeight() < buildings.get(i).getHeight()) {
+				if (buildingToCheck.getHeight() <= buildings.get(i).getHeight()) {
 					brdth++;
 				} else {
 					break;
@@ -656,7 +660,7 @@ public class StackApi {
 		BiFunction<List<Building>, Building, Integer> getBreadthBackwards = (buildings, buildingToCheck) -> {
 			int brdth = 0;
 			for (int i = buildingToCheck.getPosition() - 1; i >= 0; i--) {
-				if (buildingToCheck.getHeight() < buildings.get(i).getHeight()) {
+				if (buildingToCheck.getHeight() <= buildings.get(i).getHeight()) {
 					brdth++;
 				} else {
 					break;
@@ -757,4 +761,313 @@ public class StackApi {
 		System.out.println(area);
 		assertEquals(18, area);
 	}
+
+
+	@Test
+	void testLargestRectangle_4() throws Exception {
+		List<Integer> l = new ArrayList<>();
+		l.add(11);
+		l.add(11);
+		l.add(10);
+		l.add(10);
+		l.add(10);
+		long area = largestRectangle(l);
+		System.out.println(area);
+		assertEquals(50, area);
+	}
+
+
+	class PlantsRow {
+		Stack<FertilizerAmount> fertAmountStack = new Stack<>();
+
+		public void push(FertilizerAmount fertAmount) {
+			this.fertAmountStack.push(fertAmount);
+		}
+
+		public FertilizerAmount pop() {
+			return this.fertAmountStack.pop();
+		}
+
+		@Override
+		public String toString() {
+			return "PlantsRow [fertAmountStack=" + fertAmountStack + "]";
+		}
+
+	}
+
+
+	class FertilizerAmount {
+		int data;
+
+		public FertilizerAmount(int data) {
+			super();
+			this.data = data;
+		}
+
+		@Override
+		public String toString() {
+			return "FertilizerAmount [data=" + data + "]";
+		}
+
+	}
+
+	public int poisonousPlants(List<Integer> p) {
+		PlantsRow plantsRow = new PlantsRow();
+
+		for (int i = p.size() - 1; i >= 0; i--) {
+			plantsRow.push(new FertilizerAmount(p.get(i)));
+		}
+
+		return _processAPlantRow(plantsRow);
+	}
+
+
+	private int _processAPlantRow(PlantsRow plantsRow) {
+		int rowsCreated = 0;
+		Queue<PlantsRow> processQueue = new LinkedList<>();
+		processQueue.add(plantsRow);
+		while (!processQueue.isEmpty()) {
+			PlantsRow poll = processQueue.poll();
+
+			PlantsRow newRow = new PlantsRow();
+
+			while (!poll.fertAmountStack.isEmpty()) {
+				FertilizerAmount stackPop = poll.fertAmountStack.pop();
+				FertilizerAmount peek = null;
+				try {
+					peek = poll.fertAmountStack.peek();
+				} catch (Exception ex) {
+					peek = null;
+				}
+
+				if (stackPop == null) {
+					break;
+				} else if (null == peek && null != stackPop) {
+					newRow.push(stackPop);
+				} else if (stackPop.data < peek.data) {
+					newRow.fertAmountStack.push(stackPop);
+				}
+				//				} else {
+				//					break;
+				//				}
+			}
+
+			if (newRow.fertAmountStack.size() > 1) {
+				System.out.println("New Row created : " + newRow);
+				rowsCreated++;
+				processQueue.add(newRow);
+			}
+		}
+		return rowsCreated;
+	}
+
+
+	@Test
+	void testPoisonousPlants() throws Exception {
+		List<Integer> plants = new ArrayList<Integer>();
+		plants.add(3);
+		plants.add(6);
+		plants.add(2);
+		plants.add(7);
+		plants.add(5);
+
+		int hops = poisonousPlants(plants);
+		assertEquals(2, hops);
+	}
+
+
+	@Test
+	void testPoisonousPlants1() throws Exception {
+		List<Integer> plants = new ArrayList<Integer>();
+		plants.add(14);
+		plants.add(55);
+		plants.add(2);
+		plants.add(7);
+
+		int hops = poisonousPlants(plants);
+		assertEquals(2, hops);
+	}
+
+
+	@Test
+	void testPoisonousPlants2() throws Exception {
+		List<Integer> plants = new ArrayList<Integer>();
+		plants.add(3);
+		plants.add(2);
+		plants.add(5);
+		plants.add(4);
+
+		int hops = poisonousPlants(plants);
+		assertEquals(2, hops);
+	}
+
+
+
+	public String convertToPostFix(String inFix) {
+		Set<Character> setOfOperators = new HashSet<>();
+		setOfOperators.addAll(List.of('+', '-', '*', '/', '%'));
+
+		Stack<Character> operators = new Stack<Character>();
+
+		inFix += ")";
+		//		operators.push('(');
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < inFix.length(); i++) {
+			char charAt = inFix.charAt(i);
+			if (setOfOperators.contains(charAt)) {
+				if (!operators.isEmpty() && operators.peek() != '(') {
+					while (!operators.isEmpty() && _getPriority(operators.peek()) >= _getPriority(charAt)) {
+						sb.append(operators.pop());
+					}
+				}
+				operators.push(charAt);
+			} else if (charAt == ')') {
+				while (!operators.isEmpty() && operators.peek() != '(') {
+					sb.append(operators.pop());
+				}
+			} else if (charAt == '(') {
+				operators.push('(');
+			} else {
+				sb.append(charAt);
+			}
+			//			else if (charAt == '(') {
+			//				//?
+			//			}
+
+		}
+
+
+		//clear backlog
+		if (!operators.isEmpty()) {
+			while (!operators.isEmpty()) {
+				Character pop = operators.pop();
+
+				if ('(' != pop) {
+					sb.append(pop);
+				}
+			}
+		}
+
+		return sb.toString();
+	}
+
+
+
+
+	private int _getPriority(char c) {
+		if (c == '/' || c == '*' || c == '%') {
+			return 1;
+		}
+		//for + - 
+		return 0;
+	}
+
+
+	@Test
+	void testConvertToPostFix() throws Exception {
+		String postFix = convertToPostFix("A+B");
+		assertEquals("AB+", postFix);
+	}
+
+
+	@Test
+	void testConvertToPostFix_1() throws Exception {
+		String postFix = convertToPostFix("A+B*C");
+		assertEquals("ABC*+", postFix);
+	}
+
+	@Test
+	void testConvertToPostFix_2() throws Exception {
+		String postFix = convertToPostFix("(A+B)*C");
+		assertEquals("AB+C*", postFix);
+	}
+
+
+	@Test
+	void testConvertToPostFix_3() throws Exception {
+		String postFix = convertToPostFix("A-(B/C+(D%E*F)/G)*H");
+		assertEquals("ABC/DE%F*G/+H*-", postFix);
+	}
+
+
+	@Test
+	void testConvertToPostFix_4() throws Exception {
+		String postFix = convertToPostFix("9-((3*4)+8)/4");
+		assertEquals("934*8+4/-", postFix);
+	}
+
+
+	class Expression {
+		int a;
+		int b;
+
+		public Expression(int a, int b) {
+			super();
+			this.a = a;
+			this.b = b;
+		}
+
+		@Override
+		public String toString() {
+			return "Expression [a=" + a + ", b=" + b + "]";
+		}
+
+
+	}
+
+
+	private int evaluatePostFix(String postFix) {
+		BiFunction<Expression, Character, Integer> calcuate = (expression, operator) -> {
+			switch (operator) {
+			case '+':
+				return expression.b + expression.a;
+			case '-':
+				return expression.b - expression.a;
+			case '*':
+				return expression.b * expression.a;
+			case '/':
+				return expression.b / expression.a;
+			case '%':
+				return expression.b % expression.a;
+			default:
+				return 0;
+			}
+
+		};
+
+		Stack<Integer> operands = new Stack<>();
+
+		Set<Character> setOfOperators = new HashSet<>();
+		setOfOperators.addAll(List.of('+', '-', '*', '/', '%'));
+
+		for (int i = 0; i < postFix.length(); i++) {
+			char charAt = postFix.charAt(i);
+			if (!setOfOperators.contains(charAt)) {
+				operands.push(Character.getNumericValue(charAt));
+			} else {
+				if (!operands.isEmpty()) {
+					int a = operands.pop();
+					int b = operands.pop();
+					Expression expression = new Expression(a, b);
+
+					int midSum = calcuate.apply(expression, charAt);
+					operands.push(midSum);
+				}
+			}
+		}
+
+		return operands.pop();
+	}
+
+
+
+	@Test
+	void testEvaluatingPostFix() throws Exception {
+		String postFix = convertToPostFix("9-((3*4)+8)/4");
+		int calc = evaluatePostFix(postFix);
+		assertEquals(4, calc);
+	}
+
 }
