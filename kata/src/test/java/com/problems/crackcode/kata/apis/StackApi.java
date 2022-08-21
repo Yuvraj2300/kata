@@ -1070,4 +1070,50 @@ public class StackApi {
 		assertEquals(4, calc);
 	}
 
+
+
+	public void towerOfHanoi(Stack<Integer> src, Stack<Integer> dest, Stack<Integer> spare) {
+		int n = src.size();
+
+		towerOfHanoiHelper(n, src, dest, spare);
+		System.out.println(src);
+		System.out.println(spare);
+		System.out.println(dest);
+	}
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 *         if stuff can be done on n-1 then it can also be done on n
+	 */
+	private void towerOfHanoiHelper(int n, Stack<Integer> src, Stack<Integer> dest, Stack<Integer> spare) {
+		if (n == 1) {
+			spare.push(src.pop());
+			dest.push(spare.pop());
+			return;
+		}
+
+
+		//n-1 move from A to B using C as spare
+		towerOfHanoiHelper(n - 1, src, spare, dest);
+		//Move the nth from A to C using B as spare (Base case)
+		towerOfHanoiHelper(1, src, dest, spare);
+		//Move n-1 From B to C using A as spare
+		towerOfHanoiHelper(n - 1, spare, dest, src);
+	}
+
+
+	@Test
+	void testTowerOfHanoi() throws Exception {
+		Stack<Integer> src = new Stack<Integer>();
+		src.push(5);
+		src.push(3);
+		src.push(1);
+
+		Stack<Integer> spare = new Stack<Integer>();
+		Stack<Integer> dest = new Stack<Integer>();
+
+
+		towerOfHanoi(src, spare, dest);
+	}
 }
