@@ -243,37 +243,41 @@ public class StackApi {
 
 	private static boolean _checkBracketPair(String s) {
 		boolean goodPairs = true;
-		Stack<Character> bracketStack = new Stack<Character>();
+		Stack<Character> parenthesisStack = new Stack<Character>();
+		Set<Character> openParens = new HashSet<>(List.of('(', '[', '{'));
+		Set<Character> closeParens = new HashSet<>(List.of(')', ']', '}'));
+
 		for (int i = 0; i < s.length(); i++) {
-			if (!goodPairs) {
-				break;
+			char charAt = s.charAt(i);
+			if (openParens.contains(charAt)) {
+				parenthesisStack.push(charAt);
 			}
 
-			char bracketInString = s.charAt(i);
-			// @formatter:off
-			if (bracketInString == Brackets.CURLY.getOpenValue() 
-					|| bracketInString == Brackets.SQUARE.getOpenValue() 
-					|| bracketInString == Brackets.SMALL.getOpenValue()) {
-			// @formatter:on
-				bracketStack.add(bracketInString);
-			} else {
-				if (bracketStack.isEmpty()) {
-					goodPairs &= false;
+			if (closeParens.contains(charAt)) {
+				if (parenthesisStack.isEmpty()) {
+					goodPairs = false;
+					break;
 				} else {
-					Character popedBracket = bracketStack.pop();
-					Brackets poppedBracketType = Brackets.getBracket(popedBracket);
-					Brackets currentBracketType = Brackets.getBracket(bracketInString);
+					Character currParen = parenthesisStack.pop();
 
-					if (null != poppedBracketType && currentBracketType == poppedBracketType) {
-						goodPairs &= true;
-					} else {
-						goodPairs &= false;
+					if (charAt == ')' && (currParen == '{' || currParen == '[')) {
+						goodPairs = false;
+					}
+					if (charAt == '}' && (currParen == '(' || currParen == '[')) {
+						goodPairs = false;
+					}
+					if (charAt == ']' && (currParen == '{' || currParen == '(')) {
+						goodPairs = false;
 					}
 				}
 			}
+
 		}
+
+
 		return goodPairs;
 	}
+
 
 
 	@Test
@@ -337,7 +341,79 @@ public class StackApi {
 		assertEquals("YES", balanced);
 	}
 
+	class ParenPair {
+		int goodPairs;
+		int badPairs;
 
+		public ParenPair(int goodPairs, int badPairs) {
+			super();
+			this.goodPairs = goodPairs;
+			this.badPairs = badPairs;
+		}
+
+		@Override
+		public String toString() {
+			return "ParenPair [goodPairs=" + goodPairs + ", badPairs=" + badPairs + "]";
+		}
+
+
+	}
+
+	public ParenPair getNumOfGoodPair(String s) {
+		int goodPair = 0;
+		int badPair = 0;
+
+		Stack<Character> parenthesisStack = new Stack<Character>();
+		Set<Character> openParens = new HashSet<>(List.of('(', '[', '{'));
+		Set<Character> closeParens = new HashSet<>(List.of(')', ']', '}'));
+
+		for (int i = 0; i < s.length(); i++) {
+			char charAt = s.charAt(i);
+			if (openParens.contains(charAt)) {
+				parenthesisStack.push(charAt);
+			}
+
+			if (closeParens.contains(charAt)) {
+				if (parenthesisStack.isEmpty()) {
+					break;
+				} else {
+					Character currParen = parenthesisStack.pop();
+
+					if (charAt == ')' && (currParen == '{' || currParen == '[')) {
+						badPair++;
+						continue;
+					}
+					if (charAt == '}' && (currParen == '(' || currParen == '[')) {
+						badPair++;
+						continue;
+					}
+					if (charAt == ']' && (currParen == '{' || currParen == '(')) {
+						badPair++;
+						continue;
+					}
+				}
+				goodPair++;
+			}
+
+		}
+
+		return new ParenPair(goodPair, badPair);
+	}
+
+
+	@Test
+	void testNumOfPairs() throws Exception {
+		ParenPair pairCounts = getNumOfGoodPair("{{([])}}");
+		System.out.println(pairCounts);
+	}
+
+	//
+
+	@Test
+	void testNumOfPairs_1() throws Exception {
+		ParenPair pairCounts = getNumOfGoodPair("{({])}");
+		System.out.println(pairCounts);
+	}
 
 	class GameStack {
 		private Stack<Integer> stack = new Stack<>();
