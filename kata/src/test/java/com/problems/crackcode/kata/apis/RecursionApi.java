@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.problems.crackcode.kata.exceptions.KataException;
+
 public class RecursionApi {
 
 	public int calculateExponenet(int x, int y) {
@@ -264,6 +266,64 @@ public class RecursionApi {
 	//	/593 10/
 
 
+	public String passwordCracker(List<String> passwords, String loginAttempt) {
+		//		String[] passwords = new String[passwordsList.size()];
+		//
+		//		for (int i = 0; i < passwords.length; i++) {
+		//			passwords[i] = passwordsList.get(i);
+		//		}
+		StringBuilder sb = new StringBuilder();
+		for (String s : passwords) {
+			char[] currentStringArray = s.toCharArray();
+			StringBuilder smallerSb = new StringBuilder();
 
+			try {
+				StringBuilder smalerSb = _getWord(loginAttempt, currentStringArray, smallerSb, 0, 0);
+				sb.append(smalerSb);
+				sb.append(" ");
+			} catch (Exception ex) {
+				return ex.getMessage();
+			}
+		}
+
+
+		return sb.toString();
+	}
+
+	private StringBuilder _getWord(String loginAttempt, char[] currentStringArray, StringBuilder sb, int i, int j) {
+
+// @formatter:off
+		if (//currentStringArray[i] != loginAttempt.charAt(j) ||
+				i > currentStringArray.length || 
+					j > loginAttempt.length()) {
+			throw new KataException("WRONG COMBINATION");
+		}
+// @formatter:on
+
+		if (j == currentStringArray.length) {
+			return sb;
+		} else if (currentStringArray[i] == loginAttempt.charAt(i)) {
+			sb.append(loginAttempt.charAt(j));
+			j++;
+			i++;
+		} else {
+			j++;
+		}
+
+		return _getWord(loginAttempt.substring(1), currentStringArray, sb, i, j);
+	}
+
+
+	@Test
+	void testPasswordCracker() throws Exception {
+		List<String> passwords = new ArrayList<>();
+		passwords.add("because");
+		passwords.add("can");
+		passwords.add("do");
+		passwords.add("must");
+		passwords.add("we");
+		passwords.add("what");
+		passwordCracker(passwords, "wedowhatwemustbecausewecan");
+	}
 
 }
