@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 
 import com.problems.crackcode.kata.exceptions.KataException;
 
@@ -265,52 +267,71 @@ public class RecursionApi {
 
 	//	/593 10/
 
+	class LoginStringState {
+		String loginString;
+		int loginStringLength = 0;
+		int stringParsedTill = 0;
+	}
 
 	public String passwordCracker(List<String> passwords, String loginAttempt) {
-		//		String[] passwords = new String[passwordsList.size()];
-		//
-		//		for (int i = 0; i < passwords.length; i++) {
-		//			passwords[i] = passwordsList.get(i);
-		//		}
 		StringBuilder sb = new StringBuilder();
-		for (String s : passwords) {
-			char[] currentStringArray = s.toCharArray();
-			StringBuilder smallerSb = new StringBuilder();
+		LoginStringState loginStringState = new LoginStringState();
+		loginStringState.loginString = loginAttempt;
+		loginStringState.loginStringLength = loginAttempt.length();
 
-			try {
-				StringBuilder smalerSb = _getWord(loginAttempt, currentStringArray, smallerSb, 0, 0);
-				sb.append(smalerSb);
-				sb.append(" ");
-			} catch (Exception ex) {
-				return ex.getMessage();
-			}
-		}
-
-
+		sb = _getWord(loginStringState, passwords, sb, 0, 0);
 		return sb.toString();
 	}
 
-	private StringBuilder _getWord(String loginAttempt, char[] currentStringArray, StringBuilder sb, int i, int j) {
 
-// @formatter:off
-		if (//currentStringArray[i] != loginAttempt.charAt(j) ||
-				i > currentStringArray.length || 
-					j > loginAttempt.length()) {
-			throw new KataException("WRONG COMBINATION");
-		}
-// @formatter:on
-
-		if (j == currentStringArray.length) {
+	private StringBuilder _getWord(LoginStringState loginAttempt, List<String> strings, StringBuilder sb, int i, int j) {
+		if (i == loginAttempt.loginStringLength) {
 			return sb;
-		} else if (currentStringArray[i] == loginAttempt.charAt(i)) {
-			sb.append(loginAttempt.charAt(j));
-			j++;
-			i++;
-		} else {
+		}
+
+		for (String string : strings) {
+			if (j >= string.length()) {
+				continue;
+			}
+
+			if (loginAttempt.loginString.charAt(i) != string.charAt(j)) {
+				continue;
+			}
+
+			_updatePasswordBuilder(loginAttempt, string, sb, i, j);
+
+		}
+
+		if (loginAttempt.stringParsedTill != loginAttempt.loginStringLength) {
+			sb.append(" ");
+		}
+
+
+		return _getWord(loginAttempt, strings, sb, loginAttempt.stringParsedTill, j);
+	}
+
+
+
+
+	private void _updatePasswordBuilder(LoginStringState loginAttempt, String string, StringBuilder sb, int i, int j) {
+		StringBuilder internalSb = new StringBuilder();
+		boolean appendFlag = false;
+		while (j < string.length()) {
+			if (loginAttempt.loginString.charAt(i) == string.charAt(j)) {
+				internalSb.append(loginAttempt.loginString.charAt(i));
+				i++;
+
+				if (j == string.length() - 1) {
+					appendFlag = true;
+				}
+			}
 			j++;
 		}
 
-      		return _getWord(loginAttempt.substring(1), currentStringArray, sb, i, j);
+		if (appendFlag) {
+			sb.append(internalSb);
+			loginAttempt.stringParsedTill = i;
+		}
 	}
 
 
@@ -323,7 +344,31 @@ public class RecursionApi {
 		passwords.add("must");
 		passwords.add("we");
 		passwords.add("what");
-		passwordCracker(passwords, "wedowhatwemustbecausewecan");
+
+		String password = passwordCracker(passwords, "wedowhatwemustbecausewecan");
+		assertEquals("we do what we must because we can", password);
+	}
+
+
+	@Test
+	void testPasswordCracker_1() throws Exception {
+		List<String> passwords = new ArrayList<>();
+		passwords.add("abra");
+		passwords.add("ka");
+		passwords.add("dabra");
+
+		String password = passwordCracker(passwords, "kaabra");
+		assertEquals("ka abra", password);
+	}
+
+	@Test
+	void testPasswordCracker_2() throws Exception {
+		List<String> passwords = new ArrayList<>();
+		passwords.add("ab");
+		passwords.add("ba");
+
+		String password = passwordCracker(passwords, "aba");
+		assertEquals("WRONG PASSWORD", password);
 	}
 
 }
