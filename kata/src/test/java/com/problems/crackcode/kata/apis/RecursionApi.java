@@ -310,7 +310,7 @@ public class RecursionApi {
 			j++;
 		}
 
-		return _getWord(loginAttempt.substring(1), currentStringArray, sb, i, j);
+      		return _getWord(loginAttempt.substring(1), currentStringArray, sb, i, j);
 	}
 
 
