@@ -4,9 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import org.assertj.core.internal.Comparables;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 
@@ -371,4 +377,143 @@ public class RecursionApi {
 		assertEquals("WRONG PASSWORD", password);
 	}
 
+
+
+
+
+	public static long stoneDivision(long n, List<Long> s) {
+		// Write your code here
+		System.out.println(n);
+		System.out.println(s);
+
+		long divisionWays = 0;
+		for (Long splitter : s) {
+			divisionWays = _findDecomposeWay(n, splitter, divisionWays);
+		}
+
+		return divisionWays;
+	}
+
+
+	private static long _findDecomposeWay(long n, Long splitter, long ways) {
+		if (n == splitter) {
+			return ways;
+		}
+
+		long quotient = n / splitter;
+		long remainder = n % splitter;
+		if (remainder == 0) {
+			n = quotient;
+		} else {
+			return ways;
+		}
+		ways++;
+		return _findDecomposeWay(n, splitter, ways);
+	}
+
+
+
+	@Test
+	void testStoneDivision() throws Exception {
+		long divisionSteps = stoneDivision(12, List.of(2L, 3L, 4L));
+		assertEquals(4, divisionSteps);
+	}
+
+
+	static int[] kFactorization_array(int number, int[] factors) {
+		Arrays.sort(factors);
+		List<Integer> result = new ArrayList<>();
+		minFactor(number, factors, factors.length - 1, result);
+		if (result.size() == 0) {
+			return new int[] { -1 };
+		} else {
+			result.add(1);
+			return result.stream().mapToInt(k -> k).sorted().toArray();
+		}
+	}
+
+	private static void minFactor(int number, int[] factors, int i, List<Integer> result) {
+		if (number == 1) {
+			return;
+		}
+		if (i < 0) {
+			result.clear();
+			return;
+		}
+		if (number % factors[i] == 0) {
+			result.add(number);
+			minFactor(number / factors[i], factors, i, result);
+		} else {
+			minFactor(number, factors, i - 1, result);
+		}
+	}
+
+	class ListComparator<T extends Comparable<T>> implements Comparator<List<T>> {
+
+		@Override
+		public int compare(List<T> o1, List<T> o2) {
+			for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
+				int c = o1.get(i).compareTo(o2.get(i));
+				if (c != 0) {
+					return c;
+				}
+			}
+			return Integer.compare(o1.size(), o2.size());
+		}
+
+	}
+
+	public List<Integer> kFactorization(int n, List<Integer> A) {
+
+		List<List<Integer>> factorSeries = new ArrayList<List<Integer>>();
+
+		List<Integer> toAdd = null;
+		int i = A.size() - 1;
+		while (i >= 0) {
+			toAdd = new ArrayList<Integer>();
+			_minFactors(n, toAdd, A, i);
+			toAdd.add(1);
+			Collections.sort(toAdd);
+			factorSeries.add(toAdd);
+			i--;
+		}
+
+
+		Collections.sort(factorSeries, new ListComparator<>());
+		System.out.println(factorSeries);
+		return factorSeries.get(0);
+
+	}
+
+	private void _minFactors(int n, List<Integer> toReturn, List<Integer> factors, int i) {
+		if (n == 1) {
+			return;
+		}
+
+		if (i > factors.size() - 1) {
+			toReturn.clear();
+			return;
+		}
+
+		Integer currFactor = factors.get(i);
+		if (n % currFactor == 0) {
+			toReturn.add(n);
+			_minFactors(n / currFactor, toReturn, factors, i);
+		} else {
+			i++;
+			_minFactors(n, toReturn, factors, i);
+		}
+	}
+
+	@Test
+	void testKFactroizations() throws Exception {
+		List<Integer> list = new ArrayList<>();
+		list.add(2);
+		list.add(3);
+		list.add(4);
+		List<Integer> op = kFactorization(12, list);
+		//		int[] factors = { 2, 3, 4 };
+		//		int[] oparr = kFactorization_array(12, factors);
+		System.out.println(op);
+	}
 }
