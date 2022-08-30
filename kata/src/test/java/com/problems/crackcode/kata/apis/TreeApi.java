@@ -125,8 +125,16 @@ public class TreeApi {
 
 
 	class NodeByLevel {
-		int val;
+		TreeNode node;
 		int level;
+
+		public NodeByLevel(TreeNode node, int level) {
+			super();
+			this.node = node;
+			this.level = level;
+		}
+
+
 	}
 
 
@@ -134,19 +142,16 @@ public class TreeApi {
 	public Map<Integer, List<Integer>> getNodesByLevel(TreeNode root) {
 		Map<Integer, List<Integer>> mapOfLevelAndNodes = new HashMap<>();
 
-		Queue<TreeNode> nodesQueue = new LinkedList<>();
-		Queue<Integer> levelsQueue = new LinkedList<>();
+		Queue<NodeByLevel> nodeByLevelQueue = new LinkedList<>();
 
-		List<Integer> listOfNeighborNodes;
+		nodeByLevelQueue.add(new NodeByLevel(root, 0));
 
-		nodesQueue.add(root);
-		levelsQueue.add(0);
+		while (!nodeByLevelQueue.isEmpty()) {
+			NodeByLevel currNodeLevelPair = nodeByLevelQueue.poll();
 
-		while (!nodesQueue.isEmpty()) {
-			listOfNeighborNodes = new ArrayList<Integer>();
-
-			TreeNode currNode = nodesQueue.poll();
-			Integer level = levelsQueue.poll();
+			int level = currNodeLevelPair.level;
+			TreeNode currNode = currNodeLevelPair.node;
+			int val = currNode.val;
 
 			if (mapOfLevelAndNodes.containsKey(level)) {
 				List<Integer> listInMap = mapOfLevelAndNodes.get(level);
@@ -154,23 +159,15 @@ public class TreeApi {
 				mapOfLevelAndNodes.put(level, listInMap);
 			} else {
 				List<Integer> listInMap = new ArrayList<>();
-				listInMap.add(currNode.val);
+				listInMap.add(val);
 				mapOfLevelAndNodes.put(level, listInMap);
 			}
 
-
 			if (currNode.left != null) {
-				nodesQueue.add(currNode.left);
-				listOfNeighborNodes.add(currNode.left.val);
+				nodeByLevelQueue.add(new NodeByLevel(currNode.left, level + 1));
 			}
-
 			if (currNode.right != null) {
-				nodesQueue.add(currNode.right);
-				listOfNeighborNodes.add(currNode.right.val);
-			}
-
-			for (Integer nodeInteger : listOfNeighborNodes) {
-				levelsQueue.add(level + 1);
+				nodeByLevelQueue.add(new NodeByLevel(currNode.right, level + 1));
 			}
 		}
 
