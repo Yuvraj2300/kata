@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -733,6 +734,224 @@ public class TreeApi {
 		assertEquals(5, sum);
 	}
 
+
+	private int sumOfAllTheLeftLeaves(TreeNode root) {
+		List<Integer> buffer = new ArrayList<>();
+		int sum = 0;
+
+		_getLeftLeavesVal(root, buffer);
+
+		for (Integer i : buffer) {
+			sum += i;
+		}
+
+		return sum;
+	}
+
+
+
+	private void _getLeftLeavesVal(TreeNode root, List<Integer> buffer) {
+		if (null == root) {
+			return;
+		}
+
+		if (null != root.left && null == root.left.left && null == root.left.right) {
+			buffer.add(root.left.val);
+		}
+
+		_getLeftLeavesVal(root.left, buffer);
+		_getLeftLeavesVal(root.right, buffer);
+
+	}
+
+
+
+	@Test
+	void testSumOfAllTheLeftLeaves() throws Exception {
+		TreeNode root = new TreeNode(9);
+		root.left = new TreeNode(8);
+		root.left.left = new TreeNode(5);
+		root.left.right = new TreeNode(2);
+
+
+		root.right = new TreeNode(6);
+		root.right.left = new TreeNode(1);
+
+		int sum = sumOfAllTheLeftLeaves(root);
+		assertEquals(6, sum);
+	}
+
+
+
+	enum LeafDirection {
+		LEFT,
+		RIGHT;
+	}
+
+	class NodeLevelLeaves {
+		int level;
+		TreeNode nodeRef;
+
+
+		public NodeLevelLeaves(int level, TreeNode node) {
+			super();
+			this.level = level;
+			this.nodeRef = node;
+		}
+
+
+		@Override
+		public String toString() {
+			return "NodeLevelLeaves [level=" + level + ", node=" + nodeRef + "]";
+		}
+
+	}
+
+	class SumLeaves {
+		int sum;
+		List<TreeNode> listOfLeavesCovered = new LinkedList<TreeNode>();
+		LeafDirection leafDirection;
+
+
+
+		public SumLeaves(int sum, List<TreeNode> listOfLeavesCovered) {
+			super();
+			this.sum = sum;
+			this.listOfLeavesCovered = listOfLeavesCovered;
+		}
+
+
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getEnclosingInstance().hashCode();
+			result = prime * result + Objects.hash(leafDirection, sum);
+			return result;
+		}
+
+
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!(obj instanceof SumLeaves))
+				return false;
+			SumLeaves other = (SumLeaves) obj;
+			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+				return false;
+			return leafDirection == other.leafDirection && sum == other.sum;
+		}
+
+
+
+		@Override
+		public String toString() {
+			return "SumLeaves [sum=" + sum + ", listOfLeavesCovered=" + listOfLeavesCovered + "]";
+		}
+
+
+		private TreeApi getEnclosingInstance() {
+			return TreeApi.this;
+		}
+	}
+
+
+
+	private int maxPathBwTwoLeaves(TreeNode root) {
+		int maxSum = 0;
+		Map<TreeNode, SumLeaves> mapOfNodeLeaves = new HashMap<>();
+
+		Queue<NodeLevelLeaves> levelQueue = new LinkedList<>();
+		levelQueue.add(new NodeLevelLeaves(0, root));
+
+		while (!levelQueue.isEmpty()) {
+			NodeLevelLeaves poll = levelQueue.poll();
+			int level = poll.level;
+			TreeNode currNode = poll.nodeRef;
+
+			List<TreeNode> listOfLeaves = new LinkedList<>();
+			SumLeaves sumLeaves = new SumLeaves(0, listOfLeaves);
+			_getSumAndListOfLeavesCovered(currNode, sumLeaves, null);
+			mapOfNodeLeaves.put(currNode, sumLeaves);
+
+			if (null != currNode.left) {
+				levelQueue.add(new NodeLevelLeaves(level + 1, currNode.left));
+			}
+
+			if (null != currNode.right) {
+				levelQueue.add(new NodeLevelLeaves(level + 1, currNode.right));
+			}
+		}
+
+		for (Map.Entry<TreeNode, SumLeaves> entry : mapOfNodeLeaves.entrySet()) {
+			int sum = entry.getValue().sum;
+			if (maxSum < sum) {
+				maxSum = sum;
+			}
+		}
+
+		return maxSum;
+	}
+
+
+
+	private void _getSumAndListOfLeavesCovered(TreeNode root, SumLeaves sumLeaves, LeafDirection leafDirection) {
+		if (null == root) {
+			return;
+		}
+
+		sumLeaves.sum += root.val;
+
+		if (_isLeaf(root)) {
+			sumLeaves.listOfLeavesCovered.add(root);
+			sumLeaves.leafDirection = leafDirection;
+		}
+
+		_getSumAndListOfLeavesCovered(root.left, sumLeaves, LeafDirection.LEFT);
+		_getSumAndListOfLeavesCovered(root.right, sumLeaves, LeafDirection.RIGHT);
+	}
+
+
+
+	@Test
+	void testMaxPathBetweenTwoLeaves() throws Exception {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.left.left = new TreeNode(20);
+		root.left.right = new TreeNode(6);
+		root.left.right.left = new TreeNode(7);
+
+		root.right = new TreeNode(-4);
+		root.right.right = new TreeNode(-8);
+
+		int sum = maxPathBwTwoLeaves(root);
+		assertEquals(35, sum);
+	}
+
+
+
+	@Test
+	void testMaxPathBetweenTwoLeaves_1() throws Exception {
+		TreeNode root;
+		root = new TreeNode(-15);
+		root.left = new TreeNode(5);
+		root.right = new TreeNode(6);
+		root.left.left = new TreeNode(-8);
+		root.left.right = new TreeNode(1);
+		root.left.left.left = new TreeNode(2);
+		root.left.left.right = new TreeNode(6);
+		root.right.left = new TreeNode(3);
+		root.right.right = new TreeNode(9);
+		root.right.right.right = new TreeNode(0);
+		root.right.right.right.left = new TreeNode(4);
+		root.right.right.right.right = new TreeNode(-1);
+		root.right.right.right.right.left = new TreeNode(10);
+		int sum = maxPathBwTwoLeaves(root);
+		assertEquals(27, sum);
+	}
 
 
 
