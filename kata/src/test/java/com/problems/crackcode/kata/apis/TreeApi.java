@@ -1,11 +1,14 @@
 package com.problems.crackcode.kata.apis;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.junit.jupiter.api.Test;
@@ -287,9 +290,449 @@ public class TreeApi {
 		root.left.right.right.right = new TreeNode(6);
 
 		root.right = new TreeNode(3);
+
 		Map<Integer, List<Integer>> nodesByLevel = getNodesForTopView(root);
 		System.out.println(nodesByLevel);
 	}
+
+
+	@Test
+	void testTopView() throws Exception {
+		TreeNode root = new TreeNode(20);
+		root.left = new TreeNode(8);
+		root.right = new TreeNode(22);
+		root.left.left = new TreeNode(5);
+		root.left.right = new TreeNode(3);
+		root.right.left = new TreeNode(4);
+		root.right.right = new TreeNode(25);
+		root.left.right.left = new TreeNode(10);
+		root.left.right.right = new TreeNode(14);
+
+		Map<Integer, List<Integer>> nodesByLevel = getNodesForTopView(root);
+		System.out.println(nodesByLevel);
+	}
+
+
+
+	class StateWithDirectionFlag {
+		int level;
+		TreeNode node;
+
+		public StateWithDirectionFlag(int level, TreeNode node) {
+			super();
+			this.level = level;
+			this.node = node;
+		}
+	}
+
+	public void printLeftView(TreeNode root) {
+		Map<Integer, Queue<Integer>> mapOfLevelWithValsFromLeft = new HashMap<Integer, Queue<Integer>>();
+		Queue<StateWithDirectionFlag> queueForLeftNodes = new LinkedList<>();
+
+		queueForLeftNodes.add(new StateWithDirectionFlag(0, root));
+
+
+		while (!queueForLeftNodes.isEmpty()) {
+			StateWithDirectionFlag poll = queueForLeftNodes.poll();
+			TreeNode currNode = poll.node;
+
+			int level = poll.level;
+			if (mapOfLevelWithValsFromLeft.containsKey(level)) {
+				Queue<Integer> listInMap = mapOfLevelWithValsFromLeft.get(level);
+				listInMap.add(currNode.val);
+				mapOfLevelWithValsFromLeft.put(level, listInMap);
+			} else {
+				Queue<Integer> listInMap = new LinkedList<>();
+				listInMap.add(currNode.val);
+				mapOfLevelWithValsFromLeft.put(level, listInMap);
+			}
+
+
+			if (currNode.left != null) {
+				queueForLeftNodes.add(new StateWithDirectionFlag(level + 1, currNode.left));
+			}
+
+			if (currNode.right != null) {
+				queueForLeftNodes.add(new StateWithDirectionFlag(level + 1, currNode.right));
+			}
+		}
+		System.out.println(mapOfLevelWithValsFromLeft);
+
+		for (Map.Entry<Integer, Queue<Integer>> entry : mapOfLevelWithValsFromLeft.entrySet()) {
+			System.out.print(entry.getValue().poll() + " ");
+		}
+
+	}
+
+
+	@Test
+	void testPrintLeftView() throws Exception {
+		TreeNode root = new TreeNode(10);
+		root.left = new TreeNode(2);
+		root.right = new TreeNode(3);
+		root.left.left = new TreeNode(7);
+		root.left.right = new TreeNode(8);
+		root.right.right = new TreeNode(15);
+		root.right.left = new TreeNode(12);
+		root.right.right.left = new TreeNode(14);
+
+		printLeftView(root);
+
+	}
+
+	@Test
+	void testPrintLeftView_1() throws Exception {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.left.left = new TreeNode(4);
+		root.left.right = new TreeNode(5);
+
+		root.right = new TreeNode(3);
+		root.right.left = new TreeNode(6);
+		root.right.right = new TreeNode(7);
+
+		printLeftView(root);
+	}
+
+
+	@Test
+	void testPrintLeftView_2() throws Exception {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.left.right = new TreeNode(4);
+		root.left.right.right = new TreeNode(5);
+		root.left.right.right.right = new TreeNode(6);
+
+		root.right = new TreeNode(3);
+
+		printLeftView(root);
+	}
+
+
+	class NodeDistances {
+		int nodeDistanceFromRoot = 0;
+		int nodeDistnaceFromCosestLeaf = 0;
+		int rootDistFromCurrentLeaf = 0;
+		boolean crossingNode = false;
+
+		@Override
+		public String toString() {
+			return "NodeDistances [nodeDistance=" + nodeDistanceFromRoot + ", closestLeaf=" + nodeDistnaceFromCosestLeaf + "]";
+		}
+
+	}
+
+	class LeafNodePojo {
+		TreeNode node;
+		boolean visited;
+		int rootDistFromCurrentLeaf = 0;
+		boolean crossingNode = false;
+
+
+
+		public LeafNodePojo(TreeNode node, boolean visited) {
+			super();
+			this.node = node;
+			this.visited = visited;
+		}
+
+
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getEnclosingInstance().hashCode();
+			result = prime * result + Objects.hash(node);
+			return result;
+		}
+
+
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!(obj instanceof LeafNodePojo))
+				return false;
+			LeafNodePojo other = (LeafNodePojo) obj;
+			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+				return false;
+			return Objects.equals(node, other.node);
+		}
+
+
+
+		@Override
+		public String toString() {
+			return "LeadNodePojo [node=" + node + ", visited=" + visited + "]";
+		}
+
+
+
+		private TreeApi getEnclosingInstance() {
+			return TreeApi.this;
+		}
+	}
+
+	public int getClosestLeaf(TreeNode root, TreeNode nodeToSearch) {
+		int minDistance = Integer.MAX_VALUE;
+		Queue<LeafNodePojo> leafNodesQueue = new LinkedList<>();
+
+		NodeDistances nodeDistances = new NodeDistances();
+		_getDistanceOfRootToNode(root, nodeToSearch, nodeDistances);
+
+		System.out.println(nodeDistances);
+		_getNodeDisatanceFromRoot(root, nodeToSearch, nodeDistances, leafNodesQueue, 0);
+
+		while (!leafNodesQueue.isEmpty()) {
+			int distance = 0;
+			LeafNodePojo poll = leafNodesQueue.poll();
+			if (poll.crossingNode) {
+				distance = poll.rootDistFromCurrentLeaf - nodeDistances.nodeDistanceFromRoot;
+			} else {
+				distance = nodeDistances.nodeDistanceFromRoot + poll.rootDistFromCurrentLeaf;
+			}
+
+			if (distance < minDistance) {
+				minDistance = distance;
+			}
+
+		}
+
+		return minDistance;
+	}
+
+
+
+	private void _getNodeDisatanceFromRoot(TreeNode root, TreeNode nodeToSearch, NodeDistances nodeDistances, Queue<LeafNodePojo> leafNodesQueue, int level) {
+
+		if (root == null) {
+			return;
+		}
+
+		if (nodeToSearch == root) {
+			nodeDistances.crossingNode = true;
+		}
+
+
+		if (_isLeaf(root)) {
+			//			nodeDistances.rootDistFromCurrentLeaf++;
+			LeafNodePojo currentLeafNode = new LeafNodePojo(root, true);
+			currentLeafNode.rootDistFromCurrentLeaf = level;
+			currentLeafNode.crossingNode = nodeDistances.crossingNode;
+
+			if (!leafNodesQueue.contains(currentLeafNode)) {
+				currentLeafNode.visited = true;
+				leafNodesQueue.add(currentLeafNode);
+			}
+
+			return;
+
+		}
+		_getNodeDisatanceFromRoot(root.left, nodeToSearch, nodeDistances, leafNodesQueue, level + 1);
+		_getNodeDisatanceFromRoot(root.right, nodeToSearch, nodeDistances, leafNodesQueue, level + 1);
+	}
+
+
+
+	boolean _isLeaf(TreeNode node) {
+		if (node.left == null && null == node.right) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+
+	private void _getDistanceOfRootToNode(TreeNode root, TreeNode nodeToSearch, NodeDistances nodeDistances) {
+		if (root == null) {
+			return;
+		}
+
+
+		if (root.val == nodeToSearch.val) {
+			return;
+		}
+
+		if (root.left != null && root.left.val == nodeToSearch.val) {
+			nodeDistances.nodeDistanceFromRoot++;
+			return;
+		}
+
+
+		if (root.right != null && root.right.val == nodeToSearch.val) {
+			nodeDistances.nodeDistanceFromRoot++;
+			return;
+		}
+
+		_getDistanceOfRootToNode(root.left, nodeToSearch, nodeDistances);
+		_getDistanceOfRootToNode(root.right, nodeToSearch, nodeDistances);
+	}
+
+
+
+	@Test
+	void testFindNearestLeatNode() throws Exception {
+		TreeNode root = new TreeNode(10);
+
+		TreeNode nodeToSearch = new TreeNode(13);
+
+		root.left = new TreeNode(12);
+		root.right = nodeToSearch;
+		root.right.left = new TreeNode(14);
+
+		int closestLeafValue = getClosestLeaf(root, nodeToSearch);
+		assertEquals(1, closestLeafValue);
+	}
+
+
+	@Test
+	void testFindNearestLeatNode_1() throws Exception {
+		TreeNode root = new TreeNode(10);
+
+		TreeNode nodeToSearch = new TreeNode(13);
+
+		root.left = new TreeNode(12);
+		root.right = nodeToSearch;
+		root.right.left = new TreeNode(14);
+
+		root.right.left.left = new TreeNode(21);
+		root.right.left.left.left = new TreeNode(1);
+		root.right.left.left.right = new TreeNode(2);
+
+		root.right.left.right = new TreeNode(22);
+		root.right.left.right.left = new TreeNode(3);
+		root.right.left.right.right = new TreeNode(4);
+
+
+		root.right.right = new TreeNode(15);
+
+		root.right.right.left = new TreeNode(23);
+		root.right.right.left.left = new TreeNode(5);
+		root.right.right.left.right = new TreeNode(6);
+
+
+		root.right.right.right = new TreeNode(24);
+		root.right.right.right.left = new TreeNode(7);
+		root.right.right.right.right = new TreeNode(8);
+
+		int closestLeafValue = getClosestLeaf(root, nodeToSearch);
+		assertEquals(2, closestLeafValue);
+	}
+
+
+
+	private int sumOfAllNodes(TreeNode root) {
+
+		if (null == root) {
+			return 0;
+		}
+
+		int sumLeft = root.val + sumOfAllNodes(root.left);
+		int sumRight = root.val + sumOfAllNodes(root.right);
+
+
+		return sumLeft + sumRight - root.val;
+	}
+
+
+
+	@Test
+	void testSumOfAllNodes() throws Exception {
+		TreeNode root = new TreeNode(15);
+
+		root.left = new TreeNode(10);
+		root.left.left = new TreeNode(8);
+		root.left.right = new TreeNode(12);
+
+
+		root.right = new TreeNode(20);
+		root.right.left = new TreeNode(16);
+		root.right.right = new TreeNode(25);
+
+		int sum = sumOfAllNodes(root);
+		assertEquals(106, sum);
+	}
+
+
+
+	@Test
+	void testSumOfAllNodes_1() throws Exception {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.right = new TreeNode(3);
+
+		int sum = sumOfAllNodes(root);
+		assertEquals(6, sum);
+	}
+
+
+	private int sumOfParentNodesWithChildX(TreeNode root, int numToCheck) {
+		List<Integer> listOfNubers = new ArrayList<>();
+		int sum = 0;
+
+		_getValuesWithNum(root, numToCheck, listOfNubers);
+
+
+		for (Integer i : listOfNubers) {
+			sum += i;
+		}
+
+
+		return sum;
+	}
+
+
+
+	private void _getValuesWithNum(TreeNode root, int numToCheck, List<Integer> listOfNubers) {
+		if (null == root) {
+			return;
+		}
+
+		if ((null != root.left && root.left.val == numToCheck) || (null != root.right && root.right.val == numToCheck)) {
+			listOfNubers.add(root.val);
+		}
+
+		_getValuesWithNum(root.left, numToCheck, listOfNubers);
+		_getValuesWithNum(root.right, numToCheck, listOfNubers);
+	}
+
+
+
+	@Test
+	void testSumOfParentNodesHavingChildX() throws Exception {
+		TreeNode root = new TreeNode(4);
+		root.left = new TreeNode(2);
+		root.left.left = new TreeNode(7);
+		root.left.right = new TreeNode(2);
+
+
+		root.right = new TreeNode(5);
+		root.right.left = new TreeNode(2);
+		root.right.right = new TreeNode(3);
+
+		int sum = sumOfParentNodesWithChildX(root, 2);
+		assertEquals(11, sum);
+	}
+
+	@Test
+	void testSumOfParentNodesHavingChildX_1() throws Exception {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.left.left = new TreeNode(4);
+		root.left.right = new TreeNode(5);
+
+
+		root.right = new TreeNode(3);
+		root.right.left = new TreeNode(4);
+		root.right.right = new TreeNode(7);
+
+		int sum = sumOfParentNodesWithChildX(root, 4);
+		assertEquals(5, sum);
+	}
+
 
 
 
