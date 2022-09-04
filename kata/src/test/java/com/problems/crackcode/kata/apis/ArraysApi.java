@@ -1,6 +1,6 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
+
+import com.problems.crackcode.kata.exceptions.KataException;
 
 public class ArraysApi {
 	private void findThreeNumbers(int[] a, int arr_size, int sum) {
@@ -303,17 +307,100 @@ public class ArraysApi {
 
 
 
-	private int[] mySort(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
-		_mergeSort(a, l, h);
+	private int[] mySort(int[] a, String type) {
+		if (StringUtils.isBlank(type)) {
+			int l = 0;
+			int h = a.length - 1;
+			_mergeSort(a, l, h);
+		}
 
-
+		if ("quick".equals(type)) {
+			_quickSort(a);
+		}
 
 		return a;
 	}
 
 
+
+	private void _quickSort(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		_quickSortUtil(a, l, h);
+	}
+
+
+
+	private void _quickSortUtil(int[] a, int l, int h) {
+		int pivotIdx = l;
+		if (l < h) {
+			pivotIdx = _getPivotIdx(a, pivotIdx, l, h);
+			//			System.out.println("Pivot is at  : " + pivotIdx);
+			_quickSortUtil(a, l, pivotIdx - 1);
+			_quickSortUtil(a, pivotIdx + 1, h);
+		}
+	}
+
+
+
+	private int _getPivotIdx(int[] a, int pivotIdx, int l, int h) {
+		while (l != pivotIdx || h != pivotIdx) {
+
+			while (a[h] > a[pivotIdx]) {
+				h--;
+			}
+
+			if (a[h] < a[pivotIdx]) {
+				_swap(a, pivotIdx, h);
+			}
+			pivotIdx = h;
+
+			while (a[l] < a[pivotIdx]) {
+				l++;
+			}
+
+			if (a[l] > a[pivotIdx]) {
+				_swap(a, pivotIdx, l);
+			}
+			pivotIdx = l;
+		}
+		return pivotIdx;
+	}
+
+
+
+	private void _swap(int[] a, int i, int j) {
+		int temp = a[j];
+		a[j] = a[i];
+		a[i] = temp;
+	}
+
+
+
+	@Test
+	void testQuickSort() throws Exception {
+		int[] a = { 16, 20, 1, 2, 19 };
+
+		mySort(a, "quick");
+
+		for (int i : a) {
+			System.out.print(i + " ");
+		}
+	}
+
+
+	@Test
+	void testQuickSort_1() throws Exception {
+		int[] a = { 90, 34, 1, 45, 21, -3 };
+
+		mySort(a, "quick");
+
+
+		for (int i : a) {
+			System.out.print(i + " ");
+		}
+	}
 
 	private int[] _mergeSort(int[] a, int l, int h) {
 
@@ -380,7 +467,7 @@ public class ArraysApi {
 	@Test
 	void testSortArray() {
 		int a[] = { 2, 6, 18, 4 };
-		int sorteda[] = mySort(a);
+		int sorteda[] = mySort(a, "");
 
 		for (int i : sorteda) {
 			System.out.print(i + ",");
@@ -409,8 +496,8 @@ public class ArraysApi {
 			i--;
 		}
 
-		mySort(a);
-		mySort(b);
+		mySort(a, "");
+		mySort(b, "");
 	}
 	//&& i >= 0	
 	//	else {
@@ -497,7 +584,7 @@ public class ArraysApi {
 			p++;
 		}
 
-		int[] sorted = mySort(res);
+		int[] sorted = mySort(res, "");
 
 		return sorted;
 	}
@@ -706,4 +793,342 @@ public class ArraysApi {
 		}
 	}
 
+
+
+	private int[] rotateArrayBy(int[] a, int rotateTimes) {
+		while (rotateTimes > 0) {
+			int i = 0;
+			int first = a[0];
+			while (i < a.length) {
+				if (i == a.length - 1) {
+					a[i] = first;
+				} else {
+					a[i] = a[i + 1];
+				}
+
+				i++;
+			}
+
+			rotateTimes--;
+		}
+
+		return a;
+	}
+
+
+
+	@Test
+	void testArrayRotation() throws Exception {
+		int a[] = { 1, 2, 3, 4, 5, 6, 7 };
+
+		int[] rotatedArray = rotateArrayBy(a, 2);
+
+		for (int i : rotatedArray) {
+			System.out.print(i + ",");
+		}
+	}
+
+
+
+	private int timesRightRotated(int[] a) {
+
+		int l = 0;
+		int h = a.length - 1;
+
+		int rotations = _binaryToFindTimesOfRightRotation(a, l, h);
+		return rotations;
+	}
+
+
+
+	private int _binaryToFindTimesOfRightRotation(int[] a, int l, int h) {
+
+		if (!(l < h)) {
+			return 0;
+		}
+
+		int mid = (h + l) / 2;
+
+		if (mid == 0) {
+			return 0;
+		}
+
+		if (a[mid] < a[mid - 1]) {
+			return mid;
+		}
+
+		if (a[mid + 1] < a[mid]) {
+			return mid + 1;
+		}
+
+		if (a[h] > a[mid]) {
+			return _binaryToFindTimesOfRightRotation(a, l, mid);
+		} else {
+			return _binaryToFindTimesOfRightRotation(a, mid + 1, h);
+		}
+	}
+
+
+
+	@Test
+	void testFindNumberOfTimesRoatedRightRotated() throws Exception {
+		int a[] = { 6, 7, 1, 2, 3, 4, 5 };
+
+		int timesRotated = timesRightRotated(a);
+		assertEquals(2, timesRotated);
+	}
+
+
+
+	@Test
+	void testFindNumberOfTimesRoatedRightRotated_1() throws Exception {
+		int a[] = { 1, 2, 3, 4, 5 };
+
+		int timesRotated = timesRightRotated(a);
+		assertEquals(0, timesRotated);
+	}
+
+
+
+
+	private int timesLeftRotated(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		return _binaryToSearchLeftRotation(a, l, h);
+	}
+
+
+
+	private int _binaryToSearchLeftRotation(int[] a, int l, int h) {
+		int mid = (h + l) / 2;
+
+		//		if (a[mid] < a[mid + 1]) {
+		//			return a.length - mid + 1;
+		//		}
+
+		if (mid == 0) {
+			return 0;
+		}
+		if (a[mid] < a[mid - 1]) {
+			return a.length - mid - 1 + 1;
+		}
+
+		if (a[h] < a[mid]) {
+			return _binaryToSearchLeftRotation(a, mid + 1, h);
+			//check right;
+		} else {
+			return _binaryToSearchLeftRotation(a, l, mid);
+		}
+	}
+
+
+	@Test
+	void testFindNumberOfTimesRoatedLeftRotated() throws Exception {
+		int a[] = { 3, 4, 5, 6, 7, 1, 2 };
+
+		int timesRotated = timesLeftRotated(a);
+		assertEquals(2, timesRotated);
+	}
+
+
+	@Test
+	void testFindNumberOfTimesRoatedLeftRotated_1() throws Exception {
+		int a[] = { 1, 2, 4, 6, 8 };
+
+		int[] rotatedArray = rotateArrayBy(a, 3);
+
+		int timesRotated = timesLeftRotated(rotatedArray);
+		assertEquals(3, timesRotated);
+	}
+
+
+	@Test
+	void testFindNumberOfTimesRoatedLeftRotated_2() throws Exception {
+		int a[] = { 1, 2, 4, 6, 8 };
+
+		int[] rotatedArray = rotateArrayBy(a, 4);
+
+		int timesRotated = timesLeftRotated(rotatedArray);
+		assertEquals(4, timesRotated);
+	}
+
+	@Test
+	void testFindNumberOfTimesRoatedLeftRotated_3() throws Exception {
+		int a[] = { 1, 2, 3, 4 };
+
+		int[] rotatedArray = rotateArrayBy(a, 0);
+
+		int timesRotated = timesLeftRotated(rotatedArray);
+		assertEquals(0, timesRotated);
+	}
+
+
+
+	private int findMinValInARotatedArray(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		return _binrayToFindMinValInArray(a, l, h);
+
+	}
+
+
+
+	private int _binrayToFindMinValInArray(int[] a, int l, int h) {
+		if (!(l < h)) {
+			return a[0];
+		}
+
+		int mid = (h + l) / 2;
+
+		if (a[mid] < a[mid - 1]) {
+			return a[mid];
+		}
+
+		if (a[mid + 1] < a[mid]) {
+			return a[mid + 1];
+		}
+
+
+		if (a[h] > a[mid]) {
+			return _binrayToFindMinValInArray(a, l, mid);
+		} else {
+			return _binrayToFindMinValInArray(a, mid + 1, h);
+		}
+	}
+
+
+
+	@Test
+	void testFindMinimumValuesFromRotatedArray() throws Exception {
+		int a[] = { -20, 1, 3, 4 };
+
+		int[] rotatedArray = rotateArrayBy(a, 3);
+
+		int minVal = findMinValInARotatedArray(rotatedArray);
+		assertEquals(-20, minVal);
+	}
+
+
+
+	@Test
+	void testFindMinimumValuesFromRotatedArray_1() throws Exception {
+		int a[] = { 3, 4, 5, 6, 7, 1, 2 };
+
+		int minVal = findMinValInARotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+
+
+	private int[] rearrangeAsAi(int[] a) {
+		Arrays.sort(a);
+
+		int[] res = new int[a.length];
+
+		int p = 0;
+		while (p < a.length) {
+			int search = Arrays.binarySearch(a, p);
+			if (search != 0 && search >= 0) {
+				res[p] = a[search];
+			} else {
+				res[p] = -1;
+			}
+			p++;
+		}
+
+		return res;
+	}
+
+
+	@Test
+	void testRearrangeValuesAsAi() throws Exception {
+		int[] a = { -1, -1, 6, 1, 9, 3, 2, -1, 4, -1 };
+
+		int[] updatedArr = rearrangeAsAi(a);
+
+		for (int i : updatedArr) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	private int[] sendValueBackOfArray(int[] a, int valToSendBack) {
+		int size = a.length;
+
+		int i = 0;
+		int j = 0;
+
+		while (j < size) {
+			if (a[j] != valToSendBack) {
+				a[i] = a[j];
+				i++;
+			}
+			j++;
+		}
+
+		while (i < size) {
+			a[i] = valToSendBack;
+			i++;
+		}
+
+		return a;
+	}
+
+
+	@Test
+	void testSendAValueToEndOfArray() throws Exception {
+		int[] a = { 1, 2, 0, 4, 6, 0, 0 };
+
+		int[] updatedArr = sendValueBackOfArray(a, 0);
+
+		for (int i : updatedArr) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	@Test
+	void testSendAValueToEndOfArray_1() throws Exception {
+		int[] a = { 1, 2, 2, 4, 6, 0, 0 };
+
+		int[] updatedArr = sendValueBackOfArray(a, 2);
+
+		for (int i : updatedArr) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+
+	private int kthSmallestElement(int[] a, int kthVal) {
+
+		Set<Integer> set = new TreeSet<>();
+
+		for (int i : a) {
+			set.add(i);
+		}
+
+		int p = 0;
+		for (int i : set) {
+			if (p == kthVal - 1) {
+				return i;
+			}
+			p++;
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	void testGetKthSmallestElement() throws Exception {
+		int[] a = { 7, 10, 4, 3, 20, 15 };
+
+		int value = kthSmallestElement(a, 3);
+
+		assertEquals(7, value);
+	}
 }
