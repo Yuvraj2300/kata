@@ -1,16 +1,22 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -1131,4 +1137,430 @@ public class ArraysApi {
 
 		assertEquals(7, value);
 	}
+
+
+
+	@Test
+	void testSortString() throws Exception {
+		String s = "yuvraj";
+		String updatedString = sortString(s, "ASC");
+		System.out.println(updatedString);
+
+		//		String updatedString_1 = sortString(s, "DESC");
+		//		System.out.println(updatedString_1);
+
+		sortString(s);
+		System.out.println();
+		sortStringDesc(s);
+	}
+
+
+
+	private String sortString(String s, String orderBy) {
+
+		String res = "";
+		int[] letter = new int[26];
+
+		for (int i = 0; i < s.length(); i++) {
+			letter[s.charAt(i) - 'a']++;
+		}
+
+		if ("ASC" == orderBy) {
+			for (int i = 0; i < 26; i++) {
+				for (int j = 0; j < letter[i]; j++) {
+					System.out.print((char) (i + 'a'));
+				}
+			}
+		} else if ("DESC" == orderBy) {
+			for (int i = 26 - 1; i >= 0; i++) {
+				for (int j = 0; j < letter[i]; j++) {
+					System.out.print((char) (i + 'a'));
+				}
+			}
+		} else {
+			throw new KataException("");
+		}
+
+		return res;
+	}
+
+	private void sortString(String str) {
+		Set<Character> set = new TreeSet();
+		for (char c : str.toCharArray()) {
+			set.add(c);
+		}
+
+		for (Character character : set) {
+			System.out.print(character);
+		}
+	}
+
+
+	private void sortStringDesc(String str) {
+		TreeSet<Character> set = new TreeSet<>();
+		for (char c : str.toCharArray()) {
+			set.add(c);
+		}
+		TreeSet<Character> descendingSet = (TreeSet<Character>) set.descendingSet();
+		for (Character character : descendingSet) {
+			System.out.print(character);
+		}
+	}
+
+
+
+	private void getAllRotations(String s) {
+		char[] charArray = s.toCharArray();
+
+		int p = charArray.length - 1;
+		while (p >= 0) {
+			int i = 0;
+			char last = charArray[0];
+			while (i < charArray.length) {
+
+				if (i == charArray.length - 1) {
+					charArray[i] = last;
+				} else {
+					charArray[i] = charArray[i + 1];
+				}
+				i++;
+			}
+			p--;
+		}
+
+	}
+
+
+	@Test
+	void testGetAllRotations() {
+		String s = "abc";
+		getAllRotations(s);
+	}
+
+
+
+	private boolean isRotation(String original, String toCheck) {
+		char[] originalArray = original.toCharArray();
+		char[] toCheckArray = toCheck.toCharArray();
+
+		Queue<Character> originalQueue = new LinkedList<>();
+		Queue<Character> toCheckQueue = new LinkedList<>();
+
+		boolean isRotation = false;
+
+		for (char c : originalArray) {
+			originalQueue.add(c);
+		}
+		for (char c : toCheckArray) {
+			toCheckQueue.add(c);
+		}
+
+		while (!originalQueue.isEmpty() || !toCheckQueue.isEmpty()) {
+			Character peek = originalQueue.peek();
+			Character poll = toCheckQueue.poll();
+
+			if (!(peek == poll)) {
+				toCheckQueue.add(poll);
+			} else {
+				isRotation = true;
+				originalQueue.remove();
+			}
+
+		}
+
+		return isRotation;
+	}
+
+
+
+	@Test
+	void testDetermineRotation() throws Exception {
+		boolean rotation = isRotation("ABCD", "CDAB");
+		assertTrue(rotation);
+	}
+
+
+
+	private boolean isReversible(String toCheck) {
+		int i = 0;
+		int j = toCheck.length() - 1;
+
+		while (i < j) {
+			if (toCheck.charAt(i) != toCheck.charAt(j)) {
+				return false;
+			}
+			i++;
+			j--;
+		}
+
+		return true;
+	}
+
+
+
+	@Test
+	void testIsReversible() throws Exception {
+		boolean isReversible = isReversible("ABBA");
+		assertTrue(isReversible);
+	}
+
+	@Test
+	void testIsReversible_1() throws Exception {
+		boolean isReversible = isReversible("AB");
+		assertFalse(isReversible);
+	}
+
+
+
+	private String reverseByWord(String input) {
+		int j = input.length() - 1;
+
+		StringBuilder res = new StringBuilder();
+		StringBuilder sbInt = null;
+
+		while (j >= 0) {
+
+			if (null == sbInt) {
+				sbInt = new StringBuilder();
+			}
+
+			if (input.charAt(j) != ' ') {
+				sbInt.append(input.charAt(j));
+			} else {
+				res.append(sbInt.reverse().toString());
+				res.append(input.charAt(j));
+				sbInt = null;
+			}
+
+			j--;
+		}
+
+		if (sbInt.length() > 0) {
+			res.append(sbInt.reverse().toString());
+		}
+
+		return res.toString();
+	}
+
+
+
+	@Test
+	void testReversingByWords() {
+		String updatedString = reverseByWord("geeks quiz practice code");
+		assertEquals("code practice quiz geeks", updatedString);
+	}
+
+	@Test
+	void testReversingByWords_1() {
+		String updatedString = reverseByWord("getting good at coding needs a lot of practice");
+		assertEquals("practice of lot a needs coding at good getting", updatedString);
+	}
+
+
+
+	private String reverseEachWord(String input) {
+		// @formatter:off
+		String collect = Arrays.asList(input.split(" "))
+			.stream()
+			.map(s -> new StringBuilder(s).reverse())
+			.collect(Collectors.joining(" "));
+ 
+		// @formatter:on
+
+
+		return collect;
+	}
+
+
+
+	@Test
+	void testReversingEachWord() throws Exception {
+		String updatedString = reverseEachWord("geeks for geeks");
+		assertEquals("skeeg rof skeeg", updatedString);
+	}
+
+
+
+	private String preserveSpacesAndResverse(String input) {
+		int j = input.length() - 1;
+		int i = 0;
+
+		StringBuilder sb = new StringBuilder();
+
+		while (j >= 0 && i < input.length()) {
+			if (input.charAt(i) != ' ') {
+				if (input.charAt(j) != ' ') {
+					sb.append(input.charAt(j));
+					j--;
+				} else {
+					j--;
+					continue;
+				}
+			} else {
+				sb.append(input.charAt(i));
+			}
+
+			i++;
+		}
+
+		return sb.toString();
+	}
+
+
+
+	@Test
+	void testPreservingTheSpaces() throws Exception {
+		String newString = preserveSpacesAndResverse("abc de");
+		assertEquals("edc ba", newString);
+	}
+
+	@Test
+	void testPreservingTheSpaces_1() throws Exception {
+		String newString = preserveSpacesAndResverse("abc de fg");
+		assertEquals("gfe dc ba", newString);
+	}
+
+
+
+	private String ltNCharK(int n, int k) {
+		String res = "";
+		for (int i = 0; i < k; i++) {
+			res += Character.toString('a' + i);
+		}
+
+		for (int i = 0; i < n - k; i++) {
+			res += Character.toString('a' + i);
+		}
+
+		return res;
+	}
+
+
+
+	@Test
+	void testLtNCharK() throws Exception {
+		String obtainedString = ltNCharK(5, 3);
+		assertEquals("abcab", obtainedString);
+	}
+
+	@Test
+	void testLtNCharK_1() throws Exception {
+		String obtainedString = ltNCharK(3, 2);
+		assertEquals("aba", obtainedString);
+	}
+
+
+
+	private int countAllTheWordsInTheString(String[] words, String stringToCheck) {
+		int wordsFound = 0;
+
+		Set<String> hs = new HashSet<>();
+		for (String s : words) {
+			hs.add(s);
+		}
+
+		Pattern pattern = Pattern.compile("[a-zA-Z]+");
+		Matcher matcher = pattern.matcher(stringToCheck);
+
+		while (matcher.find()) {
+			if (hs.contains(matcher.group())) {
+				wordsFound++;
+			}
+		}
+
+		return wordsFound;
+	}
+
+
+
+	@Test
+	void testCountAllTheWordsInTheString() throws Exception {
+		String[] words = { "welcome", "to", "geeks", "portal" };
+		String stringToCheck = "welcome to portal";
+
+		int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
+		assertEquals(3, allTheWords);
+	}
+
+
+
+	@Test
+	void testCountAllTheWordsInTheString_1() throws Exception {
+		String[] words = { "Save", "Water", "Save", "Yourself" };
+		String stringToCheck = "Save";
+
+		int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
+		assertEquals(1, allTheWords);
+	}
+
+
+
+	private char decryptAndFindCharAtLocation(String input, int pos) {
+		int j = 0;
+
+		int repitionValue = 0;
+		StringBuilder expandedStringSb = new StringBuilder();
+
+		StringBuilder subString = new StringBuilder();
+		while (j < input.length()) {
+			if (!Character.isDigit(input.charAt(j))) {
+				subString.append(input.charAt(j));
+				if (repitionValue == 0) {
+					repitionValue++;
+				}
+			} else {
+				int tempRepitionValue = 0;
+				if (j + 1 < input.length() && Character.isDigit(input.charAt(j + 1))) {
+					int tens = Character.getNumericValue(input.charAt(j));
+					int ones = Character.getNumericValue(input.charAt(j + 1));
+
+					String number = String.valueOf(tens) + String.valueOf(ones);
+					tempRepitionValue = Integer.valueOf(number) - 1;
+					j++;
+				} else {
+					tempRepitionValue = Character.getNumericValue(input.charAt(j)) - 1;
+				}
+
+				repitionValue += tempRepitionValue;
+
+				for (int k = 0; k < repitionValue; k++) {
+					expandedStringSb.append(subString);
+				}
+				repitionValue = 0;
+				subString.setLength(0);
+			}
+
+			j++;
+		}
+
+		return expandedStringSb.charAt(pos - 1);
+	}
+
+
+
+	@Test
+	void testDecryptAndFindCharAtLocation() throws Exception {
+		char foundChar = decryptAndFindCharAtLocation("ab2cd2", 5);
+		assertEquals('c', foundChar);
+	}
+
+
+
+	@Test
+	void testDecryptAndFindCharAtLocation_1() throws Exception {
+		char foundChar = decryptAndFindCharAtLocation("ab4c2ed3", 9);
+		assertEquals('c', foundChar);
+	}
+
+
+
+	@Test
+	void testDecryptAndFindCharAtLocation_2() throws Exception {
+		char foundChar = decryptAndFindCharAtLocation("ab4c12ed3", 21);
+		assertEquals('e', foundChar);
+	}
+
+
+
+
 }
