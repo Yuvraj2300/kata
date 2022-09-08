@@ -122,6 +122,14 @@ public class GraphAndTrees {
 		System.out.println(tree.toString());
 	}
 
+	@Test
+	void testConvertArrayToTree() throws Exception {
+		int[] values = { 2, 5, 3, 2, 6 };
+		Arrays.sort(values);
+		TreeNode root = getTreeFromSortedArray(values);
+		printInOrder(root);
+	}
+
 
 
 
