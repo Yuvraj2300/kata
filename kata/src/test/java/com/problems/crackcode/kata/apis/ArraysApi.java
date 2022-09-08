@@ -1,6 +1,8 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1562,5 +1563,249 @@ public class ArraysApi {
 
 
 
+	private boolean ocurrencesInHalves(String input) {
+		int[] counterArray = new int[26];
+
+		int i = 0;
+		int j = input.length() - 1;
+
+		while (i < j) {
+			counterArray[input.charAt(i) - 'a']++;
+			counterArray[input.charAt(j) - 'a']--;
+
+			i++;
+			j--;
+		}
+
+		for (int k = 0; k < counterArray.length; k++) {
+			if (counterArray[k] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
+	@Test
+	void testOccurencesInHalves() throws Exception {
+		boolean occurenceFlag = ocurrencesInHalves("abccab");
+		assertTrue(occurenceFlag);
+	}
+
+
+
+	@Test
+	void testOccurencesInHalves_1() throws Exception {
+		boolean occurenceFlag = ocurrencesInHalves("abbaab");
+		assertFalse(occurenceFlag);
+	}
+
+
+
+	private int checkSamePositionAsAlphabet(String input) {
+		int res = 0;
+
+		int i = 0;
+		while (i < input.length()) {
+			if (i == input.charAt(i) - 'a' || i == input.charAt(i) - 'A') {
+				res++;
+			}
+
+			i++;
+		}
+
+		return res;
+	}
+
+
+
+	@Test
+	void testCharactersInSamePositionAsAlphabet() throws Exception {
+		int samePostions = checkSamePositionAsAlphabet("abced");
+		assertEquals(3, samePostions);
+	}
+
+
+
+	@Test
+	void testCharactersInSamePositionAsAlphabet_1() throws Exception {
+		int samePostions = checkSamePositionAsAlphabet("ABcED");
+		assertEquals(3, samePostions);
+	}
+
+
+	class SentenceInfo {
+		private int words = 0;
+		private int vowels = 0;
+		private int upperCase = 0;
+		private Map<Character, Integer> mapOfCharAndOccurence = new HashMap<Character, Integer>();
+
+		public int getWords() {
+			return words;
+		}
+
+		public void setWords(int words) {
+			this.words = words;
+		}
+
+		public int getVowels() {
+			return vowels;
+		}
+
+		public void setVowels(int vowels) {
+			this.vowels = vowels;
+		}
+
+		public int getUpperCase() {
+			return upperCase;
+		}
+
+		public void setUpperCase(int upperCase) {
+			this.upperCase = upperCase;
+		}
+
+		public Map<Character, Integer> getMapOfCharAndOccurence() {
+			return mapOfCharAndOccurence;
+		}
+
+		public void setMapOfCharAndOccurence(Map<Character, Integer> mapOfCharAndOccurence) {
+			this.mapOfCharAndOccurence = mapOfCharAndOccurence;
+		}
+
+
+
+		@Override
+		public String toString() {
+			return "SentenceInfo [words=" + words + ", vowels=" + vowels + ", upperCase=" + upperCase + ", mapOfCharAndOccurence=" + mapOfCharAndOccurence + "]";
+		}
+	}
+
+
+
+
+	private SentenceInfo countingSetenceInfo(String sentence) {
+		int i = 0;
+		SentenceInfo sentenceInfo = new SentenceInfo();
+
+		Map<Character, Integer> occurenceMap = sentenceInfo.getMapOfCharAndOccurence();
+
+		while (i < sentence.length()) {
+			//char ocurrence updation
+			char currChar = sentence.charAt(i);
+			occurenceMap.put(currChar, occurenceMap.getOrDefault(currChar, 0) + 1);
+
+			if (currChar == ' ' || currChar == '.') {
+				_updateWords(sentenceInfo);
+			}
+
+			_porcessVowelUpdate(sentenceInfo, currChar);
+
+			if (currChar >= 'A' && currChar <= 'Z') {
+				_updateUpperCase(sentenceInfo);
+			}
+
+			i++;
+		}
+
+		return sentenceInfo;
+	}
+
+
+
+	private void _updateUpperCase(SentenceInfo sentenceInfo) {
+		sentenceInfo.setUpperCase(sentenceInfo.getUpperCase() + 1);
+	}
+
+
+
+	private void _porcessVowelUpdate(SentenceInfo sentenceInfo, char currChar) {
+		switch (currChar) {
+		case 'A':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'E':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'I':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'O':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'U':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'a':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'e':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'i':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'o':
+			_updateVowels(sentenceInfo);
+			break;
+		case 'u':
+			_updateVowels(sentenceInfo);
+			break;
+		default:
+			break;
+		}
+	}
+
+
+
+	private void _updateWords(SentenceInfo sentenceInfo) {
+		sentenceInfo.setWords(sentenceInfo.getWords() + 1);
+	}
+
+
+
+	private void _updateVowels(SentenceInfo sentenceInfo) {
+		sentenceInfo.setVowels(sentenceInfo.getVowels() + 1);
+	}
+
+
+
+	@Test
+	void testCountingSentenceInfo() {
+		String sentence = "How Good GOD Is.";
+		SentenceInfo info = countingSetenceInfo(sentence);
+		System.out.println(info);
+	}
+
+
+
+	private Set<String> getAllTheSubstrings(String input) {
+		Set<String> allSubs = new TreeSet<>();
+
+		for (int i = 0; i < input.length(); i++) {
+			for (int j = i; j < input.length(); j++) {
+				allSubs.add(input.substring(i, j + 1));
+			}
+		}
+
+		return allSubs;
+	}
+
+
+
+	@Test
+	void testGetAllTheSubstrings() {
+		Set<String> substrings = getAllTheSubstrings("abcd");
+		assertEquals(10, substrings.size());
+		System.out.println(substrings);
+	}
+
+
+
+
 
 }
+
+
+
+
