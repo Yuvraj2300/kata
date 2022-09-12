@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GraphNode {
 	public String val = "a_node";
+	private int intVal;
 	public boolean visited = false;
 	public List<GraphNode> neighbors = new ArrayList<>();
+
+
 
 	public GraphNode(List<GraphNode> neighbors) {
 		this.neighbors = neighbors;
@@ -22,5 +25,11 @@ public class GraphNode {
 	@Override
 	public String toString() {
 		return "GrahNode : [ val : " + this.val + ", neighbors : [" + this.neighbors + "], visited : " + this.visited + "]";
+	}
+
+	public GraphNode(int intVal, List<GraphNode> neighbors) {
+		super();
+		this.intVal = intVal;
+		this.neighbors = neighbors;
 	}
 }

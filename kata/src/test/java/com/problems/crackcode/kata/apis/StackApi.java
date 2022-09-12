@@ -1,11 +1,13 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -1196,4 +1199,340 @@ public class StackApi {
 
 		towerOfHanoi(src, spare, dest);
 	}
+
+
+
+	private Map<Integer, Integer> getTheNGE(int[] a) {
+		Map<Integer, Integer> res = new TreeMap<Integer, Integer>();
+		Stack<Integer> stack = new Stack<>();
+
+		int j = a.length - 1;
+
+		while (j >= 0) {
+			if (j == a.length - 1) {
+				res.put(a[j], -1);
+				stack.push(a[j]);
+			} else if (!stack.isEmpty() && stack.peek() < a[j]) {
+				stack.pop();
+			}
+
+			if (!stack.isEmpty() && stack.peek() > a[j]) {
+				Integer peek = stack.peek();
+				res.put(a[j], peek);
+				stack.push(a[j]);
+			} else {
+				res.put(a[j], -1);
+			}
+			j--;
+		}
+
+		return res;
+	}
+
+
+
+	@Test
+	void testGetTheNGE() {
+		int[] a = { 4, 5, 2, 25 };
+		Map<Integer, Integer> mapOfNge = getTheNGE(a);
+		System.out.println(mapOfNge);
+	}
+
+
+	@Test
+	void testGetTheNGE_1() {
+		int[] a = { 13, 7, 6, 12 };
+		Map<Integer, Integer> mapOfNge = getTheNGE(a);
+		System.out.println(mapOfNge);
+	}
+
+	class PairingOfValAndFreq {
+		int value;
+		int freq;
+
+		public PairingOfValAndFreq(int value, int freq) {
+			super();
+			this.value = value;
+			this.freq = freq;
+		}
+
+		@Override
+		public String toString() {
+			return "ValnFreq [value=" + value + ", \nfreq=" + freq + "]";
+		}
+
+
+	}
+
+	private List<Integer> getTheNGF(int[] a) {
+		List<Integer> res = new ArrayList<Integer>();
+		Map<Integer, Integer> mapOfValsAndOcurrences = new HashMap<Integer, Integer>();
+		Stack<PairingOfValAndFreq> stack = new Stack<PairingOfValAndFreq>();
+
+		for (int i = 0; i < a.length; i++) {
+			mapOfValsAndOcurrences.put(a[i], mapOfValsAndOcurrences.getOrDefault(a[i], 0) + 1);
+		}
+
+		int j = a.length - 1;
+		while (j >= 0) {
+			if (j == a.length - 1) {
+				stack.push(new PairingOfValAndFreq(a[j], mapOfValsAndOcurrences.get(a[j])));
+				res.add(-1);
+			} else if (!stack.isEmpty() && stack.peek().freq > mapOfValsAndOcurrences.get(a[j])) {
+				res.add(stack.peek().value);
+				stack.push(new PairingOfValAndFreq(a[j], mapOfValsAndOcurrences.get(a[j])));
+			} else {
+				while (!stack.isEmpty() && !(stack.peek().freq >= mapOfValsAndOcurrences.get(a[j]))) {
+					stack.pop();
+				}
+
+				if (!stack.isEmpty() && stack.peek().freq >= mapOfValsAndOcurrences.get(a[j])) {
+					res.add(stack.peek().value);
+				} else {
+					res.add(-1);
+					stack.push(new PairingOfValAndFreq(a[j], mapOfValsAndOcurrences.get(a[j])));
+				}
+			}
+
+			j--;
+		}
+
+		Collections.reverse(res);
+		return res;
+	}
+
+
+
+	@Test
+	void testNextGreaterFrequency() throws Exception {
+		int[] a = { 1, 1, 1, 2, 2, 2, 2, 11, 3, 3 };
+		List<Integer> listOfNgf = getTheNGF(a);
+		System.out.println(listOfNgf);
+	}
+
+
+
+	@Test
+	void testNextGreaterFrequency_1() throws Exception {
+		int[] a = { 1, 1, 2, 3, 4, 2, 1 };
+		List<Integer> listOfNgf = getTheNGF(a);
+		System.out.println(listOfNgf);
+	}
+
+
+
+	private int findTheCeleb(int numberOfPeople, int[][] relMatrix) {
+		Stack<Integer> contestantStack = new Stack<Integer>();
+
+		for (int i = 0; i < numberOfPeople; i++) {
+			contestantStack.push(i);
+		}
+
+		while (contestantStack.size() > 1) {
+			int contestant1 = contestantStack.pop();
+			int contestant2 = contestantStack.pop();
+
+			if (_isKnowing(contestant1, contestant2, relMatrix)) {
+				//cont2 is the winner;
+				contestantStack.push(contestant2);
+			} else {
+				//cont1 is the winner;
+				contestantStack.push(contestant1);
+			}
+
+		}
+
+		int winningCandidate = -1;
+		if (!contestantStack.isEmpty() && contestantStack.size() == 1) {
+			winningCandidate = contestantStack.pop();
+			for (int i = 0; i < numberOfPeople; i++) {
+				if (i != winningCandidate) {
+					if (!_isKnowing(i, winningCandidate, relMatrix))
+						return -1;
+				}
+			}
+		}
+
+		return winningCandidate;
+	}
+
+	private boolean _isKnowing(int a, int b, int[][] relMatrix) {
+		return relMatrix[a][b] == 1 ? true : false;
+	}
+
+
+
+	@Test
+	void testFindTheCelebrity() throws Exception {
+		// @formatter:off
+		int[][] relMatrix = { 
+								{ 0, 0, 1, 0 }, 
+								{ 0, 0, 1, 0 },
+								{ 0, 0, 0, 0 },
+								{ 0, 0, 1, 0 }
+							};
+		// @formatter:on
+
+		int numberOfPeople = 4;
+
+		int idOfCeleb = findTheCeleb(numberOfPeople, relMatrix);
+		assertEquals(2, idOfCeleb);
+	}
+
+
+	@Test
+	void testFindTheCelebrity_1() throws Exception {
+		// @formatter:off
+		int[][] relMatrix = { 
+								{ 0, 0, 1, 0 }, 
+								{ 0, 0, 1, 0 },
+								{ 0, 0, 0, 0 },
+								{ 0, 0, 1, 0 }
+							};
+		// @formatter:on
+
+		int numberOfPeople = 4;
+
+		int idOfCeleb = findTheCeleb(numberOfPeople, relMatrix);
+		assertEquals(2, idOfCeleb);
+	}
+
+
+
+	private int getMaxAreaInTheHistograms(int[] a) {
+		//the idea is to use the concept of hashing (storing indices of the array 
+		//in a datastructures and on the basis of the business rules excute calculations
+		// storing the index so that we can calculate the area of the contigous bar
+		int maxArea = 0;
+		int i = 0;
+
+		Stack<Integer> stack = new Stack<Integer>();
+
+		while (i < a.length) {
+
+			if (stack.isEmpty() || a[i] > a[stack.peek()]) {
+				//store the index
+				stack.push(i);
+				//iterate forward only if next element is bigger , i.e contiguous
+				i++;
+			} else {
+				//now calculate the area since the current value at i 
+				//in the array is smaller and the previous val is not contiguous anymore
+				int currHeight = a[stack.pop()];
+				int currBrdth = 0;
+
+				if (stack.isEmpty()) {
+					currBrdth = 1;
+				} else {
+					// 0,___peek()____i____n-1,n
+					currBrdth = i - stack.peek() - 1;
+				}
+
+				int currArea = currHeight * currBrdth;
+
+				if (currArea > maxArea) {
+					maxArea = currArea;
+				}
+
+			}
+
+		}
+
+		//stack might still have some indices to look at
+		while (!stack.isEmpty()) {
+			int currHeight = a[stack.pop()];
+			int currBrdth = 0;
+
+			if (stack.isEmpty()) {
+				currBrdth = 1;
+			} else {
+				// 0,___peek()____i____n-1,n
+				currBrdth = i - stack.peek() - 1;
+			}
+
+			int currArea = currHeight * currBrdth;
+
+			if (currArea > maxArea) {
+				maxArea = currArea;
+			}
+		}
+
+
+		return maxArea;
+	}
+
+
+
+	@Test
+	void testGetMaxAreaInTheHistograms() throws Exception {
+		int[] a = { 6, 2, 5, 4, 5, 1, 6 };
+		int maxArea = getMaxAreaInTheHistograms(a);
+		assertEquals(12, maxArea);
+	}
+
+
+	@Test
+	void testGetMaxAreaInTheHistograms_1() throws Exception {
+		int[] a = { 1, 6, 8, 1 };
+		int maxArea = getMaxAreaInTheHistograms(a);
+		assertEquals(12, maxArea);
+	}
+
+
+
+	private String reverseString(String string) {
+		Stack<Character> stack = new Stack<Character>();
+		StringBuilder sb = new StringBuilder();
+
+		int i = 0;
+		while (i < string.length()) {
+			stack.push(string.charAt(i));
+			i++;
+		}
+
+
+		while (!stack.isEmpty()) {
+			sb.append(stack.pop());
+		}
+
+		return sb.toString();
+	}
+
+
+
+	@Test
+	void testReverseAString() throws Exception {
+		String reversedString = reverseString("hello");
+		assertEquals("olleh", reversedString);
+	}
+
+
+
+	private List<Integer> findMaximaFromMinimas(int[] a) {
+		BiFunction<Integer, Integer, Integer> getMaximaFromCurrentIndexAndSize = (i, size) -> {
+			
+			
+			return 0;
+		};
+
+
+
+		Map<Integer, Integer> mapOfWindowAndMaxima = new TreeMap<Integer, Integer>();
+
+		int i = 0;
+		while (i < a.length) {
+
+		}
+		return null;
+	}
+
+
+
+	@Test
+	void testFindMaximaFromMinimas() {
+		int[] a = { 10, 20, 30, 50, 10, 70, 30 };
+		List<Integer> res = findMaximaFromMinimas(a);
+	}
+
+
 }
