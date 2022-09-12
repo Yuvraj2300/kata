@@ -117,4 +117,26 @@ public class MergeSort implements Sort {
 		}
 	}
 
+
+	@Test
+	void testSortMethod_2() throws Exception {
+		int a[] = { 100, 3, 54, 6, -56 };
+		int[] sortedArray = this.sort(a);
+		for (int i : sortedArray) {
+			System.out.print(i + " ");
+		}
+	}
+
+
+
+	@Test
+	void testSortMethod_3() throws Exception {
+		int a[] = { 1, 2, 3, 4, 5, 6 };
+		int[] sortedArray = this.sort(a);
+		for (int i : sortedArray) {
+			System.out.print(i + " ");
+		}
+	}
+
+
 }

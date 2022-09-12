@@ -81,9 +81,9 @@ public class QuickSort implements Sort {
 
 			if (a[h] < a[pivotIdx]) {
 				_swap(a, pivotIdx, h);
+				//bring the pivot index to h
+				pivotIdx = h;
 			}
-			//bring the pivot index to h
-			pivotIdx = h;
 
 
 			//comapre values from l to pivot
@@ -94,9 +94,9 @@ public class QuickSort implements Sort {
 			if (a[l] > a[pivotIdx]) {
 				_swap(a, pivotIdx, l);
 
+				//bring the pivot index to h
+				pivotIdx = l;
 			}
-			//bring the pivot index to h
-			pivotIdx = l;
 
 			//do this till pivot!=l!=h
 			//means wrap this in a while condition for the same
@@ -123,6 +123,8 @@ public class QuickSort implements Sort {
 		}
 	}
 
+
+
 	@Test
 	void testSortMethod_1() throws Exception {
 		int a[] = { 200, 100, -44, 2, 5, 1, 66, 3, 23, 5453 };
@@ -132,5 +134,26 @@ public class QuickSort implements Sort {
 		}
 	}
 
+
+
+	@Test
+	void testSortMethod_2() throws Exception {
+		int a[] = { 100, 3, 54, 6, -56 };
+		int[] sortedArray = this.sort(a);
+		for (int i : sortedArray) {
+			System.out.print(i + " ");
+		}
+	}
+
+
+
+	@Test
+	void testSortMethod_3() throws Exception {
+		int a[] = { 1, 2, 3, 4, 5, 6 };
+		int[] sortedArray = this.sort(a);
+		for (int i : sortedArray) {
+			System.out.print(i + " ");
+		}
+	}
 
 }

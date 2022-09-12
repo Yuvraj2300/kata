@@ -568,7 +568,6 @@ public class ArraysApi {
 	}
 
 
-
 	private int[] mergeAndSortTwoArray(int[] a, int[] b) {
 		int size1 = a.length;
 		int size2 = b.length;
@@ -703,6 +702,7 @@ public class ArraysApi {
 
 
 
+
 	private int[] mergeTwoSortedArraysAsSortedInBiggerArray(int[] a, int[] b) {
 		int size1 = a.length;
 		int size2 = b.length;
@@ -782,11 +782,12 @@ public class ArraysApi {
 		int a[] = { 16, 17, 19, 20, 22 };
 
 		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
-
 		for (int i : mergedSortedArray) {
 			System.out.print(i + ",");
 		}
 	}
+
+
 
 	@Test
 	void testMergeTwoSortedArraysAsSortedInBiggerArray_2() throws Exception {
@@ -794,10 +795,66 @@ public class ArraysApi {
 		int b[] = { 16, 17, 19, 20, 22 };
 
 		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
-
 		for (int i : mergedSortedArray) {
 			System.out.print(i + ",");
 		}
+	}
+
+
+
+	@Test
+	void testMergeTwoSortedArraysAsSortedInBiggerArray_3() throws Exception {
+		int b[] = { 1, 4, 17, 22, 99, -1, -1, -1, -1, -1 };
+		int a[] = { 16, 17, 19, 20, 22 };
+
+		//		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
+		int[] mergedSortedArray = merge2SortedWithBuffer(a, b);
+		for (int i : mergedSortedArray) {
+			System.out.print(i + ",");
+		}
+	}
+
+
+	private int[] merge2SortedWithBuffer(int[] a, int[] b) {
+		int[] biggerArray;
+		int[] smallerArray;
+
+		int actualValues = 0;
+		if (a.length > b.length) {
+
+			biggerArray = a;
+			smallerArray = b;
+
+		} else {
+			biggerArray = b;
+			smallerArray = a;
+		}
+
+		for (int i = 0; i < biggerArray.length; i++) {
+			if (biggerArray[i] != -1)
+				actualValues++;
+			else
+				break;
+
+		}
+
+		int i = biggerArray.length - 1;
+		int j = smallerArray.length - 1;
+		actualValues -= 1;
+
+		while (i >= 0 && j >= 0) {
+			if (biggerArray[actualValues] > smallerArray[j]) {
+				biggerArray[i] = biggerArray[actualValues];
+				actualValues--;
+			} else {
+				biggerArray[i] = smallerArray[j];
+				j--;
+			}
+			i--;
+		}
+
+
+		return biggerArray;
 	}
 
 
