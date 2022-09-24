@@ -1,20 +1,22 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -225,6 +227,58 @@ public class ArraysApi {
 	}
 
 
+
+	public int findPeak_1(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		return _binSearchPeakl(a, l, h);
+	}
+
+
+
+	private int _binSearchPeakl(int[] a, int l, int h) {
+		int mid = (h + l) / 2;
+
+		if (a[mid] > a[mid - 1] && a[mid] > a[mid + 1]) {
+			return a[mid];
+		} else {
+			//start a race b/w two threads to search other parts of the array
+			CountDownLatch ready = new CountDownLatch(2);
+			CountDownLatch start = new CountDownLatch(1);
+
+
+			Executor executor = Executors.newCachedThreadPool();
+
+			for (int i = 0; i < 2; i++) {
+				if (i == 0) {
+					l = l + 1;
+				} else {
+
+				}
+
+
+				try {
+					ready.countDown();
+					executor.execute(() -> {
+						try {
+							start.await();
+							//							_binSearchPeakl(a, l, h);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					});
+				} catch (Exception e) {
+
+				}
+			}
+
+
+
+			return 0;
+
+		}
+	}
 
 	@Test
 	void testFindPeakElement() throws Exception {
@@ -1857,6 +1911,311 @@ public class ArraysApi {
 		System.out.println(substrings);
 	}
 
+
+
+	private int serachMinSortedRotatedArray(int[] a) {
+		int h = a.length - 1;
+		int l = 0;
+
+		int searchResult = _binarySearchForMin(a, l, h);
+
+		if (searchResult != -1)
+			return searchResult;
+		else
+			throw new KataException("Cannot be found");
+	}
+
+
+
+	private int _binarySearchForMin(int[] a, int l, int h) {
+
+
+		int mid = (h + l) / 2;
+
+		while (l <= h) {
+			if (a[mid - 1] > a[mid] && (mid == a.length - 1 || a[mid] < a[mid + 1])) {
+				return a[mid];
+			} else if (a[mid] > a[mid - 1]) {
+				return _binarySearchForMin(a, mid + 1, h);
+			} else {
+				return _binarySearchForMin(a, l, mid - 1);
+			}
+		}
+		//means array was never rotated
+		return a[0];
+	}
+
+
+
+	@Test
+	void testSearchMinElementInSortedRotatedArray() throws Exception {
+		int[] a = { 5, 6, 1, 2, 3, 4 };
+		int minVal = serachMinSortedRotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+	@Test
+	void testSearchMinElementInSortedRotatedArray_1() throws Exception {
+		int[] a = { 3, 4, 5, 6, 1, 2 };
+		int minVal = serachMinSortedRotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+
+	@Test
+	void testSearchMinElementInSortedRotatedArray_3() throws Exception {
+		int[] a = { 1, 2, 3, 4, 5, 6 };
+		int minVal = serachMinSortedRotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+	@Test
+	void testSearchMinElementInSortedRotatedArray_4() throws Exception {
+		int[] a = { 2, 3, 4, 5, 6, 1 };
+		int minVal = serachMinSortedRotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+
+	@Test
+	void testSearchMinElementInSortedRotatedArray_5() throws Exception {
+		int[] a = { 45, 75, 99, 107, 108, 1, 22, 33 };
+		int minVal = serachMinSortedRotatedArray(a);
+		assertEquals(1, minVal);
+	}
+
+
+
+	private int findEqlibIdx(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		int sumLow = 0;
+		int sumHigh = 0;
+
+		while (l < h) {
+			sumLow += a[l++];
+			sumHigh += a[h--];
+			if (sumHigh == sumLow) {
+				break;
+			}
+		}
+
+		return sumHigh == sumLow ? l : -1;
+	}
+
+
+
+	@Test
+	void testFindEqlibIdx() throws Exception {
+		int[] a = { -7, 1, 5, 2, -4, 3, 0 };
+		int idx = findEqlibIdx(a);
+		assertEquals(3, idx);
+	}
+
+	@Test
+	void testFindEqlibIdx_1() throws Exception {
+		int[] a = { 1, 2, 3 };
+		int idx = findEqlibIdx(a);
+		assertEquals(-1, idx);
+	}
+
+
+
+
+	private int[] insertInASortedArray(int[] a, int key, int valuesEndAt) {
+		int i = valuesEndAt;
+
+		while (i >= 0) {
+			if (a[i] < key) {
+				a[i + 1] = key;
+				break;
+			} else {
+				a[i + 1] = a[i];
+			}
+			i--;
+		}
+
+		return a;
+	}
+
+	@Test
+	void testInsertInASortedArray() throws Exception {
+		int[] a = { 1, 2, 4, 5, 6, -1, -1 };
+		a = insertInASortedArray(a, 3, 4);
+	}
+
+	private int[] segragateEvenOdd(int[] a) {
+		int oddIdx = 0;
+		int evenIdx = 0;
+
+		while (evenIdx < a.length && oddIdx < a.length) {
+			if (a[evenIdx] % 2 == 0) {
+				if (oddIdx != evenIdx && evenIdx != 0) {
+					int temp = a[oddIdx];
+					a[oddIdx] = a[evenIdx];
+					a[evenIdx] = temp;
+
+					oddIdx++;
+				}
+			}
+			evenIdx++;
+		}
+
+
+		return a;
+	}
+
+
+	@Test
+	void testSegragateEvenOdd() throws Exception {
+		int[] a = { 1, 9, 5, 3, 2, 6, 7, 11 };
+		a = segragateEvenOdd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+
+	private int[] moveNegativeValuesToEnd(int[] a) {
+		int i = 0;
+		int j = 0;
+
+		while (i < a.length && j < a.length - 1) {
+			if (a[i] < 0) {
+				j = i;
+				while (!(a[j] > 0) && j < a.length) {
+					j++;
+				}
+				int temp = a[i];
+				a[i] = a[j];
+				a[j] = temp;
+			}
+			i++;
+		}
+
+		return a;
+	}
+
+
+
+	@Test
+	void testMoveNegativeValuesToEnd() throws Exception {
+		int[] a = { 1, -1, 3, 2, -7, -5, 11, 6 };
+		a = moveNegativeValuesToEnd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+	@Test
+	void testMoveNegativeValuesToEnd_1() throws Exception {
+		int[] a = { 1, -12, 3 };
+		a = moveNegativeValuesToEnd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	@Test
+	void testMoveNegativeValuesToEnd_2() throws Exception {
+		int[] a = { 1, -1, -4, -45, -64, 3 };
+		a = moveNegativeValuesToEnd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	private int[] moveZerosToTheEnd(int[] a) {
+		int i = 0;
+		int j = 0;
+
+		while (i < a.length && j <= a.length - 1) {
+			if (a[i] == 0) {
+				j = i;
+				while (j < a.length && a[j] == 0) {
+					j++;
+				}
+
+				if (j < a.length) {
+					int temp = a[j];
+					a[j] = a[i];
+					a[i] = temp;
+				}
+			}
+
+			i++;
+		}
+
+		return a;
+	}
+
+
+	private int[] moveZerosToTheEnd_1(int[] a) {
+		int countOfNonZero = 0;
+		int i = 0;
+
+		while (i < a.length) {
+			if (a[i] != 0)
+				a[countOfNonZero++] = a[i];
+
+			i++;
+		}
+
+		while (countOfNonZero < a.length)
+			a[countOfNonZero++] = 0;
+
+		return a;
+	}
+
+
+	@Test
+	void testMoveZerosToTheEnd() throws Exception {
+		int[] a = { 1, 0, 5, 3, 23, 0, 34, 0, 4, 12 };
+
+		a = moveZerosToTheEnd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+
+	@Test
+	void testMoveZerosToTheEnd_1() throws Exception {
+		int[] a = { 1, 0, 0, 3, 4, 56 };
+
+		a = moveZerosToTheEnd_1(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	@Test
+	void testMoveZerosToTheEnd_1_1() throws Exception {
+		int[] a = { 1, 0, 5, 3, 23, 0, 34, 0, 4, 12 };
+
+		a = moveZerosToTheEnd_1(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+
+	@Test
+	void testMoveZerosToTheEnd_1_2() throws Exception {
+		int[] a = { 1, 0, 0, 3, 4, 56 };
+
+		a = moveZerosToTheEnd(a);
+		for (int i : a) {
+			System.out.print(i + ", ");
+		}
+	}
 
 
 
