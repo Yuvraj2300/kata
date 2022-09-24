@@ -1,6 +1,6 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -70,6 +70,69 @@ public class StringApi {
 	void testAlternate() {
 		int count = alternate("abaacdabd");
 		assertEquals(4, count);
+	}
+
+	private int getMaxVowels(String S1, String S2, int K) {
+		//this is default OUTPUT. You can change it.
+		int result = -404;
+
+		//write your Logic here:
+		Set<Character> vowelsSet = new HashSet<>();
+		vowelsSet.add('a');
+		vowelsSet.add('e');
+		vowelsSet.add('i');
+		vowelsSet.add('o');
+		vowelsSet.add('u');
+
+		int operationsPerformed = 0;
+		int vowelsInS1 = 0;
+		int i = 0;
+		int j = 0;
+
+		char[] s1Arr = S1.toCharArray();
+		char[] s2Arr = S2.toCharArray();
+
+		while (i < s1Arr.length) {
+			if (!vowelsSet.contains(s1Arr[i])) {
+				while (j < s2Arr.length && operationsPerformed <= K) {
+					if (vowelsSet.contains(s2Arr[j])) {
+						char temp = s2Arr[j];
+						s2Arr[j] = s1Arr[i];
+						s1Arr[i] = temp;
+
+						vowelsInS1++;
+						operationsPerformed++;
+						break;
+					}
+					j++;
+				}
+			} else {
+				vowelsInS1++;
+			}
+			i++;
+		}
+		return vowelsInS1;
+	}
+
+
+	@Test
+	void testMaxVowels() throws Exception {
+		int maxVowelsinS1 = getMaxVowels("abc", "aeiou", 5);
+		assertEquals(3, maxVowelsinS1);
+	}
+
+
+	@Test
+	void testMaxVowels_1() throws Exception {
+		int maxVowelsinS1 = getMaxVowels("zzzzz", "zzzzz", 5);
+		assertEquals(0, maxVowelsinS1);
+	}
+
+
+	@Test
+	void testMaxVowels_2() throws Exception {
+		int maxVowelsinS1 = getMaxVowels("abcdeigh", "aeiou", 3);
+		assertEquals(7, maxVowelsinS1);
 	}
 
 }
