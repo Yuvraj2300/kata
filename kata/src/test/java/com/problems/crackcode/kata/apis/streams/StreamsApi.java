@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -561,6 +562,228 @@ public class StreamsApi {
 		// TODO Auto-generated method stub
 		return IntStream.of(arr).anyMatch(currVal -> currVal == valToCheck);
 	}
+
+
+	@Test
+	void testCreatingAOccurenceOfElemetnsInAList() throws Exception {
+		Map<String, Long> result = creatingAOccurenceOfElemetnsInAList(List.of("apple", "apple", "banana", "pear", "pear"));
+		result.entrySet().stream().forEach(System.out::println);
+
+	}
+
+	private Map<String, Long> creatingAOccurenceOfElemetnsInAList(List<String> list) {
+		// TODO Auto-generated method stub
+		return list.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+	}
+
+
+	@Test
+	void testCreatingAOccurenceOfElemetnsInAListSort() throws Exception {
+		Map<String, Long> result = creatingAOccurenceOfElemetnsInAListSort(List.of("apple", "apple", "banana", "pear", "pear"));
+		result.entrySet().stream().forEach(System.out::println);
+
+	}
+
+	private Map<String, Long> creatingAOccurenceOfElemetnsInAListSort(List<String> of) {
+		Map<String, Long> mapToReturn = new LinkedHashMap<>();
+		// @formatter:off
+		 of.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+		.entrySet().stream().sorted(Map.Entry.<String,Long>comparingByKey()).forEachOrdered(e->mapToReturn.put(e.getKey(), e.getValue()));
+ 
+// @formatter:on
+		return mapToReturn;
+	}
+
+	@Data
+	@AllArgsConstructor
+	public class Item {
+		private String name;
+		private int qty;
+		private BigDecimal price;
+
+		@Override
+		public String toString() {
+			return "Item [name=" + name + ", qty=" + qty + ", price=" + price + "]";
+		}
+
+
+	}
+
+	@Test
+	void testGroupByNameCountAndSum() {
+		// @formatter:off
+		 List<Item> items = Arrays.asList(
+	                new Item("apple", 10, new BigDecimal("9.99")),
+	                new Item("banana", 20, new BigDecimal("19.99")),
+	                new Item("orang", 10, new BigDecimal("29.99")),
+	                new Item("watermelon", 10, new BigDecimal("29.99")),
+	                new Item("papaya", 20, new BigDecimal("9.99")),
+	                new Item("apple", 10, new BigDecimal("9.99")),
+	                new Item("banana", 10, new BigDecimal("19.99")),
+	                new Item("apple", 20, new BigDecimal("9.99"))
+	        );
+// @formatter:on
+		groupByNameCountAndSum(items);
+	}
+
+	private void groupByNameCountAndSum(List<Item> items) {
+		System.out.println("Displaying BY Occurence, sorted");
+		items.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream().sorted(Map.Entry.comparingByValue()).forEachOrdered(System.out::println);
+
+		System.out.println();
+		System.out.println("Displaying BY Quantity, sorted");
+		items.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(Item::getQty))).entrySet().stream().forEach(System.out::println);
+
+		System.out.println();
+		System.out.println("Displaying Items by price");
+		items.stream().collect(Collectors.groupingBy(Item::getPrice)).entrySet().stream().forEach(System.out::println);
+
+		System.out.println();
+		System.out.println("Displaying Items by price in a set to avoid dups");
+		items.stream().collect(Collectors.groupingBy(Item::getPrice, Collectors.mapping(Item::getName, Collectors.toSet()))).entrySet().stream().forEach(System.out::println);
+	}
+
+
+	@Test
+	void testIterateAMap() throws Exception {
+		Map<Integer, String> singletonMap = Collections.singletonMap(1, "aKey1");
+		iterateAMap(singletonMap);
+	}
+
+	private void iterateAMap(Map<Integer, String> singletonMap) {
+		singletonMap.forEach((key, val) -> {
+			System.out.println("[KEY]: " + key + " <---> [VALUE]: " + val);
+		});
+	}
+
+
+	@Test
+	void testOpsOnAMap() throws Exception {
+		Map<Integer, String> map = new HashMap<>();
+		map.put(1, "linode.com");
+		map.put(2, "heroku.com");
+		map.put(3, "something.com");
+
+		opsOnAMap(map);
+	}
+
+
+
+	private void opsOnAMap(Map<Integer, String> givenMap) {
+		String collected = givenMap.entrySet().stream().filter(e -> e.getValue().contains("something")).map(x -> x.getValue()).collect(Collectors.joining());
+		System.out.println(collected);
+
+		System.out.println();
+
+		Map<Integer, String> collect = givenMap.entrySet().stream().filter(e -> e.getKey() == 2).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		System.out.println(collect);
+
+		System.out.println();
+
+		String collect2 = givenMap.entrySet().stream().filter(e -> {
+			return e.getValue().contains(".") ? true : false;
+		}).map(e -> e.getValue()).collect(Collectors.joining(", "));
+		System.out.println(collect2);
+	}
+
+
+
+
+	@Test
+	void testReduce_SumOperation() throws Exception {
+		int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+		assertEquals(55, sumOfNumInAnArray(arr));
+	}
+
+	private int sumOfNumInAnArray(int[] arr) {
+		int reduce = IntStream.of(arr).reduce(0, (a, b) -> a + b);
+		IntStream.of(arr).reduce(0, Integer::sum);
+		return reduce;
+	}
+
+
+
+	@Test
+	void testReduce_FindMax() throws Exception {
+		int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+		assertEquals(10, findMaxInAnArray(arr));
+	}
+
+
+
+	private Integer findMaxInAnArray(int[] arr) {
+		return IntStream.of(arr).reduce(0, (a, b) -> a > b ? a : b);
+	}
+
+
+
+	@Test
+	void testReduce_FindMin() throws Exception {
+		int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+		assertEquals(1, findMinInAnArray(arr));
+	}
+
+
+
+	private Integer findMinInAnArray(int[] arr) {
+		return IntStream.of(arr).reduce(Integer.MAX_VALUE, (a, b) -> a < b ? a : b);
+	}
+
+
+	@Test
+	void testJoiningString() throws Exception {
+		String[] strs = { "a", "b", "c", "d" };
+		String joinedStr = joinStrings(strs);
+		assertEquals("a|b|c|d", joinedStr);
+	}
+
+	private String joinStrings(String[] strs) {
+		Stream.of(strs).reduce("", (a, b) -> a + "|" + b);
+		String collect = Stream.of(strs).collect(Collectors.joining("|"));
+		return collect;
+	}
+
+
+	@Data
+	@AllArgsConstructor
+	class Invoice {
+		String invoiceNo;
+		BigDecimal price;
+		BigDecimal qty;
+	}
+
+
+
+	/**
+	 * @author yuvraj1.sharma
+	 *
+	 * @implNote THIS IS A MAP REDUCE EXAMPLE
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	void testSumOfInvoices() throws Exception {
+		// @formatter:off
+		List<Invoice> invoices = Arrays.asList(
+				new Invoice("A01", BigDecimal.valueOf(9.99), BigDecimal.valueOf(1)),
+				new Invoice("A02", BigDecimal.valueOf(19.99), BigDecimal.valueOf(1.5)),
+				new Invoice("A03", BigDecimal.valueOf(4.99), BigDecimal.valueOf(2))
+				);
+		// @formatter:on
+		assertEquals(BigDecimal.valueOf(49.955), getSum(invoices));
+	}
+
+
+
+	private BigDecimal getSum(List<Invoice> invoices) {
+		// @formatter:off
+		BigDecimal sum = invoices.stream()
+								.map(inv->inv.getPrice().multiply(inv.getQty()))
+								.reduce(BigDecimal.ZERO, BigDecimal::add);
+		// @formatter:on
+		return sum;
+	}
+
 }
 
 
