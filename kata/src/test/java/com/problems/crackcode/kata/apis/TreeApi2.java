@@ -1,11 +1,15 @@
 package com.problems.crackcode.kata.apis;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
@@ -25,6 +29,7 @@ public class TreeApi2 {
 	@AllArgsConstructor
 	@ToString(includeFieldNames = false)
 	class Node {
+		int hd = 0;
 		String strVal;
 		int val;
 		Node left;
@@ -1088,6 +1093,315 @@ public class TreeApi2 {
 
 		return res;
 	}
+
+
+	@Test
+	void testGetMaxSumLeaf() throws Exception {
+		BinaryTree tree = new BinaryTree();
+		tree.root = new Node(-15);
+		tree.root.left = new Node(5);
+		tree.root.right = new Node(6);
+		tree.root.left.left = new Node(-8);
+		tree.root.left.right = new Node(1);
+		tree.root.left.left.left = new Node(2);
+		tree.root.left.left.right = new Node(6);
+		tree.root.right.left = new Node(3);
+		tree.root.right.right = new Node(9);
+		tree.root.right.right.right = new Node(0);
+		tree.root.right.right.right.left = new Node(4);
+		tree.root.right.right.right.right = new Node(-1);
+		tree.root.right.right.right.right.left = new Node(10);
+
+		assertEquals(27, getMaxSumLeafToLeaf(tree.root, new SumVar()));
+	}
+
+
+	int getMaxSumLeafToLeaf(Node root, SumVar sumVar) {
+		if (root == null)
+			return 0;
+
+		//		//this is for our logic to work in case any child was sent as a null
+		//		if (root.left == null) {
+		//			root.left = new Node(0);
+		//		} else if (root.right == null) {
+		//			root.right = new Node(0);
+		//		}
+
+		if (root.left == null && root.right == null)
+			return root.val;
+
+		int rs = getMaxSumLeafToLeaf(root.right, sumVar);
+		int ls = getMaxSumLeafToLeaf(root.left, sumVar);
+
+		if (root.left != null && root.right != null) {
+			sumVar.sum = Math.max(sumVar.sum, ls + rs + root.val);
+
+			return Math.max(rs, ls) + sumVar.sum;
+		}
+
+		return (root.left == null) ? rs + root.val : ls + root.val;
+	}
+
+
+
+	@Test
+	void testSumOfMaxSubTree() throws Exception {
+		Node root = new Node(1);
+		root.left = new Node(-2);
+		root.right = new Node(3);
+		root.left.left = new Node(4);
+		root.left.right = new Node(5);
+		root.right.left = new Node(-6);
+		root.right.right = new Node(2);
+
+		assertEquals(7, sumOfMaxSubTree(root, new SumVar()));
+	}
+
+
+
+	int sumOfMaxSubTree(Node root, SumVar sumVar) {
+		if (root == null)
+			return 0;
+
+		//left subtree
+		//right subtree
+
+		//check if sum is greater than maxSum till now
+
+
+		return sumVar.sum;
+	}
+
+	@Test
+	void testFindSizeOfTheTree() throws Exception {
+		BinaryTree tree = new BinaryTree();
+		tree.root = new Node(1);
+		tree.root.left = new Node(2);
+		tree.root.right = new Node(3);
+		tree.root.left.left = new Node(4);
+		tree.root.left.right = new Node(5);
+
+		assertEquals(5, findSizeOfTree(tree.root));
+	}
+
+
+	int findSizeOfTree(Node root) {
+		if (root == null)
+			return 0;
+
+		return 1 + findSizeOfTree(root.left) + findSizeOfTree(root.right);
+	}
+
+
+
+	@Test
+	void testMaxDepth() throws Exception {
+		BinaryTree tree = new BinaryTree();
+		tree.root = new Node(1);
+		tree.root.left = new Node(2);
+		tree.root.right = new Node(3);
+		tree.root.left.left = new Node(4);
+		tree.root.left.right = new Node(5);
+
+		assertEquals(3, maxDepth(tree.root));
+	}
+
+
+	int maxDepth(Node root) {
+		if (root == null)
+			return 0;
+
+		int ld = maxDepth(root.left);
+		int rd = maxDepth(root.right);
+
+		return Math.max(ld, rd) + 1;
+	}
+
+
+	@Test
+	void testMinPath() throws Exception {
+
+	}
+
+
+
+	class MinDist {
+		int dist = 0;
+	}
+
+
+
+	int minPath(Node node, int level, MinDist minDist) {
+		if (Objects.isNull(node))
+			return 0;
+
+		if (node.left == null && node.right == null)
+			if (level < minDist.dist)
+				minDist.dist = level;
+
+		minPath(node.left, level + 1, minDist);
+		minPath(node.right, level + 1, minDist);
+
+		return minDist.dist;
+	}
+
+
+
+	@Test
+	void testGetTheBottomView() throws Exception {
+		Node root = new Node(20);
+		root.left = new Node(8);
+		root.right = new Node(22);
+		root.left.left = new Node(5);
+		root.left.right = new Node(3);
+		root.right.left = new Node(4);
+		root.right.right = new Node(25);
+		root.left.right.left = new Node(10);
+		root.left.right.right = new Node(14);
+
+
+		Map<Integer, Node> mapOfNodesOnBottomView = getTheBottomView(root);
+
+		System.out.print("Nodes at bottom : -> ");
+		mapOfNodesOnBottomView.entrySet().stream().forEach(e -> {
+			System.out.print(e.getValue().getVal() + ", ");
+		});
+	}
+
+
+
+	private Map<Integer, Node> getTheBottomView(Node node) {
+		Map<Integer, Node> mapOfNodesOnBottomView = new HashMap<Integer, Node>();
+		int hd = 0;
+
+		Queue<Node> q = new LinkedList<TreeApi2.Node>();
+
+		q.add(node);
+
+		while (!q.isEmpty()) {
+			Node poppedNode = q.remove();
+			hd = poppedNode.hd;
+			mapOfNodesOnBottomView.put(hd, poppedNode);
+
+			if (!Objects.isNull(poppedNode.left)) {
+				poppedNode.left.hd = hd - 1;
+				q.add(poppedNode.left);
+			}
+
+			if (!Objects.isNull(poppedNode.right)) {
+				poppedNode.right.hd = hd + 1;
+				q.add(poppedNode.right);
+			}
+		}
+
+		return mapOfNodesOnBottomView;
+	}
+
+
+
+	@Test
+	void testGetTheTopView() throws Exception {
+		BinaryTree tree = new BinaryTree();
+		tree.root = new Node(1);
+		tree.root.left = new Node(2);
+		tree.root.right = new Node(3);
+		tree.root.left.right = new Node(4);
+		tree.root.left.right.right = new Node(5);
+		tree.root.left.right.right.right = new Node(6);
+
+		Map<Integer, Node> mapOfTopView = getTheTopView(tree.root);
+
+		System.out.println("The TopView ::--> ");
+		mapOfTopView.entrySet().stream().forEach(e -> {
+			System.out.print(e.getValue().val + ", ");
+		});
+	}
+
+
+
+	private Map<Integer, Node> getTheTopView(Node node) {
+		if (null == node)
+			return Collections.emptyMap();
+
+		Map<Integer, Node> mapOfTopView = new HashMap<Integer, TreeApi2.Node>();
+
+		int hd = 0;
+		Queue<Node> q = new LinkedList<Node>();
+		q.add(node);
+
+
+		while (!q.isEmpty()) {
+			Node poppedNode = q.remove();
+
+			hd = poppedNode.hd;
+
+			if (!mapOfTopView.containsKey(hd)) {
+				mapOfTopView.put(hd, poppedNode);
+			}
+
+			if (null != poppedNode.left) {
+				poppedNode.left.hd = hd - 1;
+				q.add(poppedNode.left);
+			}
+
+			if (null != poppedNode.right) {
+				poppedNode.right.hd = hd + 1;
+				q.add(poppedNode.right);
+			}
+
+		}
+
+		return mapOfTopView;
+	}
+
+	@Test
+	void testGetLeftViewOfTheTree() throws Exception {
+		Node root = new Node(10);
+		root.left = new Node(2);
+		root.right = new Node(3);
+		root.left.left = new Node(7);
+		root.left.right = new Node(8);
+		root.right.right = new Node(15);
+		root.right.left = new Node(12);
+		root.right.right.left = new Node(14);
+
+		Set<Node> leftViewOfTree = getLeftViewOfTree(root);
+		leftViewOfTree.stream().forEach(e -> System.out.println(e.val));
+	}
+
+
+	Set<Node> getLeftViewOfTree(Node root) {
+		Set<Node> set = new HashSet<>();
+		Queue<Node> q = new LinkedList<Node>();
+
+		q.add(root);
+
+		while (!q.isEmpty()) {
+
+			for (int i = 0; i < q.size(); i++) {
+				Node polled = q.poll();
+
+				//just get the first element, which should be the first one 
+				if (i == 0) {
+					set.add(polled);
+				}
+
+				if (polled.left != null) {
+					q.add(polled.left);
+				}
+
+
+				if (polled.right != null) {
+					q.add(polled.right);
+				}
+			}
+
+		}
+
+		return set;
+	}
+
+
 }
 
 
