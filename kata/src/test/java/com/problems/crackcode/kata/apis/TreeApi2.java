@@ -1371,36 +1371,34 @@ public class TreeApi2 {
 
 
 	Set<Node> getLeftViewOfTree(Node root) {
-		Set<Node> set = new HashSet<>();
-		Queue<Node> q = new LinkedList<Node>();
+		if (null == root)
+			return Collections.emptySet();
+
+		Set<Node> set = new HashSet<TreeApi2.Node>();
+		Queue<Node> q = new LinkedList<TreeApi2.Node>();
 
 		q.add(root);
 
 		while (!q.isEmpty()) {
-
-			for (int i = 0; i < q.size(); i++) {
+			int actualSize = q.size();
+			for (int i = 0; i < actualSize; i++) {
 				Node polled = q.poll();
 
-				//just get the first element, which should be the first one 
-				if (i == 0) {
+				if (0 == i) {
 					set.add(polled);
 				}
 
-				if (polled.left != null) {
-					q.add(polled.left);
-				}
+				if (null != polled.left)
+					q.add(polled.getLeft());
 
 
-				if (polled.right != null) {
-					q.add(polled.right);
-				}
+				if (null != polled.right)
+					q.add(polled.getRight());
 			}
-
 		}
 
 		return set;
 	}
-
 
 }
 
