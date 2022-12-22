@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.problems.crackcode.kata.exceptions.KataException;
+
 public class ArraysApi2 {
 
 	@Test
@@ -128,6 +130,169 @@ public class ArraysApi2 {
 
 
 
+	@Test
+	void testGetEquilibIndex() throws Exception {
+		int[] A = { -7, 1, 5, 2, -4, 3, 0 };
+		assertEquals(3, getEquilibIndex(A));
+	}
+
+
+
+	@Test
+	void testGetEquilibIndex_1() throws Exception {
+		int[] A = { 1, 2, 3 };
+		assertEquals(-1, getEquilibIndex(A));
+	}
+
+
+
+	int getEquilibIndex(int[] a) {
+		int i = 0;
+		int j = a.length - 1;
+		int sumR = 0;
+		int sumL = 0;
+
+		while (i < a.length && j >= 0 && i < j) {
+			sumR += a[i];
+			sumL += a[j];
+			i++;
+			j--;
+
+			if (sumL == sumR)
+				return i++;
+
+		}
+		return -1;
+	}
+
+
+
+	@Test
+	void testFindPeak() throws Exception {
+		int arr[] = { 1, 3, 20, 4, 1, 0 };
+		assertEquals(20, findPeak(arr));
+
+		int arr2[] = { 5, 10, 20, 15 };
+		assertEquals(20, findPeak(arr));
+	}
+
+
+
+	int findPeak(int[] arr) {
+		int l = 0;
+		int h = arr.length - 1;
+
+		return _binSrchPeak(arr, l, h);
+
+	}
+
+	private int _binSrchPeak(int[] arr, int l, int h) {
+		int mid = (l + h) / 2;
+
+		if (arr[mid + 1] < arr[mid] && arr[mid - 1] < arr[mid]) {
+			return arr[mid];
+		} else if (arr[mid + 1] < arr[mid]) {
+			return _binSrchPeak(arr, mid + 1, arr.length - 1);
+		} else {
+			return _binSrchPeak(arr, 0, mid - 1);
+		}
+	}
+
+	@Test
+	void testFindSubArray() throws Exception {
+		int[] a = { 1, 4, 20, 3, 10, 5 };
+		int sum = 33;
+
+		SubArrayWindow subArray = findSubArray(a, sum);
+		assertNotNull(subArray);
+		assertEquals(2, subArray.getStart());
+		assertEquals(4, subArray.getEnd());
+	}
+
+
+
+	@Test
+	void testFindSubArray_1() throws Exception {
+		int[] a = { 1, 4, 0, 0, 3, 10, 5 };
+		int sum = 7;
+
+		SubArrayWindow subArray = findSubArray(a, sum);
+		assertNotNull(subArray);
+		assertEquals(1, subArray.getStart());
+		assertEquals(4, subArray.getEnd());
+	}
+
+
+
+	@Test
+	void testFindSubArray_2() throws Exception {
+		int[] a = { 1, 4 };
+		int sum = 0;
+
+		SubArrayWindow subArray = findSubArray(a, sum);
+		assertNull(subArray);
+	}
+
+
+	SubArrayWindow findSubArray(int[] a, int sum) {
+		SubArrayWindow subArrayWindow = null;
+
+		int i = 0;
+		int j = 0;
+
+		int tempSum = 0;
+
+		while (i < a.length) {
+			tempSum += a[i];
+
+			//corner case
+			if (sum < tempSum) {
+				return null;
+			}
+
+			if (tempSum > sum) {
+				while (tempSum > sum) {
+					tempSum -= a[j];
+					j++;
+				}
+			}
+
+			if (tempSum == sum) {
+				subArrayWindow = new SubArrayWindow();
+				subArrayWindow.setStart(j);
+				subArrayWindow.setEnd(i);
+				break;
+			}
+
+
+			i++;
+		}
+		return subArrayWindow;
+	}
+
+
+
+
+	class SubArrayWindow {
+		int start;
+		int end;
+
+		public int getStart() {
+			return start;
+		}
+
+		public void setStart(int start) {
+			this.start = start;
+		}
+
+		public int getEnd() {
+			return end;
+		}
+
+		public void setEnd(int end) {
+			this.end = end;
+		}
+	}
 
 }
 
