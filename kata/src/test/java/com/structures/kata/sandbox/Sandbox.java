@@ -1,8 +1,12 @@
 package com.structures.kata.sandbox;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 
 public class Sandbox {
 
@@ -87,11 +91,11 @@ public class Sandbox {
 
 		while (i < a.length) {
 			currSum += a[i];
-			
-			if(currSum<0) {
-				currSum	=0;
+
+			if (currSum < 0) {
+				currSum = 0;
 			}
-			
+
 			if (currSum > maxSum) {
 				maxSum = currSum;
 			}
