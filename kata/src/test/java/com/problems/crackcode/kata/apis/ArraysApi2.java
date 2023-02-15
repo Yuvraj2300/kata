@@ -1059,6 +1059,77 @@ public class ArraysApi2 {
 
 		return a;
 	}
+
+
+
+	@Test
+	void testGetMaxLength() throws Exception {
+		assertEquals(10, getMaxLength(11));
+	}
+
+
+	int getMaxLength(int n) {
+		int low = 0;
+		int high = 1000;
+
+		while (high - low > 1) {
+			int mid = (high - low) / 2 + low;
+
+			if (totalCost(mid) <= n) {
+				low = mid;
+			} else {
+				high = mid - 1;
+			}
+		}
+
+		if (totalCost(high) <= n) {
+			return high;
+		}
+
+		if (totalCost(low) <= n) {
+			return low;
+		}
+
+		return 0;
+	}
+
+
+
+	private int totalCost(int n) {
+		int cnt = 0;
+		for (int i = 1; i <= n; i *= 10) {
+			cnt += (n - i + 1);
+		}
+		return cnt;
+	}
+
+	@Test
+	void testGetAllRotaions() throws Exception {
+		getAllRots("geeks");
+	}
+
+	void getAllRots(String s) {
+		int j = 0;
+		int i = 0;
+		char[] charArray = s.toCharArray();
+		int lt = charArray.length;
+		int looper = 0;
+
+		while (looper < lt) {
+			char init = charArray[j];
+			while (i < s.length()) {
+				if (i == lt - 1) {
+					charArray[i] = init;
+				} else {
+					charArray[i] = charArray[i + 1];
+				}
+				i++;
+			}
+			System.out.println(new String(charArray));
+			i = 0;
+			looper++;
+		}
+	}
 }
 
 
