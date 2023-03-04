@@ -1,22 +1,11 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.*;
 
-import org.assertj.core.internal.Comparables;
-import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
-
-import com.problems.crackcode.kata.exceptions.KataException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RecursionApi {
 
@@ -516,4 +505,100 @@ public class RecursionApi {
 		//		int[] oparr = kFactorization_array(12, factors);
 		System.out.println(op);
 	}
+
+
+	@Test
+	void testArraysByR() {
+		int[] a = { 1, 2, 3, 4 };
+		arraysByR(a, 2);
+	}
+
+
+	void arraysByR(int[] a, int r) {
+		int[] data = new int[r];
+		int idx = 1;
+		int s = 0;
+		int e = a.length - 1;
+
+
+		recurPrint(r, data, idx, s, e, a);
+
+	}
+
+	private static void recurPrint(int r, int[] data, int idx, int s, int e, int[] a) {
+		if (s == a.length - 1 || s > a.length) {
+			return;
+		}
+
+		if (idx == r) {
+			for (int i : data)
+				System.out.print(i + ", ");
+
+			System.out.println();
+			recurPrint(r, data, 1, s, e, a);
+		}
+
+		data[0] = a[s];
+		if (s < e) {
+			data[idx] = a[e];
+			recurPrint(r, data, ++idx, s, --e, a);
+		} else {
+			recurPrint(r, data, 1, ++s, a.length - 1, a);
+		}
+	}
+
+
+	@Test
+	void testPrintCombinations() {
+		printSeq(3, 2);
+	}
+
+
+	@Test
+	void testPrintCombinations1() {
+		printSeq(5, 5);
+	}
+
+
+
+	@Test
+	void testPrintCombinaxtions2() {
+		printSeq(5, 3);
+	}
+
+
+	@Test
+	void testPrintCombinaxtions3() {
+		printSeq(7, 3);
+	}
+
+
+
+
+	void printSeq(int n, int k) {
+
+		int[] a = new int[k];
+
+		int len = 0;
+		_printSeqHelper(n, k, a, len);
+	}
+
+	private static void _printSeqHelper(int n, int k, int[] a, int len) {
+		if (len == k) {
+			System.out.println();
+			Arrays.stream(a).forEach(e -> System.out.print(e + " "));
+			return;
+		}
+
+		//natural nums to be filled
+		int i = len == 0 ? 1 : a[len - 1] + 1;
+		len++;
+		while (i <= n) {
+			a[len - 1] = i;
+			_printSeqHelper(n, k, a, len);
+			i++;
+		}
+	}
+
+
 }

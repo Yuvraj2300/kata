@@ -1130,6 +1130,47 @@ public class ArraysApi2 {
 			looper++;
 		}
 	}
+
+
+	@Test
+	void testGetSortedMergeArray() {
+		int[] a = { 10, 12, 13, 14, 18, 0, 0, 0, 0, 0 };
+		int[] b = { 16, 17, 19, 20, 22 };
+		int[] sortedMergeArray = getSortedMergeArray(a, b);
+
+		for (int i : sortedMergeArray) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	/**
+	 * Give first array as the larger one please
+	 */
+	public int[] getSortedMergeArray(int[] a, int[] b) {
+		int i = a.length - 1;
+		int j = b.length - 1;
+		int k = 0;
+
+		while (a[k + 1] != 0) {
+			k++;
+		}
+
+		while (j >= 0 && i >= 0) {
+			if (a[k] < b[j]) {
+				a[i] = b[j];
+			} else {
+				int temp = a[k];
+				a[k] = b[j];
+				a[i] = temp;
+			}
+
+			j--;
+			i--;
+		}
+		return a;
+	}
+
 }
 
 
