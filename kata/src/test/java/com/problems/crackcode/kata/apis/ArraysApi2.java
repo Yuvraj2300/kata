@@ -1059,6 +1059,118 @@ public class ArraysApi2 {
 
 		return a;
 	}
+
+
+
+	@Test
+	void testGetMaxLength() throws Exception {
+		assertEquals(10, getMaxLength(11));
+	}
+
+
+	int getMaxLength(int n) {
+		int low = 0;
+		int high = 1000;
+
+		while (high - low > 1) {
+			int mid = (high - low) / 2 + low;
+
+			if (totalCost(mid) <= n) {
+				low = mid;
+			} else {
+				high = mid - 1;
+			}
+		}
+
+		if (totalCost(high) <= n) {
+			return high;
+		}
+
+		if (totalCost(low) <= n) {
+			return low;
+		}
+
+		return 0;
+	}
+
+
+
+	private int totalCost(int n) {
+		int cnt = 0;
+		for (int i = 1; i <= n; i *= 10) {
+			cnt += (n - i + 1);
+		}
+		return cnt;
+	}
+
+	@Test
+	void testGetAllRotaions() throws Exception {
+		getAllRots("geeks");
+	}
+
+	void getAllRots(String s) {
+		int j = 0;
+		int i = 0;
+		char[] charArray = s.toCharArray();
+		int lt = charArray.length;
+		int looper = 0;
+
+		while (looper < lt) {
+			char init = charArray[j];
+			while (i < s.length()) {
+				if (i == lt - 1) {
+					charArray[i] = init;
+				} else {
+					charArray[i] = charArray[i + 1];
+				}
+				i++;
+			}
+			System.out.println(new String(charArray));
+			i = 0;
+			looper++;
+		}
+	}
+
+
+	@Test
+	void testGetSortedMergeArray() {
+		int[] a = { 10, 12, 13, 14, 18, 0, 0, 0, 0, 0 };
+		int[] b = { 16, 17, 19, 20, 22 };
+		int[] sortedMergeArray = getSortedMergeArray(a, b);
+
+		for (int i : sortedMergeArray) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	/**
+	 * Give first array as the larger one please
+	 */
+	public int[] getSortedMergeArray(int[] a, int[] b) {
+		int i = a.length - 1;
+		int j = b.length - 1;
+		int k = 0;
+
+		while (a[k + 1] != 0) {
+			k++;
+		}
+
+		while (j >= 0 && i >= 0) {
+			if (a[k] < b[j]) {
+				a[i] = b[j];
+			} else {
+				int temp = a[k];
+				a[k] = b[j];
+				a[i] = temp;
+			}
+
+			j--;
+			i--;
+		}
+		return a;
+	}
+
 }
 
 
