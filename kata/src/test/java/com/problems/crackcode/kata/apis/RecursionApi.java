@@ -572,33 +572,33 @@ public class RecursionApi {
 		printSeq(7, 3);
 	}
 
-
-
-
-	void printSeq(int n, int k) {
-
-		int[] a = new int[k];
-
+	private void printSeq(int n, int k) {
+		int[] data = new int[k];
+		int i = 0;
 		int len = 0;
-		_printSeqHelper(n, k, a, len);
+
+		printHelper(n, k, data, len, i);
 	}
 
-	private static void _printSeqHelper(int n, int k, int[] a, int len) {
+	private void printHelper(int n, int k, int[] data, int len, int i) {
 		if (len == k) {
+			Arrays.stream(data).forEach(e -> System.out.print(e + ", "));
 			System.out.println();
-			Arrays.stream(a).forEach(e -> System.out.print(e + " "));
 			return;
 		}
 
-		//natural nums to be filled
-		int i = len == 0 ? 1 : a[len - 1] + 1;
+		if (len == 0) {
+			i = 1;
+		} else {
+			i = data[len - 1] + 1;
+		}
+
 		len++;
 		while (i <= n) {
-			a[len - 1] = i;
-			_printSeqHelper(n, k, a, len);
+			data[len - 1] = i;
+			printHelper(n, k, data, len, i);
 			i++;
 		}
 	}
-
 
 }

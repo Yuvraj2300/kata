@@ -1,13 +1,13 @@
 package com.problems.crackcode.kata.apis;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.structures.kata.TreeNode;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StackApi2 {
 
@@ -462,20 +462,19 @@ public class StackApi2 {
 		int[] op = new int[a.length];
 
 		Stack<Integer> st = new Stack<>();
-		st.push(0);
+		int i = 0;
 
-		int i = 1;
 		while (i < a.length) {
-			if (a[st.peek()] < a[i]) {
-				while (!st.isEmpty() && a[st.peek()] < a[i]) {
-					op[st.pop()] = a[i];
-				}
-
+			if (st.isEmpty()) {
+				st.push(i);
+			} else if (a[i] < a[st.peek()]) {
 				st.push(i);
 			} else {
+				while (!st.isEmpty() && a[i] > a[st.peek()]) {
+					op[st.pop()] = a[i];
+				}
 				st.push(i);
 			}
-
 			i++;
 		}
 
@@ -677,23 +676,21 @@ public class StackApi2 {
 		int[] op = new int[a.length];
 		op[0] = 1;
 
+		int i = 1;
 		Stack<Integer> st = new Stack<>();
 		st.push(0);
-		for (int i = 1; i < a.length; i++) {
-			while (!st.isEmpty() && a[st.peek()] <= a[i]) {
-				st.pop();
+
+		while (i < a.length) {
+			if (a[i] > a[st.peek()]) {
+				while (a[i] > a[st.peek()]) {
+					st.pop();
+				}
 			}
 
-			op[i] = st.isEmpty() ? i + 1 : i - st.peek();
+			op[i] = st.isEmpty() ? i : i - st.peek();
 
-			//			if (st.isEmpty()) {
-			//				op[i] = i + 1;
-			//			} else {
-			//				op[i] = i - st.peek();
-			//			}
-			st.push(i);
+			st.push(i++);
 		}
-
 		return op;
 	}
 
@@ -738,10 +735,11 @@ public class StackApi2 {
 		int i = 1;
 
 		while (i < a.length) {
-			while (!st.isEmpty() && a[st.peek()] < a[i]) {
-				op[st.pop()] = a[i];
+			if (a[i] > a[st.peek()]) {
+				while (!st.isEmpty() && a[i] > a[st.peek()]) {
+					op[st.pop()] = a[i];
+				}
 			}
-
 			st.push(i);
 			i++;
 		}
@@ -988,6 +986,508 @@ public class StackApi2 {
 
 
 		return op;
+	}
+
+
+	@Test
+	void testIdxOfClosing() {
+		assertEquals(8, getIdxOfClosing("[ABC[23]][89]", 0));
+	}
+
+
+	void testIdxOfClosing1() {
+		assertEquals(7, getIdxOfClosing("[ABC[23]][89]", 4));
+	}
+
+
+
+	int getIdxOfClosing(String exp, int start) {
+		char[] a = exp.toCharArray();
+
+		if (a[start] != '[') {
+			throw new RuntimeException("Bad Start Given");
+		}
+
+		Stack<Integer> st = new Stack<>();
+		int i = start;
+
+		while (i < exp.length()) {
+			if (a[i] == '[') {
+				st.push(i);
+			} else if (a[i] == ']') {
+				st.pop();
+				if (st.isEmpty()) {
+					return i;
+				}
+			}
+			i++;
+		}
+
+		throw new RuntimeException("Closing expression not found. Bad Expression");
+	}
+
+
+	@Test
+	void testGetNumOfWordsRemaining() {
+		List<String> sentenceWithWords = new LinkedList<>();
+		sentenceWithWords.add("ab");
+		sentenceWithWords.add("aa");
+		sentenceWithWords.add("aa");
+		sentenceWithWords.add("bcd");
+		sentenceWithWords.add("ab");
+
+		Stack<String> opStack = removeConsecutiveWords(sentenceWithWords);
+		assertEquals(3, opStack.size());
+
+		opStack.forEach(word -> System.out.print(word + ", "));
+	}
+
+
+	@Test
+	@DisplayName("testGetNumOfWordsRemaining_1")
+	void testGetNumOfWordsRemaining_1() {
+		List<String> sentenceWithWords = new LinkedList<>();
+		sentenceWithWords.add("Tom");
+		sentenceWithWords.add("Jerry");
+		sentenceWithWords.add("Jerry");
+		sentenceWithWords.add("Tom");
+
+		Stack<String> opStack = removeConsecutiveWords(sentenceWithWords);
+		assertEquals(0, opStack.size());
+
+		opStack.forEach(word -> System.out.print(word + ", "));
+	}
+
+
+
+	<T> Stack<T> removeConsecutiveWords(List<T> sentence) {
+		int i = 0;
+
+		Stack<T> st = new Stack<>();
+
+		while (i < sentence.size()) {
+			if (st.isEmpty() || !st.peek().equals(sentence.get(i))) {
+				st.push(sentence.get(i));
+			} else {
+				st.pop();
+			}
+			i++;
+		}
+
+		return st;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Reverse Number By Stack")
+	void testReverseNumberByStack() {
+		assertEquals(391, reverseNumberByStack(193));
+	}
+
+
+
+	@Test
+	@DisplayName("Test Reverse Number By Stack 2")
+	void testReverseNumberByStack2() {
+		assertEquals(123456789, reverseNumberByStack(987654321));
+	}
+
+
+
+	int reverseNumberByStack(int n) {
+		Stack<Integer> st = new Stack<>();
+		int op = 0;
+		int reverser = 1;
+
+		while (n != 0) {
+			st.push(n % 10);
+			n = n / 10;
+		}
+
+		while (!st.isEmpty()) {
+			op = op + (reverser * st.pop());
+			reverser = reverser * 10;
+		}
+
+		return op;
+	}
+
+
+	@Test
+	@DisplayName("Test Reverse First K Element")
+	void testReverseFirstKElement() {
+		Queue<Integer> q = new LinkedList<>();
+		q.add(61);
+		q.add(1);
+		q.add(5);
+		q.add(4);
+		q.add(71);
+		Queue<Integer> updatedQueue = reverseFirstKEle(q, 2);
+
+		while (!updatedQueue.isEmpty()) {
+			System.out.print(updatedQueue.poll() + ", ");
+		}
+	}
+
+
+	<T> Queue<T> reverseFirstKEle(Queue<T> q, int k) {
+		reverseKHelper(q, k, 0);
+
+		int s = q.size() - k;
+		while (s > 0) {
+			q.add(q.poll());
+			s--;
+		}
+
+
+		return q;
+	}
+
+	private <T> void reverseKHelper(Queue<T> q, int k, int i) {
+		if (i < k) {
+			T poll = q.poll();
+			reverseKHelper(q, k, ++i);
+			q.add(poll);
+		}
+	}
+
+
+
+	@Test
+	@DisplayName("Test Calculate Max Area in a Histogram")
+	void testCalculateMaxAreaInAHistogram() {
+		int[] a = { 6, 2, 5, 4, 5, 1, 6 };
+		assertEquals(12, calculateMaxAreaInHist(a));
+	}
+
+
+
+
+	int calculateMaxAreaInHist(int[] a) {
+		int maxArr = 0;
+		Stack<Integer> st = new Stack<>();
+
+		int i = 0;
+		while (i < a.length) {
+			if (st.isEmpty() || a[i] >= a[st.peek()]) {
+				st.push(i);
+				i++;
+			} else {
+				Integer ht = a[st.pop()];
+				int wd = st.isEmpty() ? i : i - st.peek() - 1;
+				int ar = ht * wd;
+				maxArr = Math.max(maxArr, ar);
+			}
+		}
+
+		return maxArr;
+	}
+
+
+
+	@Test
+	@DisplayName("TestFindTheCeleb")
+	void testFindTheCeleb() {
+		int[][] m = { { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 } };
+		int theCeleb = findTheCeleb(m, 4);
+		assertEquals(2, theCeleb);
+	}
+
+
+
+	@Test
+	@DisplayName("TestFindTheCeleb2")
+	void testFindTheCeleb2() {
+		int[][] m = { { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 1, 0, 0, 0 }, { 0, 0, 1, 0 } };
+		int theCeleb = findTheCeleb(m, 4);
+		assertEquals(-1, theCeleb);
+	}
+
+
+
+	int findTheCeleb(int[][] m, int n) {
+		Stack<Integer> st = new Stack<>();
+		for (int i = 0; i < n; i++) {
+			st.push(i);
+		}
+
+		while (st.size() > 1) {
+			Integer a = st.pop();
+			Integer b = st.pop();
+
+			Integer potentialCeleb = null;
+
+			if (m[a][b] == 1) {
+				potentialCeleb = b;
+			} else {
+				potentialCeleb = a;
+			}
+			st.push(potentialCeleb);
+		}
+
+		if (st.isEmpty()) {
+			return -1;
+		}
+
+		int suspectedCeleb = st.pop();
+
+		for (int i = 0; i < n; i++) {
+			if (i != suspectedCeleb && (m[i][suspectedCeleb] == 1) && !(m[suspectedCeleb][i] == 0)) {
+				return -1;
+			}
+		}
+
+		return suspectedCeleb;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get NGE for Queries")
+	void testGetNgeForQueries() {
+		int[] a = { 3, 4, 2, 7, 5, 8, 10, 6 };
+		int[] q = { 3, 6, 1 };
+
+		int[] op = getNGEForQueries(a, q);
+		Arrays.stream(op).forEach(e -> System.out.print(e + ", "));
+	}
+
+
+
+	int[] getNGEForQueries(int[] a, int[] q) {
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int i = 1;
+
+		int[] nges = new int[a.length];
+		int[] op = new int[q.length];
+
+		while (i < a.length) {
+			if (a[i] < a[st.peek()]) {
+				st.push(i);
+			} else {
+				while (!st.isEmpty() && a[i] >= a[st.peek()]) {
+					nges[st.pop()] = a[i];
+				}
+				st.push(i);
+			}
+
+			i++;
+		}
+
+		while (!st.isEmpty()) {
+			nges[st.pop()] = -1;
+		}
+
+		for (int j = 0; j < q.length; j++) {
+			op[j] = nges[q[j]];
+		}
+
+		return op;
+	}
+
+
+	@Test
+	@DisplayName("Test Print Ancestors")
+	void testPrintAncestors() {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.right = new TreeNode(3);
+		printAncestors(root, 3);
+	}
+
+	//	@Test
+	@DisplayName("Test Print Ancestors")
+	void testPrintAncestors1() {
+		TreeNode root = new TreeNode(1);
+		root.left = new TreeNode(2);
+		root.right = new TreeNode(3);
+		root.left.left = new TreeNode(4);
+		root.left.right = new TreeNode(5);
+		root.right.left = new TreeNode(6);
+		root.right.right = new TreeNode(7);
+		root.left.left.left = new TreeNode(8);
+		root.left.right.right = new TreeNode(9);
+		root.right.right.left = new TreeNode(10);
+		printAncestors(root, 5);
+	}
+
+
+
+	void printAncestors(TreeNode root, int target) {
+		Stack<TreeNode> st = new Stack<>();
+
+		while (true) {
+			//postorder
+			while (root != null && !(root.val == target)) {
+				st.push(root);
+				root = root.left;
+			}
+
+			if (Objects.nonNull(root) && root.val == target) {
+				break;
+			}
+
+			//means you are at the end of the whole left side
+			if (st.peek().right == null) {
+				root = st.pop();
+				//check if this is a right child of a left side node which you have already checked for
+				while (!st.isEmpty() && st.peek().right == root) {
+					st.pop();
+				}
+			}
+			root = st.isEmpty() ? null : st.peek().right;
+		}
+
+		while (!st.isEmpty()) {
+			System.out.print(target + " : ");
+			System.out.print(st.pop().val + ", ");
+		}
+
+
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get Max area from the histogram")
+	void testGetMaxAreaFromTheHistogram() {
+		int[] a = { 6, 2, 5, 4, 5, 1, 6 };
+		assertEquals(12, getAreaOfHistograms(a));
+	}
+
+
+
+	int getAreaOfHistograms(int[] a) {
+		Stack<Integer> st = new Stack<>();
+		int i = 0;
+
+		int maxA = 0;
+
+		while (i < a.length) {
+			if (st.isEmpty() || a[i] > a[st.peek()]) {
+				st.push(i);
+				i++;
+			} else {
+				int ca = a[st.pop()] * (st.isEmpty() ? i : i - st.peek() - 1);
+				maxA = Math.max(ca, maxA);
+			}
+		}
+		return maxA;
+	}
+
+
+
+
+	@Test
+	@DisplayName("Test Get Longest Valid Substring")
+	void testGetLongestValidSubstring() {
+		assertEquals(6, getLongestValidSubstring("())))((()))"));
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get Longest Valid Substring - 1")
+	void testGetLongestValidSubstring_1() {
+		assertEquals(4, getLongestValidSubstring(")()())"));
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get Longest Valid Substring - 2")
+	void testGetLongestValidSubstring_2() {
+		assertEquals(6, getLongestValidSubstring("()(()))))"));
+	}
+
+
+
+	int getLongestValidSubstring(String s) {
+		int maxValid = 0;
+
+		Stack<Integer> st = new Stack<>();
+
+		int i = 0;
+		char[] a = s.toCharArray();
+		while (i < a.length) {
+			if (a[i] == '(') {
+				st.push(i);
+			} else {
+				if (!st.isEmpty() /*&& a[st.peek()] == '('*/) {
+					st.pop();
+				}
+				if (!st.isEmpty()) {
+					maxValid = Math.max(maxValid, i - st.peek());
+				} else {
+					st.push(i);
+				}
+
+			}
+			i++;
+		}
+		return maxValid;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Redundant Parens")
+	void testRedundantParens() {
+		assertFalse(checkRedundantParens("(a+b)"));
+	}
+
+
+	@Test
+	@DisplayName("Test Redundant Parens")
+	void testRedundantParens1() {
+		assertTrue(checkRedundantParens("(a+(b))"));
+	}
+
+
+	@Test
+	@DisplayName("Test Redundant Parens")
+	void testRedundantParens2() {
+		Assertions.assertThatThrownBy(() -> checkRedundantParens("(a+b))")).isInstanceOf(RuntimeException.class);
+	}
+
+
+
+	boolean checkRedundantParens(String s) {
+		char[] a = s.toCharArray();
+		int i = 0;
+
+		Stack<Integer> st = new Stack<>();
+		while (i < a.length) {
+			if (a[i] != ')') {
+				st.push(i);
+			} else {
+				Integer top = st.peek();
+				st.pop();
+				//assume that you popped the redundant's (, hence true
+				boolean invalidFlag = true;
+
+				//incase our assumption was wrong
+				while (a[top] != '(') {
+					if (a[top] == '+' || a[top] == '-' || a[top] == '/' || a[top] == '*' || a[top] == '%') {
+						invalidFlag = false;
+					}
+					top = st.peek();
+					st.pop();
+				}
+				if (invalidFlag) {
+					return invalidFlag;
+				}
+			}
+
+			i++;
+		}
+
+		if (!st.isEmpty() && st.peek() == ')' || st.peek() == '(') {
+			return true;
+		}
+		return false;
 	}
 
 
