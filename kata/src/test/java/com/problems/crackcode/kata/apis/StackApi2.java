@@ -1449,45 +1449,115 @@ public class StackApi2 {
 	@Test
 	@DisplayName("Test Redundant Parens")
 	void testRedundantParens2() {
-		Assertions.assertThatThrownBy(() -> checkRedundantParens("(a+b))")).isInstanceOf(RuntimeException.class);
+		assertTrue(checkRedundantParens("(a+b))"));
 	}
 
 
 
 	boolean checkRedundantParens(String s) {
-		char[] a = s.toCharArray();
 		int i = 0;
+		Stack<Character> st = new Stack<>();
 
-		Stack<Integer> st = new Stack<>();
-		while (i < a.length) {
-			if (a[i] != ')') {
-				st.push(i);
+		while (i < s.length()) {
+			char charAt = s.charAt(i);
+			if (st.isEmpty() || charAt != ')') {
+				st.push(charAt);
 			} else {
-				Integer top = st.peek();
-				st.pop();
-				//assume that you popped the redundant's (, hence true
-				boolean invalidFlag = true;
+				if (!st.isEmpty()) {
+					boolean redundant = true;
 
-				//incase our assumption was wrong
-				while (a[top] != '(') {
-					if (a[top] == '+' || a[top] == '-' || a[top] == '/' || a[top] == '*' || a[top] == '%') {
-						invalidFlag = false;
+					while (st.pop() != '(') {
+						if (st.peek() == '+' || st.peek() == '-' || st.peek() == '*' || st.peek() == '/') {
+							redundant = false;
+						}
 					}
-					top = st.peek();
-					st.pop();
-				}
-				if (invalidFlag) {
-					return invalidFlag;
+
+					if (redundant) {
+						return true;
+					}
+				} else {
+					st.push(s.charAt(i));
 				}
 			}
-
 			i++;
 		}
 
-		if (!st.isEmpty() && st.peek() == ')' || st.peek() == '(') {
+		if (!st.isEmpty())
 			return true;
-		}
+
 		return false;
+	}
+
+
+	@Test
+	@DisplayName("Test Get The Length Of LongestValid Substring")
+	void testGetTheLengthOfLongestValidSubstring() {
+		assertEquals(2, getTheLtLongestValidSubstring("(((()"));
+	}
+
+
+	@Test
+	@DisplayName("Test Get The Length Of LongestValid Substring")
+	void testGetTheLengthOfLongestValidSubstring1() {
+		assertEquals(4, getTheLtLongestValidSubstring(")()())"));
+	}
+
+	int getTheLtLongestValidSubstring(String s) {
+		int maxL = 0;
+
+		Stack<Integer> st = new Stack<>();
+		int i = 0;
+		char[] a = s.toCharArray();
+		st.push(-1);
+		while (i < a.length) {
+			if (a[i] == '(') {
+				st.push(i);
+			} else if (!st.isEmpty() && a[i] == ')') {
+				st.pop();
+				if (!st.isEmpty()) {
+					maxL = Math.max(maxL, i - st.peek());
+				} else {
+					st.push(i);
+				}
+			} else {
+				st.push(i);
+			}
+			i++;
+		}
+
+		return maxL;
+	}
+
+
+	@Test
+	@DisplayName("Test Find Spans")
+	void testFindSpans() {
+		int[] spans = findSpans(new int[] { 100, 80, 60, 70, 60, 75, 85 });
+		for (int i : spans) {
+			System.out.print(i + ", ");
+		}
+
+	}
+
+
+	int[] findSpans(int[] a) {
+		int[] op = new int[a.length];
+		//first span will always be 1
+		op[0] = 1;
+
+		int i = 1;
+		Stack<Integer> st = new Stack<>();
+		while (i < a.length) {
+			if (!st.isEmpty() && a[i] > a[st.peek()]) {
+				while (!st.isEmpty() && a[i] > a[st.peek()]) {
+					st.pop();
+				}
+			}
+			op[i] = st.isEmpty() ? i : i - st.peek();
+			st.push(i++);
+		}
+
+		return op;
 	}
 
 
