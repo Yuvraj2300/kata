@@ -1148,26 +1148,26 @@ public class ArraysApi2 {
 	 * Give first array as the larger one please
 	 */
 	public int[] getSortedMergeArray(int[] a, int[] b) {
-		int i = a.length - 1;
-		int j = b.length - 1;
-		int k = 0;
-
-		while (a[k + 1] != 0) {
-			k++;
+		int i = 0;
+		while (a[i + 1] != 0) {
+			i++;
 		}
 
-		while (j >= 0 && i >= 0) {
-			if (a[k] < b[j]) {
-				a[i] = b[j];
+		int j = a.length - 1;
+		int k = b.length - 1;
+
+		while (k >= 0) {
+			if (a[i] < b[k]) {
+				a[j] = b[k];
 			} else {
-				int temp = a[k];
-				a[k] = b[j];
-				a[i] = temp;
+				int temp = a[i];
+				a[i] = b[k];
+				a[j] = temp;
 			}
-
+			k--;
 			j--;
-			i--;
 		}
+
 		return a;
 	}
 
