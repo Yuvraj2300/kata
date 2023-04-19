@@ -3,10 +3,7 @@ package com.problems.crackcode.kata.apis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -429,7 +426,7 @@ public class SearchApi {
 	}
 
 
-// Returns the WRONG answer but well, E for effort as they say
+	// Returns the WRONG answer but well, E for effort as they say
 	int findKthSmallestNumberInMatrix(int k, int[][] mat) {
 		int l = mat[0][0];
 		int h = mat[mat.length - 1][mat[0].length - 1];
@@ -475,6 +472,128 @@ public class SearchApi {
 		}
 
 		return greaterThan;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing() {
+		int element = findElementThatIsIncThenDec(new int[] { 1, 3, 50, 10, 9, 7, 6 });
+		assertNotEquals(-1, element);
+		assertEquals(50, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing_1() {
+		int element = findElementThatIsIncThenDec(new int[] { 8, 10, 20, 80, 100, 200, 400, 500, 3, 2, 1 });
+		assertNotEquals(-1, element);
+		assertEquals(500, element);
+	}
+
+	//corner case
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing2() {
+		int element = findElementThatIsIncThenDec(new int[] { 120, 100, 80, 20, 0 });
+		assertNotEquals(-1, element);
+		assertEquals(120, element);
+	}
+
+
+	int findElementThatIsIncThenDec(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		while (l <= h) {
+			if (l == h)
+				return a[l];
+
+			int mid = l + (h - l) / 2;
+			boolean c1 = a[mid - 1] < a[mid];
+			boolean c2 = a[mid + 1] < a[mid];
+
+			if (c1 & c2) {
+				return a[mid];
+			}
+
+			if (!c1) {
+				h = mid - 1;
+			} else if (!c2) {
+				l = mid + 1;
+			}
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 5, 1, 4, 3, 6, 8, 10, 7, 9 });
+		assertEquals(6, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter1() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 5, 1, 4, 3, 6, 8, 4, 12, 99 });
+		assertEquals(12, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter2() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 1, 2, 3, 8, 99, 2 });
+		assertEquals(2, element);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter3() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 1, 2, 1, 8, 99, 2 });
+		assertEquals(-1, element);
+	}
+
+
+
+	int findNumberSmallerBeforeGr8trAfter(int[] a) {
+		int i = 0;
+		int start = -1;
+
+		Stack<Integer> st = new Stack<>();
+
+		while (i < a.length) {
+			if (st.isEmpty() || a[i] < a[st.peek()]) {
+				if (start != -1 && a[i] < a[start])
+					start = -1;
+
+				st.push(i);
+			} else {
+				if (start == -1) {
+					while (!st.isEmpty() && a[i] > a[st.peek()])
+						st.pop();
+
+					if (st.isEmpty())
+						start = i;
+				}
+
+				st.push(i);
+			}
+
+			i++;
+		}
+
+		return start == -1 ? -1 : a[start];
 	}
 
 }
