@@ -596,6 +596,326 @@ public class SearchApi {
 		return start == -1 ? -1 : a[start];
 	}
 
+
+
+	@Test
+	@DisplayName("Test Find Pair With Greatest Sum")
+	void testFindPairWithGreatestSum() {
+		int sum = findPairWithGreatestSum(new int[] { 12, 34, 10, 6, 40 });
+		assertEquals(74, sum);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Pair With Greatest Sum")
+	void testFindPairWithGreatestSum1() {
+		int sum = findPairWithGreatestSum(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+		assertEquals(17, sum);
+	}
+
+
+	int findPairWithGreatestSum(int[] a) {
+		//firtGrtst+secondGrtst = LargestPair
+		int f = Integer.MIN_VALUE;
+		int s = Integer.MIN_VALUE;
+
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] > f) {
+				if (f > s)
+					s = f;
+				f = a[i];
+			}
+			i++;
+		}
+
+		return f + s;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Merge Sort Algo")
+	void testMergeSortAlgo() {
+		int[] ints = mergeSortAlog(new int[] { 12, 11, 13, 5, 6, 7 });
+		Arrays.stream(ints).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+	int[] mergeSortAlog(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		_mergeSortHelper(a, l, h);
+
+		return a;
+	}
+
+	private static void _mergeSortHelper(int[] a, int l, int h) {
+		if (l < h) {
+			int mid = l + (h - l) / 2;
+			//callSort() on left part of mid(inclusive)
+			_mergeSortHelper(a, l, mid);
+			//callSort() on right part of mid(exclusive)
+			_mergeSortHelper(a, mid + 1, h);
+			//call a merge method on the whole array
+			_merge(a, l, h, mid);
+		}
+	}
+
+	private static void _merge(int[] a, int l, int h, int mid) {
+		int lLt = mid - l + 1;
+		int rLt = h - mid;
+
+		int[] L = new int[lLt];
+		int[] R = new int[lLt];
+
+		for (int i = 0; i < lLt; i++) {
+			L[i] = a[l + i];
+		}
+		for (int i = 0; i < rLt; i++) {
+			R[i] = a[mid + 1 + i];
+		}
+
+
+		int i = 0, j = 0;
+		int k = l;
+
+		while (i < lLt && j < rLt) {
+			if (L[i] < R[j]) {
+				a[k] = L[i];
+				i++;
+			} else {
+				a[k] = R[j];
+				j++;
+			}
+			k++;
+		}
+
+		while (i < lLt) {
+			a[k] = L[i];
+			i++;
+			k++;
+		}
+
+		while (j < rLt) {
+			a[k] = R[j];
+			j++;
+			k++;
+		}
+	}
+
+
+
+
+	@Test
+	@DisplayName("Find Index For Key In Rotated Array")
+	void findIndexForKeyInRotatedArray() {
+		int idx = findIdxForKeyInRotatedArray(new int[] { 5, 6, 7, 8, 9, 10, 1, 2, 3 }, 3);
+		assertEquals(8, idx);
+	}
+
+
+
+	@Test
+	@DisplayName("Find Index For Key In Rotated Array")
+	void findIndexForKeyInRotatedArray1() {
+		int idx = findIdxForKeyInRotatedArray(new int[] { 5, 6, 7, 8, 9, 10, 1, 2, 3 }, 1);
+		assertEquals(6, idx);
+	}
+
+
+
+	int findIdxForKeyInRotatedArray(int[] a, int k) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == k)
+				return mid;
+
+			if (a[l] < a[mid]) {
+				if (k >= a[l] && k < a[mid]) {
+					h = mid - 1;
+				} else {
+					l = mid + 1;
+				}
+			} else {
+				if (k >= a[mid] && k <= a[h]) {
+					l = mid + 1;
+				} else {
+					h = mid - 1;
+				}
+			}
+		}
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 6, 7, 1, 2, 3, 4, 5 });
+		assertEquals(1, smallest);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray1() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 5, 6, 1, 2, 3, 4 });
+		assertEquals(1, smallest);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray2() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 7, 8, 9, 3, 4, 5, 6 });
+		assertEquals(3, smallest);
+	}
+
+	int findTheSmallestInRotatedArray(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] > a[mid + 1]) {
+				return a[mid + 1];
+			}
+
+			if (a[mid - 1] > a[mid]) {
+				return a[mid];
+			}
+
+
+			if (a[mid] < a[h]) {
+				//means right half is sorted and the smallest element must be in the left sub array given the above condition on 777
+				h = mid;
+			} else {
+				l = mid + 1;
+			}
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint() {
+		int point = findTheFixedPointInTheArray(new int[] { -10, -5, 0, 3, 7 });
+		assertEquals(3, point);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint1() {
+		int point = findTheFixedPointInTheArray(new int[] { 0, 2, 5, 8, 17 });
+		assertEquals(0, point);
+	}
+
+
+
+	int findTheFixedPointInTheArray(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == mid) {
+				return mid;
+			}
+
+			if (a[mid] > mid) {
+				h = mid;
+			} else {
+				l = mid + 1;
+			}
+		}
+
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find K Closest To X")
+	void testFindKClosestToX() {
+		int[] opAssert = { 30, 39, 42, 45 };
+		int arr[] = { 12, 16, 22, 30, 35, 39, 42, 45, 48, 50, 53, 55, 56 };
+		int[] op = findTheKClosestToX(arr, 35, 4);
+
+		Arrays.sort(op);
+		Arrays.stream(op).forEach(i -> System.out.print(i + ", "));
+		assertArrayEquals(opAssert, op);
+	}
+
+
+
+	int[] findTheKClosestToX(int[] a, int x, int k) {
+		int[] op = new int[k];
+		//find the crossover points
+		int l = 0;
+		int h = a.length - 1;
+
+		int cs = -1;
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] <= x && a[mid + 1] > x) {
+				cs = mid;
+				break;
+			} else if (a[mid + 1] < x) {
+				l = mid + 1;
+			} else {
+				h = mid - 1;
+			}
+		}
+
+		if (cs != -1) {
+			int cnt = 0;
+			int cl = cs;
+			int ch = cl + 1;
+			if (a[cl] == x) {
+				cl--;
+			}
+
+			while (cl >= 0 && ch < a.length && cnt < k) {
+				if (x - a[cl] < a[ch] - x) {
+					op[cnt] = a[cl--];
+				} else {
+					op[cnt] = a[ch++];
+				}
+				cnt++;
+			}
+
+			while (cl >= 0 && cnt < k) {
+				op[cnt] = a[cl--];
+				cnt++;
+			}
+
+			while (ch < a.length && cnt < k) {
+				op[cnt] = a[ch++];
+				cnt++;
+			}
+		}
+
+		return op;
+	}
+
+
 }
 
 
