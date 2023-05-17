@@ -3,10 +3,7 @@ package com.problems.crackcode.kata.apis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -429,7 +426,7 @@ public class SearchApi {
 	}
 
 
-// Returns the WRONG answer but well, E for effort as they say
+	// Returns the WRONG answer but well, E for effort as they say
 	int findKthSmallestNumberInMatrix(int k, int[][] mat) {
 		int l = mat[0][0];
 		int h = mat[mat.length - 1][mat[0].length - 1];
@@ -475,6 +472,605 @@ public class SearchApi {
 		}
 
 		return greaterThan;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing() {
+		int element = findElementThatIsIncThenDec(new int[] { 1, 3, 50, 10, 9, 7, 6 });
+		assertNotEquals(-1, element);
+		assertEquals(50, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing_1() {
+		int element = findElementThatIsIncThenDec(new int[] { 8, 10, 20, 80, 100, 200, 400, 500, 3, 2, 1 });
+		assertNotEquals(-1, element);
+		assertEquals(500, element);
+	}
+
+	//corner case
+	@Test
+	@DisplayName("Test Find Max element That is Increasing then Decreasing")
+	void testFindMaxElementThatIsIncreasingThenDecreasing2() {
+		int element = findElementThatIsIncThenDec(new int[] { 120, 100, 80, 20, 0 });
+		assertNotEquals(-1, element);
+		assertEquals(120, element);
+	}
+
+
+	int findElementThatIsIncThenDec(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		while (l <= h) {
+			if (l == h)
+				return a[l];
+
+			int mid = l + (h - l) / 2;
+			boolean c1 = a[mid - 1] < a[mid];
+			boolean c2 = a[mid + 1] < a[mid];
+
+			if (c1 & c2) {
+				return a[mid];
+			}
+
+			if (!c1) {
+				h = mid - 1;
+			} else if (!c2) {
+				l = mid + 1;
+			}
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 5, 1, 4, 3, 6, 8, 10, 7, 9 });
+		assertEquals(6, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter1() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 5, 1, 4, 3, 6, 8, 4, 12, 99 });
+		assertEquals(12, element);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter2() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 1, 2, 3, 8, 99, 2 });
+		assertEquals(2, element);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Number With Elements That areSmaller Before Greater After")
+	void testFindNumberWithElementsThatAreSmallerBeforeGreaterAfter3() {
+		int element = findNumberSmallerBeforeGr8trAfter(new int[] { 1, 2, 1, 8, 99, 2 });
+		assertEquals(-1, element);
+	}
+
+
+
+	int findNumberSmallerBeforeGr8trAfter(int[] a) {
+		int i = 0;
+		int start = -1;
+
+		Stack<Integer> st = new Stack<>();
+
+		while (i < a.length) {
+			if (st.isEmpty() || a[i] < a[st.peek()]) {
+				if (start != -1 && a[i] < a[start])
+					start = -1;
+
+				st.push(i);
+			} else {
+				if (start == -1) {
+					while (!st.isEmpty() && a[i] > a[st.peek()])
+						st.pop();
+
+					if (st.isEmpty())
+						start = i;
+				}
+
+				st.push(i);
+			}
+
+			i++;
+		}
+
+		return start == -1 ? -1 : a[start];
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Pair With Greatest Sum")
+	void testFindPairWithGreatestSum() {
+		int sum = findPairWithGreatestSum(new int[] { 12, 34, 10, 6, 40 });
+		assertEquals(74, sum);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Pair With Greatest Sum")
+	void testFindPairWithGreatestSum1() {
+		int sum = findPairWithGreatestSum(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+		assertEquals(17, sum);
+	}
+
+
+	int findPairWithGreatestSum(int[] a) {
+		//firtGrtst+secondGrtst = LargestPair
+		int f = Integer.MIN_VALUE;
+		int s = Integer.MIN_VALUE;
+
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] > f) {
+				if (f > s)
+					s = f;
+				f = a[i];
+			}
+			i++;
+		}
+
+		return f + s;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Merge Sort Algo")
+	void testMergeSortAlgo() {
+		int[] ints = mergeSortAlog(new int[] { 12, 11, 13, 5, 6, 7 });
+		Arrays.stream(ints).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+	int[] mergeSortAlog(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		_mergeSortHelper(a, l, h);
+
+		return a;
+	}
+
+	private static void _mergeSortHelper(int[] a, int l, int h) {
+		if (l < h) {
+			int mid = l + (h - l) / 2;
+			//callSort() on left part of mid(inclusive)
+			_mergeSortHelper(a, l, mid);
+			//callSort() on right part of mid(exclusive)
+			_mergeSortHelper(a, mid + 1, h);
+			//call a merge method on the whole array
+			_merge(a, l, h, mid);
+		}
+	}
+
+	private static void _merge(int[] a, int l, int h, int mid) {
+		int lLt = mid - l + 1;
+		int rLt = h - mid;
+
+		int[] L = new int[lLt];
+		int[] R = new int[lLt];
+
+		for (int i = 0; i < lLt; i++) {
+			L[i] = a[l + i];
+		}
+		for (int i = 0; i < rLt; i++) {
+			R[i] = a[mid + 1 + i];
+		}
+
+
+		int i = 0, j = 0;
+		int k = l;
+
+		while (i < lLt && j < rLt) {
+			if (L[i] < R[j]) {
+				a[k] = L[i];
+				i++;
+			} else {
+				a[k] = R[j];
+				j++;
+			}
+			k++;
+		}
+
+		while (i < lLt) {
+			a[k] = L[i];
+			i++;
+			k++;
+		}
+
+		while (j < rLt) {
+			a[k] = R[j];
+			j++;
+			k++;
+		}
+	}
+
+
+
+
+	@Test
+	@DisplayName("Find Index For Key In Rotated Array")
+	void findIndexForKeyInRotatedArray() {
+		int idx = findIdxForKeyInRotatedArray(new int[] { 5, 6, 7, 8, 9, 10, 1, 2, 3 }, 3);
+		assertEquals(8, idx);
+	}
+
+
+
+	@Test
+	@DisplayName("Find Index For Key In Rotated Array")
+	void findIndexForKeyInRotatedArray1() {
+		int idx = findIdxForKeyInRotatedArray(new int[] { 5, 6, 7, 8, 9, 10, 1, 2, 3 }, 1);
+		assertEquals(6, idx);
+	}
+
+
+
+	int findIdxForKeyInRotatedArray(int[] a, int k) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == k)
+				return mid;
+
+			if (a[l] < a[mid]) {
+				if (k >= a[l] && k < a[mid]) {
+					h = mid - 1;
+				} else {
+					l = mid + 1;
+				}
+			} else {
+				if (k >= a[mid] && k <= a[h]) {
+					l = mid + 1;
+				} else {
+					h = mid - 1;
+				}
+			}
+		}
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 6, 7, 1, 2, 3, 4, 5 });
+		assertEquals(1, smallest);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray1() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 5, 6, 1, 2, 3, 4 });
+		assertEquals(1, smallest);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Smallest Element In Rotate Yes Sorted Array")
+	void testFindTheSmallestElementInRotateYesSortedArray2() {
+		int smallest = findTheSmallestInRotatedArray(new int[] { 7, 8, 9, 3, 4, 5, 6 });
+		assertEquals(3, smallest);
+	}
+
+	int findTheSmallestInRotatedArray(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] > a[mid + 1]) {
+				return a[mid + 1];
+			}
+
+			if (a[mid - 1] > a[mid]) {
+				return a[mid];
+			}
+
+
+			if (a[mid] < a[h]) {
+				//means right half is sorted and the smallest element must be in the left sub array given the above condition on 777
+				h = mid;
+			} else {
+				l = mid + 1;
+			}
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint() {
+		int point = findTheFixedPointInTheArray(new int[] { -10, -5, 0, 3, 7 });
+		assertEquals(3, point);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint1() {
+		int point = findTheFixedPointInTheArray(new int[] { 0, 2, 5, 8, 17 });
+		assertEquals(0, point);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint2() {
+		int point = findTheFixedPointInTheArray(new int[] { -10, 0, 2, 8, 17 });
+		assertEquals(2, point);
+	}
+
+
+	int findTheFixedPointInTheArray(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+			if (a[mid] == mid)
+				return mid;
+
+			if (a[mid] < mid) {
+				l = mid + 1;
+			} else {
+				h = mid - 1;
+			}
+		}
+
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find K Closest To X")
+	void testFindKClosestToX() {
+		int[] opAssert = { 30, 39, 42, 45 };
+		int arr[] = { 12, 16, 22, 30, 35, 39, 42, 45, 48, 50, 53, 55, 56 };
+		int[] op = findTheKClosestToX(arr, 35, 4);
+
+		Arrays.sort(op);
+		Arrays.stream(op).forEach(i -> System.out.print(i + ", "));
+		assertArrayEquals(opAssert, op);
+	}
+
+
+
+	int[] findTheKClosestToX(int[] a, int x, int k) {
+		int[] op = new int[k];
+		//find the crossover points
+		int cs = -1;
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+			//values before the cs point will be lesser than the value at mid+1
+			if (a[mid] <= x && a[mid + 1] > x) {
+				cs = mid;
+				break;
+			}
+			if (a[mid + 1] < x) {
+				l = mid + 1;
+			} else {
+				h = mid - 1;
+			}
+		}
+
+		if (cs != -1) {
+			int lft = cs;
+			int hgh = lft + 1;
+			int cnt = 0;
+
+			if (a[lft] == x)
+				lft = lft - 1;
+
+			while (lft >= 0 && hgh < a.length && cnt < k) {
+				if (x - a[lft] < a[hgh] - x) {
+					op[cnt] = a[lft];
+					lft--;
+				} else {
+					op[cnt] = a[hgh];
+					hgh++;
+				}
+				cnt++;
+			}
+			while (lft >= 0 && cnt < k) {
+				op[cnt] = a[lft];
+				cnt++;
+				lft--;
+			}
+
+			while (hgh < a.length && cnt < k) {
+				op[cnt] = a[hgh];
+				cnt++;
+				hgh++;
+			}
+		}
+
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Pair With Sum Closes To Given Value")
+	void testFindPairWithSumClosesToGivenValue() {
+		int[] a = { 10, 22, 28, 29, 30, 40 };
+		int[] op = findPairWithSumClosesToGivenValue(a, 54);
+		Arrays.sort(op);
+
+		int[] expected = { 22, 30 };
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] findPairWithSumClosesToGivenValue(int[] a, int x) {
+		int l = 0;
+		int h = a.length - 1;
+
+		int minDiff = Integer.MAX_VALUE;
+		int[] op = new int[2];
+		while (l <= h) {
+			int currSum = a[h] + a[l];
+			//take absolute since the diff can be negative , which we do not want to check
+			//as the closeness of the sum is dermined the by the 'actual value'
+			int currDiff = Math.abs(currSum - x);
+			if (currDiff < minDiff) {
+				minDiff = currDiff;
+				op[0] = a[l];
+				op[1] = a[h];
+			}
+
+			if (currSum < x) {
+				l++;
+			} else {
+				h--;
+			}
+		}
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Pair With Sum Closes to Given Value")
+	void testFindThePairWithSumClosesToGivenValue() {
+		int[] a = { 1, 4, 5, 7 };
+		int[] b = { 10, 20, 30, 40 };
+		int x = 32;
+
+		int[] expected = { 1, 30 };
+		int[] op = findThePairWithSumClosestInTwoArrays(a, b, x);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Pair With Sum Closes to Given Value")
+	void testFindThePairWithSumClosesToGivenValue1() {
+		int[] a = { 1, 4, 5, 7 };
+		int[] b = { 10, 20, 30, 40 };
+		int x = 50;
+
+		int[] expected = { 7, 40 };
+		int[] op = findThePairWithSumClosestInTwoArrays(a, b, x);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] findThePairWithSumClosestInTwoArrays(int[] a, int[] b, int x) {
+		int[] op = new int[2];
+
+		int l = 0;
+		int h = b.length - 1;
+		int minDiff = Integer.MAX_VALUE;
+
+		while (l < a.length && h >= 0) {
+			int currSum = a[l] + b[h];
+			int currDiff = Math.abs(currSum - x);
+
+			if (currDiff < minDiff) {
+				minDiff = currDiff;
+				op[0] = a[l];
+				op[1] = b[h];
+			}
+
+			if (currSum < x) {
+				l++;
+			} else {
+				h--;
+			}
+		}
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find A Value In Almost Sorted Array")
+	void testFindAValueInAlmostSortedArray() {
+		int op = findAValueInAlmostSortedArray(new int[] { 10, 3, 40, 20, 50, 80, 70 }, 40);
+		assertEquals(2, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find A Value In Almost Sorted Array")
+	void testFindAValueInAlmostSortedArray1() {
+		int op = findAValueInAlmostSortedArray(new int[] { 3, 2, 10, 4, 40 }, 4);
+		assertEquals(3, op);
+	}
+
+
+
+	int findAValueInAlmostSortedArray(int[] a, int k) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == k)
+				return mid;
+
+			if (mid > l && a[mid - 1] == k) {
+				return mid - 1;
+			}
+
+			if (mid < h && a[mid + 1] == k) {
+				return mid + 1;
+			}
+
+			if (a[mid] < k) {
+				l = mid + 2;
+			} else {
+				h = mid - 2;
+			}
+		}
+		return -1;
 	}
 
 }
