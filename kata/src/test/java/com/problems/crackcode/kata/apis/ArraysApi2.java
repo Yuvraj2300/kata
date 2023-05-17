@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import lombok.AllArgsConstructor;
@@ -607,35 +608,63 @@ public class ArraysApi2 {
 		int[] a = { 10, 12, 13, 14, 18, 0, 0, 0, 0, 0 };
 		int[] b = { 16, 17, 19, 20, 22 };
 
-		int[] mergedArr = mergeSortedArraysWithBuffer(a, b);
+		int[] expected = { 10, 12, 13, 14, 16, 17, 18, 19, 20, 22 };
 
-		for (int i : mergedArr) {
-			System.out.print(i + ", ");
-		}
+		int[] mergedArr = mergeSortedArraysWithBuffer(a, b);
+		Arrays.stream(mergedArr).forEach(i -> System.out.print(i + ", "));
+
+		assertArrayEquals(expected, mergedArr);
 	}
 
+
+	@Test
+	void testMergeSortedArrays_2() throws Exception {
+		int[] a = { 10, 12, 13, 14, 16, 0, 0, 0, 0, 0 };
+		int[] b = { 16, 17, 19, 20, 22 };
+
+		int[] expected = { 10, 12, 13, 14, 16, 16, 17, 19, 20, 22 };
+
+		int[] mergedArr = mergeSortedArraysWithBuffer(a, b);
+		Arrays.stream(mergedArr).forEach(i -> System.out.print(i + ", "));
+
+		assertArrayEquals(expected, mergedArr);
+	}
+
+
+	@Test
+	void testMergeSortedArrays_3() throws Exception {
+		int[] a = { 10, 12, 13, 14, 20, 0, 0, 0, 0, 0 };
+		int[] b = { 16, 17, 19, 20, 22 };
+
+		int[] expected = { 10, 12, 13, 14, 16, 17, 19, 20, 20, 22 };
+
+		int[] mergedArr = mergeSortedArraysWithBuffer(a, b);
+		Arrays.stream(mergedArr).forEach(i -> System.out.print(i + ", "));
+
+		assertArrayEquals(expected, mergedArr);
+	}
 
 
 	int[] mergeSortedArraysWithBuffer(int[] a, int[] b) {
 		//assuming a is always given as teh array with buffer in it
 		//assuming buffer is 0s
 		int i = 0;
-		while (a[i + 1] != 0) {
+		while (a[i + 1] != 0)
 			i++;
-		}
-		int j = b.length - 1;
-		int k = i + j + 1;
 
-		while (j >= 0) {
-			if (i >= 0 && j >= 0 && a[i] >= b[j]) {
-				a[k] = a[i];
-				i--;
+		int j = a.length - 1;
+		int k = b.length - 1;
+
+		while (k >= 0 && j > i) {
+			if (a[i] < b[k]) {
+				a[j] = b[k];
 			} else {
-				a[k] = b[j];
-				j--;
+				int temp = a[i];
+				a[i] = b[k];
+				a[j] = temp;
 			}
-
 			k--;
+			j--;
 		}
 
 		return a;
@@ -1170,6 +1199,340 @@ public class ArraysApi2 {
 
 		return a;
 	}
+
+
+
+	@Test
+	@DisplayName("Test Find Second Greatest Value")
+	void testFindSecondGreatestValue() {
+		int op = findSecondGreatestValue(new int[] { 12, 35, 1, 10, 34, 1 });
+		assertEquals(34, op);
+	}
+
+
+
+	int findSecondGreatestValue(int[] a) {
+		int fg = Integer.MIN_VALUE;
+		int sg = Integer.MIN_VALUE;
+
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] > fg) {
+				sg = fg;
+				fg = a[i];
+			}
+
+			if (a[i] < fg && a[i] > sg)
+				sg = a[i];
+
+			i++;
+		}
+
+		if (sg != Integer.MIN_VALUE) {
+			return sg;
+		}
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Move All The Zeros To The Left")
+	void testMoveAllTheZerosToTheLeft() {
+		int[] expected = { 34, 42, 15, 5, 0, 0 };
+		int[] op = moveZerosToTheLeft(new int[] { 0, 0, 34, 42, 15, 5 });
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+
+	int[] moveZerosToTheLeft(int[] a) {
+		int count = 0;
+		int i = 0;
+
+		while (i < a.length) {
+			if (a[i] != 0) {
+				a[count] = a[i];
+				count++;
+			}
+			i++;
+		}
+
+		while (count < a.length) {
+			a[count] = 0;
+			count++;
+		}
+		return a;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Vals At Event Must Be Greater")
+	void testValsAtEventMustBeGreater() {
+		int[] expected = { 1, 2, 1, 2 };
+		int[] op = valsAtEvenMustBeGreater(new int[] { 1, 2, 2, 1 });
+
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Vals At Event Must Be Greater")
+	void testValsAtEventMustBeGreater2() {
+		int[] expected = { 1, 3, 2, 5, 2 };
+		int[] op = valsAtEvenMustBeGreater(new int[] { 1, 3, 2, 2, 5 });
+
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Vals At Event Must Be Greater")
+	void testValsAtEventMustBeGreater3() {
+		int[] expected = { 2, 5 };
+		int[] op = valsAtEvenMustBeGreater(new int[] { 5, 2 });
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] valsAtEvenMustBeGreater(int[] a) {
+		int i = 0;
+		while (i < a.length) {
+			if ((i + 1) % 2 == 0) {
+				if (i > 0 && a[i] < a[i - 1]) {
+					int temp = a[i - 1];
+					a[i - 1] = a[i];
+					a[i] = temp;
+				}
+			} else {
+				if (i > 0 && a[i - 1] < a[i]) {
+					int temp = a[i - 1];
+					a[i - 1] = a[i];
+					a[i] = temp;
+				}
+			}
+			i++;
+		}
+
+		return a;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Arrange Max Min From Sorted")
+	void testArrangeMaxMinFromSorted() {
+		int[] expected = { 7, 1, 6, 2, 5, 3, 4 };
+		int[] op = arrangeMaxMinFromSorted(new int[] { 1, 2, 3, 4, 5, 6, 7 });
+
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] arrangeMaxMinFromSorted(int[] a) {
+		int[] op = new int[a.length];
+
+		int l = 0;
+		int h = a.length - 1;
+
+		boolean flag = true;
+
+		int i = 0;
+		while (i < op.length) {
+			if (flag) {
+				op[i] = a[h--];
+				flag = false;
+			} else {
+				op[i] = a[l++];
+				flag = true;
+			}
+			i++;
+		}
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Event Before Odd Solution 1")
+	void testEventBeforeOddSolution1() {
+		int[] a = { 1, 3, 2, 4, 7, 6, 9, 10 };
+		int[] expected = { 2, 4, 6, 10, 7, 1, 9, 3 };
+		int[] op = evenBeforeOddSol1(a);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Event Before Odd Solution 1")
+	void testEventBeforeOddSolution2() {
+		int[] a = { 1, 9, 1, 3, 7, 6, 9, 10 };
+		//		int[] expected = { 2, 4, 6, 10, 7, 1, 9, 3 };
+		int[] op = evenBeforeOddSol1(a);
+		Arrays.stream(op).forEach(i -> System.out.print(i + ","));
+		//		assertArrayEquals(expected, op);
+	}
+
+	int[] evenBeforeOddSol1(int[] a) {
+		//idea is to keep a ptr before the odd postion
+		int oddPtr = -1;
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] % 2 == 0) {
+				oddPtr++;
+				int temp = a[i];
+				a[i] = a[oddPtr];
+				a[oddPtr] = temp;
+			}
+			i++;
+		}
+
+		return a;
+	}
+
+
+	int[] evenBeforeOddSol2(int[] a) {
+		int[] idxA = new int[a.length];
+		int[] op = new int[a.length];
+
+		int i = 0;
+		int j = 0;
+		while (i < a.length) {
+			if (a[i] % 2 == 0) {
+				idxA[j] = i;
+				j++;
+			}
+			i++;
+		}
+
+		i = 0;
+
+		while (i < a.length) {
+			if (a[i] % 2 != 0) {
+				idxA[j] = i;
+				j++;
+			}
+			i++;
+		}
+
+		for (int k = 0; k < idxA.length; k++) {
+			op[k] = a[idxA[k]];
+		}
+
+		return op;
+	}
+
+	@Test
+	@DisplayName("Rotate Array")
+	void testRotateArray() {
+		int[] expected = { 3, 4, 5, 6, 7, 1, 2 };
+		int[] op = rotateArray(new int[] { 1, 2, 3, 4, 5, 6, 7 }, 2);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] rotateArray(int[] a, int d) {
+		while (d > 0) {
+			int first = a[0];
+			int i = 0;
+			while (i < a.length) {
+				if (i != a.length - 1) {
+					a[i] = a[i + 1];
+				} else {
+					a[i] = first;
+				}
+				i++;
+			}
+			d--;
+		}
+		return a;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Sum Array Index With Given Sum")
+	void testFindSumArrayIndexWithGivenSum() {
+		int[] expect = { 2, 4 };
+		int[] inp = { 1, 4, 20, 3, 10, 5 };
+		int[] op = findSubArrayIdxWithSum(inp, 33);
+		assertArrayEquals(expect, op);
+	}
+
+
+	int[] findSubArrayIdxWithSum(int[] a, int sum) {
+		int[] op = new int[2];
+		int i = 0;
+		int currSum = 0;
+		int j = 0;
+		while (i < a.length) {
+			if (currSum < sum) {
+				currSum += a[i];
+			}
+			while (j < i && currSum > sum) {
+				currSum -= a[j];
+				j++;
+			}
+			if (currSum == sum) {
+				break;
+			} else {
+				i++;
+			}
+		}
+		op[0] = j;
+		op[1] = i;
+		return op;
+	}
+
+
+	@Test
+	@DisplayName("Test Make A of I as I")
+	void testMakeAOfIAsI() {
+		int[] expected = { -1, 1, 2, -1, 4 };
+		int[] op = makeAofIAsI(new int[] { -1, -1, 4, 1, 2 });
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Make A of I as I")
+	void testMakeAOfIAsI_1() {
+		int[] expected = { -1, 1, 2, 3, 4, -1, 6, -1, -1, 9 };
+		int[] op = makeAofIAsI(new int[] { -1, -1, 6, 1, 9, 3, 2, -1, 4, -1 });
+		assertArrayEquals(expected, op);
+	}
+
+	int[] makeAofIAsI(int[] a) {
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] != -1 && a[i] != i) {
+				if (a[a[i]] == -1) {
+					a[a[i]] = a[i];
+					a[i] = -1;
+					i++;
+				} else {
+					int temp = a[i];
+					a[i] = a[a[i]];
+					a[temp] = temp;
+				}
+			} else {
+				i++;
+			}
+		}
+		return a;
+	}
+
 
 }
 

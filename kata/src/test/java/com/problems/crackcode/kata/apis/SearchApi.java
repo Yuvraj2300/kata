@@ -826,21 +826,27 @@ public class SearchApi {
 
 
 
+	@Test
+	@DisplayName("Test Find The Fixed Point")
+	void testFindTheFixedPoint2() {
+		int point = findTheFixedPointInTheArray(new int[] { -10, 0, 2, 8, 17 });
+		assertEquals(2, point);
+	}
+
+
 	int findTheFixedPointInTheArray(int[] a) {
 		int l = 0;
 		int h = a.length - 1;
 
 		while (l <= h) {
 			int mid = l + (h - l) / 2;
-
-			if (a[mid] == mid) {
+			if (a[mid] == mid)
 				return mid;
-			}
 
-			if (a[mid] > mid) {
-				h = mid;
-			} else {
+			if (a[mid] < mid) {
 				l = mid + 1;
+			} else {
+				h = mid - 1;
 			}
 		}
 
@@ -867,17 +873,18 @@ public class SearchApi {
 	int[] findTheKClosestToX(int[] a, int x, int k) {
 		int[] op = new int[k];
 		//find the crossover points
+		int cs = -1;
 		int l = 0;
 		int h = a.length - 1;
 
-		int cs = -1;
 		while (l <= h) {
 			int mid = l + (h - l) / 2;
-
+			//values before the cs point will be lesser than the value at mid+1
 			if (a[mid] <= x && a[mid + 1] > x) {
 				cs = mid;
 				break;
-			} else if (a[mid + 1] < x) {
+			}
+			if (a[mid + 1] < x) {
 				l = mid + 1;
 			} else {
 				h = mid - 1;
@@ -885,36 +892,186 @@ public class SearchApi {
 		}
 
 		if (cs != -1) {
+			int lft = cs;
+			int hgh = lft + 1;
 			int cnt = 0;
-			int cl = cs;
-			int ch = cl + 1;
-			if (a[cl] == x) {
-				cl--;
-			}
 
-			while (cl >= 0 && ch < a.length && cnt < k) {
-				if (x - a[cl] < a[ch] - x) {
-					op[cnt] = a[cl--];
+			if (a[lft] == x)
+				lft = lft - 1;
+
+			while (lft >= 0 && hgh < a.length && cnt < k) {
+				if (x - a[lft] < a[hgh] - x) {
+					op[cnt] = a[lft];
+					lft--;
 				} else {
-					op[cnt] = a[ch++];
+					op[cnt] = a[hgh];
+					hgh++;
 				}
 				cnt++;
 			}
-
-			while (cl >= 0 && cnt < k) {
-				op[cnt] = a[cl--];
+			while (lft >= 0 && cnt < k) {
+				op[cnt] = a[lft];
 				cnt++;
+				lft--;
 			}
 
-			while (ch < a.length && cnt < k) {
-				op[cnt] = a[ch++];
+			while (hgh < a.length && cnt < k) {
+				op[cnt] = a[hgh];
 				cnt++;
+				hgh++;
+			}
+		}
+
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Pair With Sum Closes To Given Value")
+	void testFindPairWithSumClosesToGivenValue() {
+		int[] a = { 10, 22, 28, 29, 30, 40 };
+		int[] op = findPairWithSumClosesToGivenValue(a, 54);
+		Arrays.sort(op);
+
+		int[] expected = { 22, 30 };
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] findPairWithSumClosesToGivenValue(int[] a, int x) {
+		int l = 0;
+		int h = a.length - 1;
+
+		int minDiff = Integer.MAX_VALUE;
+		int[] op = new int[2];
+		while (l <= h) {
+			int currSum = a[h] + a[l];
+			//take absolute since the diff can be negative , which we do not want to check
+			//as the closeness of the sum is dermined the by the 'actual value'
+			int currDiff = Math.abs(currSum - x);
+			if (currDiff < minDiff) {
+				minDiff = currDiff;
+				op[0] = a[l];
+				op[1] = a[h];
+			}
+
+			if (currSum < x) {
+				l++;
+			} else {
+				h--;
 			}
 		}
 
 		return op;
 	}
 
+
+
+	@Test
+	@DisplayName("Test Find The Pair With Sum Closes to Given Value")
+	void testFindThePairWithSumClosesToGivenValue() {
+		int[] a = { 1, 4, 5, 7 };
+		int[] b = { 10, 20, 30, 40 };
+		int x = 32;
+
+		int[] expected = { 1, 30 };
+		int[] op = findThePairWithSumClosestInTwoArrays(a, b, x);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find The Pair With Sum Closes to Given Value")
+	void testFindThePairWithSumClosesToGivenValue1() {
+		int[] a = { 1, 4, 5, 7 };
+		int[] b = { 10, 20, 30, 40 };
+		int x = 50;
+
+		int[] expected = { 7, 40 };
+		int[] op = findThePairWithSumClosestInTwoArrays(a, b, x);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] findThePairWithSumClosestInTwoArrays(int[] a, int[] b, int x) {
+		int[] op = new int[2];
+
+		int l = 0;
+		int h = b.length - 1;
+		int minDiff = Integer.MAX_VALUE;
+
+		while (l < a.length && h >= 0) {
+			int currSum = a[l] + b[h];
+			int currDiff = Math.abs(currSum - x);
+
+			if (currDiff < minDiff) {
+				minDiff = currDiff;
+				op[0] = a[l];
+				op[1] = b[h];
+			}
+
+			if (currSum < x) {
+				l++;
+			} else {
+				h--;
+			}
+		}
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find A Value In Almost Sorted Array")
+	void testFindAValueInAlmostSortedArray() {
+		int op = findAValueInAlmostSortedArray(new int[] { 10, 3, 40, 20, 50, 80, 70 }, 40);
+		assertEquals(2, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find A Value In Almost Sorted Array")
+	void testFindAValueInAlmostSortedArray1() {
+		int op = findAValueInAlmostSortedArray(new int[] { 3, 2, 10, 4, 40 }, 4);
+		assertEquals(3, op);
+	}
+
+
+
+	int findAValueInAlmostSortedArray(int[] a, int k) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == k)
+				return mid;
+
+			if (mid > l && a[mid - 1] == k) {
+				return mid - 1;
+			}
+
+			if (mid < h && a[mid + 1] == k) {
+				return mid + 1;
+			}
+
+			if (a[mid] < k) {
+				l = mid + 2;
+			} else {
+				h = mid - 2;
+			}
+		}
+		return -1;
+	}
 
 }
 
