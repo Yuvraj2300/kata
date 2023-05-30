@@ -1534,6 +1534,442 @@ public class ArraysApi2 {
 	}
 
 
+	@Test
+	@DisplayName("Test My Quick Sort")
+	void testMyQuickSort() {
+		int[] expected = { 1, 3, 5, 5, 7, 34 };
+		int[] sorted = quickSort(new int[] { 5, 34, 1, 3, 5, 7 });
+
+		assertArrayEquals(expected, sorted);
+	}
+
+
+
+	int[] quickSort(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		_qSort(a, l, h);
+
+		return a;
+	}
+
+
+
+	private void _qSort(int[] a, int l, int h) {
+		if (l < h) {
+			int pi = partitionForAscSort(a, l, h);
+			_qSort(a, l, pi - 1);
+			_qSort(a, pi + 1, h);
+		}
+	}
+
+
+	private int partitionForAscSort(int[] a, int l, int h) {
+		int op = l - 1;
+		int i = 0;
+		while (i <= h - 1) {
+			if (a[i] < a[h]) {
+				op++;
+				swap(a, op, i);
+			}
+			i++;
+		}
+		swap(a, h, op + 1);
+
+		return op + 1;
+	}
+
+
+	@Test
+	@DisplayName("Test Swap Negatives With Positives")
+	void testSwapNegativesWithPositives() {
+		int[] op = swapNegativesPositives(new int[] { -2, -3, -1, 6, 9, -1, 3 });
+		Arrays.stream(op).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+	@Test
+	@DisplayName("Test Swap Negatives With Positives")
+	void testSwapNegativesWithPositives1() {
+		int[] op = swapNegativesPositives(new int[] { -2, -3, -1, 6, 9, -1, -13 });
+		Arrays.stream(op).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+
+	int[] swapNegativesPositives(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		//assuming h is the partition value always
+
+		int i = 0;
+		int k = l - 1;
+		while (i < h) {
+			if (a[i] < 0) {
+				k++;
+				swap(a, k, i);
+			}
+			i++;
+		}
+		//bring the partition element at it's right position
+		swap(a, k + 1, h);
+		int pi = -1;
+		//this is to make sure that you do not end up swapping a negative value
+		//as we are partitioning on the basis of a[i]<0 and not using element at the pivot
+		if (a[k + 1] < 0) {
+			pi = k + 2;
+		} else {
+			pi = k + 1;
+		}
+		//all values at and beyond pi should be positive now
+
+		i = 0;
+		while (i < a.length) {
+			if (a[i] < 0 && pi <= h) {
+				swap(a, i + 1, pi);
+				pi++;
+			}
+			i++;
+		}
+
+		return a;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Swap as Per Mapping Given")
+	void testSwapAsPerMappingGiven() {
+		int[] expected = { 11, 10, 12 };
+
+		int[] map = { 1, 0, 2 };
+		int[] a = { 10, 11, 12 };
+		int[] op = swapAsPerMappingGiven(a, map);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Swap as Per Mapping Given")
+	void testSwapAsPerMappingGiven1() {
+		int[] expected = { 40, 60, 90, 50, 70 };
+
+		int[] map = { 3, 0, 4, 1, 2 };
+		int[] a = { 50, 40, 70, 60, 90 };
+		int[] op = swapAsPerMappingGiven(a, map);
+
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] swapAsPerMappingGiven(int[] a, int[] map) {
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] != a[map[i]]) {
+				swap(a, i, map[i]);
+				swap(map, i, map[i]);
+			}
+
+			i++;
+		}
+
+		return a;
+	}
+
+
+	@Test
+	@DisplayName("Test Find Smallest Missing Number")
+	void testFindSmallestMissingNumber() {
+		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 6, 9 });
+		assertNotEquals(-1, op);
+		assertEquals(3, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Smallest Missing Number")
+	void testFindSmallestMissingNumber1() {
+		int op = findSmallestMissingNo(new int[] { 4, 5, 10, 11 });
+		assertNotEquals(-1, op);
+		assertEquals(0, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Smallest Missing Number")
+	void testFindSmallestMissingNumber2() {
+		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 10 });
+		assertNotEquals(-1, op);
+		assertEquals(8, op);
+	}
+
+
+
+	int findSmallestMissingNo(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			if (a[l] != l) {
+				return l;
+			}
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == mid) {
+				l = mid + 1;
+			} else if (a[mid] > mid) {
+				h = mid;
+			}
+
+		}
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Sub Array With Sum Greater Than Given")
+	void testFindSubArrayWithSumGreaterThanGiven() {
+		int expected[] = { 4, 45, 6 };
+		int[] op = findSubArrayWithSumGreaterThanGiven(new int[] { 1, 4, 45, 6, 0, 19 }, 51);
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Sub Array With Sum Greater Than Given")
+	void testFindSubArrayWithSumGreaterThanGiven_1() {
+		int expected[] = { 10 };
+		int[] op = findSubArrayWithSumGreaterThanGiven(new int[] { 1, 10, 5, 2, 7 }, 9);
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Sub Array With Sum Greater Than Given")
+	void testFindSubArrayWithSumGreaterThanGiven_2() {
+		int expected[] = { 100, 1, 0, 200 };
+		int[] op = findSubArrayWithSumGreaterThanGiven(new int[] { 1, 11, 100, 1, 0, 200, 3, 2, 1, 250 }, 280);
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Sub Array With Sum Greater Than Given")
+	void testFindSubArrayWithSumGreaterThanGiven_3() {
+		int expected[] = { 50, 1 };
+		int[] op = findSubArrayWithSumGreaterThanGiven(new int[] { 1, 4, 45, 6, 0, 19, 50, 1 }, 51);
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] findSubArrayWithSumGreaterThanGiven(int[] a, int x) {
+		int end = 0;
+		int start = 0;
+		int fs = 0;
+		int fe = 0;
+		int sum = 0;
+		int minL = a.length;
+
+		while (end < a.length) {
+			while (end < a.length && sum <= x) {
+				sum += a[end];
+				end++;
+			}
+
+			while (start < a.length && sum > x) {
+				sum -= a[start];
+				start++;
+			}
+
+			if (end - start < minL) {
+				minL = end - start + 1;
+				fs = start - 1;
+				fe = end - 1;
+
+				sum = 0;
+				start = end;
+			}
+		}
+
+		int[] op = new int[minL];
+		for (int i = fs; i <= fe; i++) {
+			op[i - fs] = a[i];
+		}
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Merge Two Sorted Arrays In Relative Order")
+	void testMergeTwoSortedArraysInRelativeOrder() {
+		// @formatter:off
+		mergeTwoSortedArraysInRelativeOrders(new int[] {1, 5, 9, 10, 15, 20},
+				new int[] {2, 3, 8, 13});
+		// @formatter:on
+
+	}
+
+
+	void mergeTwoSortedArraysInRelativeOrders(int[] a, int[] b) {
+		int j = b.length - 1;
+
+		while (j >= 0) {
+			int i = a.length - 1;
+			int last = a[a.length - 1];
+			while (i >= 0 && a[i] > b[j]) {
+				a[i] = a[i - 1];
+				i--;
+			}
+
+			a[i + 1] = b[j];
+			b[j] = last;
+
+			j--;
+		}
+
+
+		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		System.out.println();
+		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Majority Element")
+	void testFindMajorityElement() {
+		int majorityElement = findMajorityElement(new int[] { 3, 3, 4, 2, 4, 4, 2, 4, 4 });
+		assertEquals(4, majorityElement);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Majority Element")
+	void testFindMajorityElement1() {
+		int majorityElement = findMajorityElement(new int[] { 3, 3, 4, 2, 4, 4, 2, 4 });
+		assertEquals(-1, majorityElement);
+	}
+
+
+	int findMajorityElement(int[] a) {
+		int reqLt = a.length / 2;
+
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < a.length; i++) {
+			if (max < a[i]) {
+				max = a[i];
+			}
+		}
+
+		int freqHash[] = new int[max + 1];
+
+		for (int i = 0; i < a.length; i++) {
+			freqHash[a[i]]++;
+		}
+
+		for (int i = 0; i < a.length; i++) {
+			if (freqHash[a[i]] > reqLt) {
+				return a[i];
+			}
+		}
+
+		return -1;
+	}
+
+
+
+	@Test
+	@DisplayName("Find Pair with Sum In Sorted Array")
+	void findPairWithSumInSortedArray() {
+		int[] expected = { 4, 5 };
+		int[] op = findPairWithSumInSortedArray(new int[] { 1, 2, 4, 5, 6 }, 9);
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Find Pair with Sum In Sorted Array")
+	void findPairWithSumInSortedArray1() {
+		int[] expected = { 20, 50 };
+		int[] op = findPairWithSumInSortedArray(new int[] { 10, 20, 35, 50, 75, 80 }, 70);
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] findPairWithSumInSortedArray(int[] a, int x) {
+		int[] op = new int[2];
+		int i = 0;
+		int j = a.length - 1;
+		while (i <= j) {
+			int sum = a[i] + a[j];
+			if (sum == x) {
+				op[0] = a[i];
+				op[1] = a[j];
+				return op;
+			} else if (sum > x) {
+				j--;
+			} else {
+				i++;
+			}
+		}
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Point Of Eqlbrm")
+	void testFindPointOfEqlbrm() {
+		int ptOfEqlbrm = findPointOfEqulbrm(new int[] { -7, 1, 5, 2, -4, 3, 0 });
+		assertEquals(3, ptOfEqlbrm);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Point Of Eqlbrm")
+	void testFindPointOfEqlbrm1() {
+		int ptOfEqlbrm = findPointOfEqulbrm(new int[] { 1, 2, 3 });
+		assertEquals(-1, ptOfEqlbrm);
+	}
+
+
+
+	int findPointOfEqulbrm(int[] a) {
+		int i = 0;
+		int j = a.length - 1;
+		int sL = 0;
+		int sR = 0;
+		while (i <= j) {
+			sL += a[i++];
+			sR += a[j--];
+
+			if (sL == sR && i == j) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+
+	void swap(int[] a, int i, int j) {
+		int temp = a[i];
+		a[i] = a[j];
+		a[j] = temp;
+	}
+
 }
 
 
