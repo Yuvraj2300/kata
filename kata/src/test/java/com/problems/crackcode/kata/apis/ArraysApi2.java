@@ -2,11 +2,7 @@ package com.problems.crackcode.kata.apis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -646,24 +642,27 @@ public class ArraysApi2 {
 
 
 	int[] mergeSortedArraysWithBuffer(int[] a, int[] b) {
-		//assuming a is always given as teh array with buffer in it
-		//assuming buffer is 0s
-		int i = 0;
-		while (a[i + 1] != 0)
-			i++;
-
-		int j = a.length - 1;
-		int k = b.length - 1;
-
-		while (k >= 0 && j > i) {
-			if (a[i] < b[k]) {
-				a[j] = b[k];
-			} else {
-				int temp = a[i];
-				a[i] = b[k];
-				a[j] = temp;
+		// assuming a is the array with buffer always
+		int k = -1;
+		for (int i = 0; i < a.length; i++) {
+			if (a[i + 1] == 0) {
+				k = i;
+				break;
 			}
-			k--;
+		}
+
+		int i = a.length - 1;
+		int j = b.length - 1;
+
+		while (i > k) {
+			if (b[j] >= a[k]) {
+				a[i] = b[j];
+			} else {
+				int temp = a[k];
+				a[k] = b[j];
+				a[i] = temp;
+			}
+			i--;
 			j--;
 		}
 
@@ -1545,39 +1544,48 @@ public class ArraysApi2 {
 
 
 
+	@Test
+	@DisplayName("Test My Quick Sort")
+	void testMyQuickSort1() {
+		int[] expected = { 1, 2, 3, 6, 88, 89, 90 };
+		int[] sorted = quickSort(new int[] { 90, 89, 1, 6, 3, 2, 88 });
+
+		assertArrayEquals(expected, sorted);
+	}
+
+
 	int[] quickSort(int[] a) {
 		int l = 0;
 		int h = a.length - 1;
 
-		_qSort(a, l, h);
+		_qSrtHlpr(a, l, h);
 
 		return a;
 	}
 
-
-
-	private void _qSort(int[] a, int l, int h) {
+	private void _qSrtHlpr(int[] a, int l, int h) {
 		if (l < h) {
-			int pi = partitionForAscSort(a, l, h);
-			_qSort(a, l, pi - 1);
-			_qSort(a, pi + 1, h);
+			int pi = _partitionForSortAsc(a, l, h);
+			_qSrtHlpr(a, l, pi - 1);
+			_qSrtHlpr(a, pi + 1, h);
 		}
 	}
 
-
-	private int partitionForAscSort(int[] a, int l, int h) {
-		int op = l - 1;
+	private int _partitionForSortAsc(int[] a, int l, int h) {
+		int pe = a[h];
 		int i = 0;
-		while (i <= h - 1) {
-			if (a[i] < a[h]) {
-				op++;
-				swap(a, op, i);
+		int k = -1;
+		while (i < h) {
+			if (a[i] < pe) {
+				k++;
+				swap(a, i, k);
 			}
 			i++;
 		}
-		swap(a, h, op + 1);
+		k++;
+		swap(a, h, k);
 
-		return op + 1;
+		return k;
 	}
 
 
@@ -1968,6 +1976,139 @@ public class ArraysApi2 {
 		int temp = a[i];
 		a[i] = a[j];
 		a[j] = temp;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Move All Zeros To End")
+	void testMoveAllZerosToEnd() {
+		int[] expected = { 1, 2, 4, 3, 5, 0, 0, 0 };
+		int[] op = moveAllZerosToEnd(new int[] { 1, 2, 0, 4, 3, 0, 5, 0 });
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Move All Zeros To End")
+	void testMoveAllZerosToEnd1() {
+		int[] expected = { 5, 4, 23, 1, 0 };
+		int[] op = moveAllZerosToEnd(new int[] { 5, 4, 0, 23, 1 });
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] moveAllZerosToEnd(int[] a) {
+		int i = 0;
+		int j = 0;
+
+		while (i < a.length) {
+			if (a[i] != 0) {
+				a[j] = a[i];
+				j++;
+			}
+			i++;
+		}
+
+		while (j < a.length) {
+			a[j] = 0;
+			j++;
+		}
+
+		return a;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leaders in The Array")
+	void testFindLeadersInTheArray() {
+		int[] expected = { 17, 5, 2 };
+		int[] op = findLeadersInTheArray(new int[] { 16, 17, 4, 3, 5, 2 });
+		assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] findLeadersInTheArray(int[] a) {
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int i = 1;
+		while (i < a.length) {
+			while (!st.isEmpty() && a[i] > a[st.peek()]) {
+				st.pop();
+			}
+			st.push(i);
+			i++;
+		}
+		return st.stream().map(index -> a[index]).mapToInt(v -> v.intValue()).toArray();
+	}
+
+
+	@Test
+	@DisplayName("Find Range With Sum")
+	void findRangeWithSum() {
+		int[] expected = { 2, 4 };
+		List<? super Number> rangeWithSum = findRangeWithSum(new int[] { 1, 4, 20, 3, 10, 5 }, 33);
+		rangeWithSum.forEach(i -> System.out.print(i + ", "));
+	}
+
+
+	List<? super Number> findRangeWithSum(int[] a, int x) {
+		List<? super Number> op = new LinkedList<>();
+		int i = 0;
+		int j = 0;
+		int csum = 0;
+		while (i < a.length && csum < x) {
+			csum += a[i++];
+		}
+
+		while (j < a.length && csum >= x) {
+			csum -= a[++j];
+		}
+
+		op.add(i);
+		op.add(j - 1);
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Distinct Value")
+	void testFindDistinctValue() {
+		int[] expected = { 1, 4, 3, 5, 6, 7 };
+		int[] op = findDistinctValues(new int[] { 1, 4, 3, 1, 3, 5, 5, 7, 6, 7 });
+		Set<Integer> asSet = Arrays.stream(expected).mapToObj(i -> i).collect(Collectors.toSet());
+		for (int i : op) {
+			assertTrue(asSet.contains(i));
+		}
+	}
+
+
+	int[] findDistinctValues(int[] a) {
+		int maxVal = Integer.MIN_VALUE;
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] > maxVal)
+				maxVal = a[i];
+		}
+		int[] f = new int[maxVal + 1];
+		List<Integer> opList = new LinkedList<>();
+
+		int i = 0;
+		while (i < a.length) {
+			f[a[i]]++;
+			i++;
+		}
+
+		for (int j = 0; j < f.length; j++) {
+			if (f[j] == 1)
+				opList.add(j);
+		}
+
+		return opList.stream().mapToInt(k -> k).toArray();
 	}
 
 }
