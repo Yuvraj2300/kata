@@ -49,4 +49,42 @@ public class StackApi3 {
 		return op;
 	}
 
+
+
+	@Test
+	@DisplayName("Test Solve Stock Span")
+	void testSolveStockSpan() {
+		int[] expected = { 1, 1, 1, 2, 1, 4, 6 };
+		int[] ints = solveStockSpan(new int[] { 100, 80, 60, 70, 60, 75, 85 });
+		Assertions.assertArrayEquals(expected, ints);
+	}
+
+
+	@Test
+	@DisplayName("Test Solve Stock Span")
+	void testSolveStockSpan1() {
+		int[] expected = { 1, 2, 1, 2, 1, 4, 7 };
+		int[] ints = solveStockSpan(new int[] { 100, 120, 60, 70, 60, 75, 185 });
+		Assertions.assertArrayEquals(expected, ints);
+	}
+
+
+
+	int[] solveStockSpan(int[] a) {
+		Stack<Integer> st = new Stack<>();
+		int[] op = new int[a.length];
+		op[0] = 1;
+		st.push(0);
+		int i = 1;
+		while (i < a.length) {
+			while (!st.isEmpty() && a[st.peek()] < a[i]) {
+				st.pop();
+			}
+			op[i] = st.empty() ? i + 1 : i - st.peek();
+			st.push(i);
+			i++;
+		}
+		return op;
+	}
+
 }

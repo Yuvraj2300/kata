@@ -159,7 +159,7 @@ public class StreamsAPI {
 	@Test
 	@DisplayName("Test Get Strings To Length Map")
 	void testGetStringsToLengthMap() {
-	//Write a program that takes a stream of strings and returns a map where the keys are the strings and the values are the lengths of the strings.
+		//Write a program that takes a stream of strings and returns a map where the keys are the strings and the values are the lengths of the strings.
 		Map<String, Integer> helloMap = Collections.singletonMap("Hello", 5);
 		Map<String, Integer> stringsToLengthMap = getStringsToLengthMap(new String[] { "Hello", "Bad", "Little" });
 		Assertions.assertEquals(helloMap.get("Hello"), stringsToLengthMap.get("Hello"));
@@ -172,14 +172,83 @@ public class StreamsAPI {
 				.collect(Collectors.toMap(Function.identity(),str->str.length()));
 		// @formatter:on
 	}
+
+
+	@Test
+	@DisplayName("Test Get String In Uppercase And Desc")
+	void testGetStringInUppercaseAndDesc() {
+		//Write a program that takes a stream of strings and returns a list of the strings in uppercase, sorted in descending order by length.
+		String[] expected = { "HELLO", "YOUS", "HOW", "R" };
+		String[] stringInUpperCaseAndDesc = getStringInUpperCaseAndDesc(new String[] { "hello", "how", "r", "yous" });
+		Assertions.assertArrayEquals(expected, stringInUpperCaseAndDesc);
+	}
+
+
+	String[] getStringInUpperCaseAndDesc(String[] s) {
+		// @formatter:off
+		String[] strings = Arrays.stream(s)
+				.map(str->str.toUpperCase())
+				.sorted((x,y)->y.length()-x.length())
+				.toArray(str->new String[str]);
+		// @formatter:on
+
+		return strings;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get The Product Of Numbers")
+	void testGetTheProductOfNumbers() {
+		//Write a program that takes a stream of numbers and returns the product of all the numbers in the stream.
+		int product = getTheProductOfNumbers(new int[] { 1, 2, 3 });
+		Assertions.assertEquals(6, product);
+	}
+
+
+
+	int getTheProductOfNumbers(int[] a) {
+		// @formatter:off
+		int reduce = Arrays.stream(a)
+				.reduce(1,(x,y)->x*y);
+		// @formatter:on
+
+		return reduce;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get the Longest String Starts With A")
+	void testGetTheLongestStringStartsWithA() {
+		String expected = "aaaaaa";
+		String op = getTheLongestStringStartsWithA(new String[] { "aa", "aaa", "aaaaaa", "a" });
+		Assertions.assertEquals(expected, op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get the Longest String Starts With A")
+	void testGetTheLongestStringStartsWithA_1() {
+		String expected = "aaa";
+		String op = getTheLongestStringStartsWithA(new String[] { "aa", "aaa", "a" });
+		Assertions.assertEquals(expected, op);
+	}
+
+
+	//Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
+	String getTheLongestStringStartsWithA(String[] a) {
+		// @formatter:off
+		String op = Arrays.stream(a)
+				.filter(s->s.startsWith("a"))
+				.sorted((x,y)->y.length()-x.length())
+				.findFirst()
+				.orElse(null);
+		// @formatter:on
+
+		return op;
+	}
+
+
 }
-
-
-
-
-
-/*
- * Write a program that takes a stream of strings and returns a list of the strings in uppercase, sorted in descending order by length.
- * Write a program that takes a stream of numbers and returns the product of all the numbers in the stream.
- * Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
- * */
