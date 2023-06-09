@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class StreamsAPI {
@@ -23,12 +24,11 @@ public class StreamsAPI {
 
 
 	private Map<Character, ? extends Number> stringArrayToFrqMap(String[] a) {
-		//a string array is an object or objects
-		// so we need to pull each string and then break it into single char somehow
 		// @formatter:off
 		Map<Character,Long> collect = Arrays.stream(a)
-					.flatMap(s->s.chars().mapToObj(i->(char)i))
-					.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
+				.flatMap(str->str.chars().mapToObj(c->(char)c))
+				.collect(Collectors.groupingBy(e->e,Collectors.counting()));
+
 		// @formatter:on
 		return collect;
 	}
@@ -46,14 +46,7 @@ public class StreamsAPI {
 
 	int getSumOfEvenNumbers(int[] a) {
 		// @formatter:off
-		int sum = Arrays.stream(a)
-				.filter(i -> i % 2 == 0)
-				.sum();
-
-		// @formatter:on
-		int reduce = Arrays.stream(a).filter(i -> i % 2 == 0).reduce(0, (x, y) -> x + y);
-		Arrays.stream(IntStream.range(0, 11).toArray()).forEach(System.out::print);
-
+		int reduce = Arrays.stream(a).filter(i->i%2==0).reduce(0,(x,y)->x+y);
 		return reduce;
 	}
 
@@ -72,26 +65,45 @@ public class StreamsAPI {
 
 	int[] findLengthOfStringSortInDesc(String[] a) {
 		// @formatter:off
-		int[] lengths = Arrays.stream(a)
-				.sorted((x,y)->y.length()-x.length())
-				.map(s->s.length())
-				.mapToInt(Integer::intValue).toArray();
+		int[] integers = Arrays.stream(a)
+				.map(String::length)
+				.sorted((x,y)->y-x)
+				.collect(Collectors.toList())
+				.stream()
+				.mapToInt(i->i)
+				.toArray();
 		// @formatter:on
 
-		return lengths;
+		return integers;
 	}
 
 
-	//Write a program that takes a map of student names and grades and returns a map of student names and average grades using streams.
+
+	@Test
+	@DisplayName("Test Get Student's Average")
+	void testGetStudentAverage() {
+		//Write a program that takes a map of student names and LIST OF grades and returns a map of student names and average grades using streams.
+		Map<String, Double> james = Collections.singletonMap("James", 73.33333333333333);
+		Map<String, Double> avgScore = findAvgGrades(Collections.singletonMap("James", Arrays.asList(50, 80, 90)));
+
+		Assertions.assertTrue(avgScore.containsKey("James"));
+		Assertions.assertTrue(avgScore.get("James") instanceof Double);
+		Assertions.assertNotNull(avgScore.get("James"));
+		Assertions.assertEquals(james.get("James"), avgScore.get("James"));
+	}
+
+
+
 	Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
 		// @formatter:off
 		Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey,e->e.getValue().stream().mapToInt(i->i).average().getAsDouble()));
-
+				.collect(Collectors.toMap(e->e.getKey(),
+						e->e.getValue().stream().mapToInt(i->i).average().getAsDouble()));
 		// @formatter:on
 
 		return collect;
 	}
+
 
 
 	@Test
@@ -108,8 +120,10 @@ public class StreamsAPI {
 		// @formatter:off
 		String s = Arrays.stream(a)
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
-				.entrySet().stream().sorted((e1,e2)->e2.getValue().intValue()-e1.getValue().intValue())
-				.findFirst().map(Map.Entry::getKey).get();
+				.entrySet().stream()
+				.sorted(Comparator.comparing((Map.Entry<String,Long>	e)->e.getValue()).reversed())
+				.findFirst()
+				.map(e->e.getKey()).orElse(null);
 		// @formatter:on
 		return s;
 	}
