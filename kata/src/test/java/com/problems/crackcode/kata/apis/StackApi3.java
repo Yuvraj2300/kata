@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 public class StackApi3 {
@@ -86,5 +87,105 @@ public class StackApi3 {
 		}
 		return op;
 	}
+
+
+	@Test
+	@DisplayName("Test Revese String")
+	void testReveseString() {
+		String reversed = reverseString("abc");
+		Assertions.assertEquals("cba", reversed);
+	}
+
+
+	String reverseString(String s) {
+		Stack<Character> st = new Stack<>();
+		char[] chars = s.toCharArray();
+		for (int i = 0; i < s.length(); i++) {
+			st.push(chars[i]);
+		}
+
+		int i = 0;
+		while (!st.isEmpty() && i < s.length()) {
+			chars[i] = st.pop();
+			i++;
+		}
+
+		return new String(chars);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Element With Next Greater Freq")
+	void testFindElementWithNextGreaterFreq() {
+		int[] expected = { -1, -1, 1, 2, 2, 1, -1 };
+		int[] op = findElementWithNextGreaterFreq(new int[] { 1, 1, 2, 3, 4, 2, 1 });
+		Assertions.assertArrayEquals(expected, op);
+	}
+
+
+
+
+	int[] findElementWithNextGreaterFreq(int[] a) {
+		int[] op = new int[a.length];
+
+		int maxVal = Integer.MIN_VALUE;
+		for (int i = 0; i < a.length; i++) {
+			maxVal = a[i] > maxVal ? a[i] : maxVal;
+		}
+
+		int[] fmap = new int[maxVal + 1];
+		for (int i = 0; i < a.length; i++) {
+			fmap[a[i]]++;
+		}
+
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int i = 1;
+		while (i < a.length) {
+			while (!st.isEmpty() && fmap[a[i]] > fmap[a[st.peek()]]) {
+				op[st.pop()] = a[i];
+			}
+
+			st.push(i);
+			i++;
+		}
+
+		while (!st.isEmpty()) {
+			op[st.pop()] = -1;
+		}
+
+		return op;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Sort Stack Using Stack")
+	void testSortStackUsingStack() {
+		Stack<Integer> st = new Stack<>();
+		st.add(3);
+		st.add(91);
+		st.add(4);
+		st.add(33);
+		st.add(1);
+
+		Stack<Integer> stack = sortAStackUsingAStack(st);
+		System.out.println(stack);
+	}
+
+
+	Stack<Integer> sortAStackUsingAStack(Stack<Integer> st) {
+		Stack<Integer> tempStack = new Stack<>();
+		while (!st.isEmpty()) {
+			int temp = st.pop();
+			while (!tempStack.isEmpty() && temp < tempStack.peek()) {
+				st.push(tempStack.pop());
+			}
+			tempStack.push(temp);
+		}
+
+		return tempStack;
+	}
+
 
 }

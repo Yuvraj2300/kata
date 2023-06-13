@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class StreamsAPI {
 
@@ -119,11 +120,12 @@ public class StreamsAPI {
 	String findTheMostFrequentWord(String[] a) {
 		// @formatter:off
 		String s = Arrays.stream(a)
-				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
-				.entrySet().stream()
-				.sorted(Comparator.comparing((Map.Entry<String,Long>	e)->e.getValue()).reversed())
-				.findFirst()
-				.map(e->e.getKey()).orElse(null);
+						.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+						.entrySet().stream()
+						.sorted((Map.Entry<String,Long> e1,Map.Entry<String,Long>e2)->Math.toIntExact((e2.getValue()-e1.getValue())))
+						.findFirst()
+						.map(e->e.getKey())
+						.orElse(null);
 		// @formatter:on
 		return s;
 	}
@@ -135,18 +137,18 @@ public class StreamsAPI {
 	void testFindTheSecondGreatestValue() {
 		//Write a program that takes a stream of numbers and returns an optional value containing the second smallest number in the stream using streams.
 		int theSecondGreatestNumber = findTheSecondGreatestNumber(new int[] { 98, 65, 23, 123, 3, 1 });
-		Assertions.assertEquals(3, theSecondGreatestNumber);
+		Assertions.assertEquals(98, theSecondGreatestNumber);
 	}
 
 
 	int findTheSecondGreatestNumber(int[] a) {
 		// @formatter:off
-		Integer integer = Arrays.stream(a)
-				.mapToObj(i->(Integer) i)
-				.sorted(Comparator.comparingInt(o->o))
-				.skip(1)
-				.findFirst().orElse(-1);
-
+		int integer=	Arrays.stream(a)
+							.mapToObj(Integer::valueOf)
+							.sorted(Comparator.comparingInt(i->(int)i).reversed())
+							.skip(1)
+							.findFirst()
+							.orElse(-1);
 		// @formatter:on
 		return integer;
 	}
@@ -164,8 +166,11 @@ public class StreamsAPI {
 	int getTheSumOfTheSquaresOfTheNums(int[] a) {
 		// @formatter:off
 		int reduce = Arrays.stream(a)
-						.map(i->(int)Math.pow(i,2))
-						.reduce(0,Integer::sum);
+				.mapToObj(Double::valueOf)
+				.map(i->Math.pow(i,2))
+				.reduce(0.0,(x,y)->x+y)
+				.intValue();
+
 		// @formatter:on
 		return reduce;
 	}
@@ -183,7 +188,7 @@ public class StreamsAPI {
 	Map<String, Integer> getStringsToLengthMap(String[] s) {
 		// @formatter:off
 		return Arrays.stream(s)
-				.collect(Collectors.toMap(Function.identity(),str->str.length()));
+				.collect(Collectors.toMap(Function.identity(),a->a.length()));
 		// @formatter:on
 	}
 
@@ -202,8 +207,8 @@ public class StreamsAPI {
 		// @formatter:off
 		String[] strings = Arrays.stream(s)
 				.map(str->str.toUpperCase())
-				.sorted((x,y)->y.length()-x.length())
-				.toArray(str->new String[str]);
+				.sorted((s1,s2)->s2.length()-s1.length())
+				.toArray(e->new String[e]);
 		// @formatter:on
 
 		return strings;
@@ -236,7 +241,7 @@ public class StreamsAPI {
 	@DisplayName("Test Get the Longest String Starts With A")
 	void testGetTheLongestStringStartsWithA() {
 		String expected = "aaaaaa";
-		String op = getTheLongestStringStartsWithA(new String[] { "aa", "aaa", "aaaaaa", "a" });
+		String op = getTheLongestStringStartsWithA(new String[] { "ba", "aaa", "aaaaaa", "a" });
 		Assertions.assertEquals(expected, op);
 	}
 
@@ -251,12 +256,13 @@ public class StreamsAPI {
 	}
 
 
+
 	//Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
 	String getTheLongestStringStartsWithA(String[] a) {
 		// @formatter:off
 		String op = Arrays.stream(a)
-				.filter(s->s.startsWith("a"))
-				.sorted((x,y)->y.length()-x.length())
+				.filter(str->str.startsWith("a"))
+				.sorted(Comparator.comparing(String::length).reversed())
 				.findFirst()
 				.orElse(null);
 		// @formatter:on
@@ -264,5 +270,288 @@ public class StreamsAPI {
 		return op;
 	}
 
+
+
+	@Test
+	void testFindDups() throws Exception {
+		int[] expected = { 1, 2, 3, 4 };
+
+		int[] op = findDups(new int[] { 4, 4, 4, 1, 1, 2, 3, 2, 3, 5, 7, 3, 89 });
+		Assertions.assertArrayEquals(expected, op);
+	}
+
+
+
+	int[] findDups(int[] ints) {
+		// @formatter:off
+		int[] op = Arrays.stream(ints)
+				.mapToObj(Integer::valueOf)
+				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+				.entrySet().stream()
+				.filter(e->e.getValue()>1)
+				.sorted((e1,e2)->e1.getKey()-e2.getKey())
+				.mapToInt(e->e.getKey())
+				.toArray();
+		// @formatter:on
+		return op;
+	}
+
+
+	@Test
+	@DisplayName("Test Get the number of times a  given number ocurred")
+	void testGetTheNumberOfTimesAGivenNumberOcurred() {
+		int occurances = timeOcurred(new int[] { 1, 2, 5, 5, 3, 4, 5, 6, 3, 5 }, 5);
+		Assertions.assertEquals(4, occurances);
+	}
+
+
+
+	private int timeOcurred(int[] ints, int x) {
+		// @formatter:off
+		long count = Arrays.stream(ints)
+				.filter(i->i==x)
+				.count();
+		// @formatter:on
+		return (int) count;
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get Sum Of Squares Of Event")
+	void testGetSumOfSquaresOfEvent() {
+		//	Write a program that takes a stream of numbers and returns the sum of the squares of the even numbers.
+		double sumSquaresOfEvent = getSumSquaresOfEvent(new int[] { 1, 2, 3, 4 });
+		Assertions.assertEquals(20, (int) sumSquaresOfEvent);
+	}
+
+
+
+	double getSumSquaresOfEvent(int[] a) {
+		// @formatter:off
+		double reduce = Arrays.stream(a)
+				.filter(i->i%2==0)
+				.mapToDouble(i->Math.pow(i,2))
+				.reduce(0.0,(x,y)->x+y);
+		// @formatter:on
+
+		return reduce;
+	}
+
+
+
+	class Employee {
+		String name;
+		int ID;
+		Department department;
+
+		Salary salary;
+
+		public Employee(String name, int ID, Department department, Salary salary) {
+			this.name = name;
+			this.ID = ID;
+			this.department = department;
+			this.salary = salary;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getID() {
+			return ID;
+		}
+
+		public Department getDepartment() {
+			return department;
+		}
+
+		public Salary getSalary() {
+			return salary;
+		}
+
+		class Department {
+			String id;
+			String name;
+
+			public Department(String id, String name) {
+				this.id = id;
+				this.name = name;
+			}
+
+			public String getId() {
+				return id;
+			}
+
+			public String getName() {
+				return name;
+			}
+		}
+
+		class Salary {
+			int fixedPay;
+
+			public int getFixedPay() {
+				return fixedPay;
+			}
+		}
+	}
+
+
+
+	@Test
+	@DisplayName("Test Get Grouping By Departments And Avg Salary")
+	void testGetGroupingByDepartmentsAndAvgSalary() {
+		//	Write a program that takes a stream of employees and returns the average salary of the employees grouped by their department.
+
+	}
+
+
+
+	Map<String, Double> getGroupingByDepartmentsAndAvgSalary(List<Employee> listOfEmployees) {
+		// @formatter:off
+			Map<String,Double> collect = listOfEmployees.stream()
+						.collect(Collectors.groupingBy(e->e.getDepartment(),Collectors.mapping(e->e.getSalary(),Collectors.toList())))
+						.entrySet().stream()
+						.collect(Collectors.groupingBy(e->e.getKey().getName(),Collectors.averagingDouble(t->t.getValue().stream().mapToDouble(i->i.getFixedPay()).average().getAsDouble())));
+		// @formatter:on
+
+		Map<String, Double> collect1 = listOfEmployees.stream().collect(Collectors.groupingBy(e -> e.getDepartment().getName(), Collectors.averagingInt(e -> e.getSalary().getFixedPay())));
+
+		return null;
+	}
+
+	class Product {
+		String name;
+		int price;
+		int vat;
+		int tax;
+
+		public Product(String name, int price, int vat, int tax) {
+			this.name = name;
+			this.price = price;
+			this.vat = vat;
+			this.tax = tax;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getPrice() {
+			return price;
+		}
+
+		public int getVat() {
+			return vat;
+		}
+
+		public int getTax() {
+			return tax;
+		}
+	}
+
+	//	Write a program that takes a stream of products and returns a list of the names of the products sorted by their price in descending order.
+
+	List<String> getProductsSortedByTotalPrice(List<Product> products) {
+		// @formatter:off
+		List<String> collect = products.stream()
+				.sorted((pdt1,pdt2)->((pdt2.getPrice()+pdt2.getVat()+pdt2.getTax())-(pdt1.getPrice()+pdt1.getVat()+pdt1.getTax())))
+				.map(Product::getName)
+				.collect(Collectors.toList());
+
+		// @formatter:on
+		return collect;
+	}
+
+
+	//	Write a program that takes a stream of transactions and returns the total amount of the transactions that occurred in the last month.
+	class Transaction {
+		int amount;
+		Date date;
+	}
+
+	int calculateTotalAmountOfTransaction(List<Transaction> transactions) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONDAY, -1);
+		Date lastMonth = cal.getTime();
+		return transactions.stream().filter(t -> t.date.after(lastMonth)).mapToInt(t -> t.amount).sum();
+	}
+
+
+
+	@Test
+	@DisplayName("Test List of All Integers In Asc Order")
+	void testListOfAllIntegersInAscOrder() {
+		//	Write a program that takes a list of lists of integers and returns a new list containing all the integers from all the lists, sorted in ascending order.
+		List<List<Integer>> listOfLists = new ArrayList<>();
+		listOfLists.add(Arrays.asList(4, 3, 1, 5, 6));
+		listOfLists.add(Arrays.asList(81, 34, 21, 55, 91));
+		listOfLists.add(Arrays.asList(9, 8, 5, 10, 7));
+
+		List<Integer> listOfAllIntsInAscOrder = getListOfAllIntsInAscOrder(listOfLists);
+		for (Integer i : listOfAllIntsInAscOrder) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
+	List<Integer> getListOfAllIntsInAscOrder(List<List<Integer>> list) {
+		List<Integer> op =
+				// @formatter:off
+		list.stream()
+				.flatMap(l->l.stream())
+				.sorted(Comparator.comparingInt(i->i))
+				.collect(Collectors.toList());
+		// @formatter:on
+
+		return op;
+	}
+
+	//	Write a program that takes a list of strings and returns a new list containing all the distinct characters from all the strings, sorted in alphabetical order.
+	List<Character> getAllCharsInAlphOrder(List<String> list) {
+		// @formatter:off
+		List<Character> collect = list.stream()
+									.flatMap(s->s.chars().mapToObj(c->(char)c))
+									.distinct()
+									.sorted()
+									.collect(Collectors.toList());
+		// @formatter:on
+		return collect;
+	}
+
+	//	Write a program that takes a list of sets of integers and returns a new set containing the union of all the sets.
+	Set<Integer> getAllTheIntegersInTheSet(List<Set<Integer>> list) {
+		// @formatter:off
+		Set<Integer> collect = list.stream()
+				.flatMap(l->l.stream())
+				.collect(Collectors.toSet());
+		// @formatter:on
+		return collect;
+	}
+
+	//	Write a program that takes a stream of streams of integers and returns the sum of all the integers.
+	int getSumOffAllIntegersIntheStreamOfStreams(Stream<Stream<Integer>> stream) {
+		// @formatter:off
+		int sum = stream.flatMap(s->s)
+				.mapToInt(i->i)
+				.reduce(0,(x,y)->x+y);
+		// @formatter:on
+
+		return sum;
+	}
+
+
+	//	Write a program that takes a list of optional integers and returns the sum of all the non-empty optionals.
+	int getSumOfNonEmptyOptionals(List<Optional<Integer>> list) {
+		// @formatter:off
+			list.stream()
+					.filter(o->o.isPresent())
+					.map(o->o.get())
+					.mapToInt(Integer::intValue)
+					.sum();
+		// @formatter:on
+		return -1;
+	}
 
 }
