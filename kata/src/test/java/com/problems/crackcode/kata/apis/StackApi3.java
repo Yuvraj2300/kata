@@ -188,4 +188,57 @@ public class StackApi3 {
 	}
 
 
+	@Test
+	@DisplayName("Test Remove Middle Element")
+	void testRemoveMiddleElement() {
+		Stack<Integer> st = new Stack<>();
+		st.push(5);
+		st.push(4);
+		st.push(3);
+		st.push(2);
+		st.push(1);
+
+		System.out.println(st);
+		Stack<Integer> op = removeTheMiddleElement(st);
+		System.out.println(op);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Remove Middle Element")
+	void testRemoveMiddleElement1() {
+		Stack<Integer> st = new Stack<>();
+		st.push(6);
+		st.push(5);
+		st.push(4);
+		st.push(3);
+		st.push(2);
+		st.push(1);
+
+		System.out.println(st);
+		Stack<Integer> op = removeTheMiddleElement(st);
+		System.out.println(op);
+	}
+
+
+
+	Stack<Integer> removeTheMiddleElement(Stack<Integer> st) {
+		_removeMiddleHelper(st, st.size(), 0);
+		return st;
+	}
+
+	private void _removeMiddleHelper(Stack<Integer> st, int size, int cntr) {
+		if (st.isEmpty() || cntr == size)
+			return;
+
+		Integer currEle = st.pop();
+
+		_removeMiddleHelper(st, size, cntr + 1);
+
+		if (cntr != size / 2)
+			st.push(currEle);
+	}
+
+
 }
