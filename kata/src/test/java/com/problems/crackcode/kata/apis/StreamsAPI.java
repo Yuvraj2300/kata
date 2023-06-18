@@ -25,9 +25,9 @@ public class StreamsAPI {
 		// @formatter:off
 		Map<Character,Long> collect = Arrays.stream(a)
 				.flatMap(str->str.chars().mapToObj(c->(char)c))
-				.collect(Collectors.groupingBy(e->e,Collectors.counting()));
-
+				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
 		// @formatter:on
+
 		return collect;
 	}
 
@@ -44,8 +44,8 @@ public class StreamsAPI {
 
 	int getSumOfEvenNumbers(int[] a) {
 		// @formatter:off
-		int reduce = Arrays.stream(a).filter(i->i%2==0).reduce(0,(x,y)->x+y);
-		return reduce;
+		int sum = Arrays.stream(a).filter(i->i%2==0).sum();
+		return sum;
 	}
 
 
@@ -63,16 +63,14 @@ public class StreamsAPI {
 
 	int[] findLengthOfStringSortInDesc(String[] a) {
 		// @formatter:off
-		int[] integers = Arrays.stream(a)
-				.map(String::length)
-				.sorted((x,y)->y-x)
-				.collect(Collectors.toList())
-				.stream()
-				.mapToInt(i->i)
-				.toArray();
+		 int[] ints = Arrays.stream(a)
+				.map(s->s.length())
+				.sorted(Comparator.comparingInt(Integer::intValue).reversed())
+				 .mapToInt(i->i)
+				 .toArray();
 		// @formatter:on
 
-		return integers;
+		return ints;
 	}
 
 
@@ -94,9 +92,9 @@ public class StreamsAPI {
 
 	Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
 		// @formatter:off
-		Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
-				.collect(Collectors.toMap(e->e.getKey(),
-						e->e.getValue().stream().mapToInt(i->i).average().getAsDouble()));
+			Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
+					.collect(Collectors.toMap(e->e.getKey(),
+							e->e.getValue().stream().mapToInt(Integer::intValue).average().getAsDouble()));
 		// @formatter:on
 
 		return collect;
@@ -119,9 +117,9 @@ public class StreamsAPI {
 		String s = Arrays.stream(a)
 						.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 						.entrySet().stream()
-						.sorted((Map.Entry<String,Long> e1,Map.Entry<String,Long>e2)->Math.toIntExact((e2.getValue()-e1.getValue())))
-						.findFirst()
+						.sorted((o1, o2) -> Math.toIntExact(o2.getValue()-o1.getValue()))
 						.map(e->e.getKey())
+						.findFirst()
 						.orElse(null);
 		// @formatter:on
 		return s;
@@ -140,12 +138,12 @@ public class StreamsAPI {
 
 	int findTheSecondGreatestNumber(int[] a) {
 		// @formatter:off
-		int integer=	Arrays.stream(a)
-							.mapToObj(Integer::valueOf)
-							.sorted(Comparator.comparingInt(i->(int)i).reversed())
-							.skip(1)
-							.findFirst()
-							.orElse(-1);
+		int integer = Arrays.stream(a)
+						.mapToObj(Integer::valueOf)
+						.sorted(Comparator.comparingInt(i->(int)i).reversed())
+						.skip(1)
+						.findFirst()
+						.orElse(-1);
 		// @formatter:on
 		return integer;
 	}
@@ -164,7 +162,7 @@ public class StreamsAPI {
 		// @formatter:off
 		int reduce = Arrays.stream(a)
 				.mapToObj(Double::valueOf)
-				.map(i->Math.pow(i,2))
+				.map(d->Math.pow(d,2))
 				.reduce(0.0,(x,y)->x+y)
 				.intValue();
 
@@ -176,16 +174,16 @@ public class StreamsAPI {
 	@DisplayName("Test Get Strings To Length Map")
 	void testGetStringsToLengthMap() {
 		//Write a program that takes a stream of strings and returns a map where the keys are the strings and the values are the lengths of the strings.
-		Map<String, Integer> helloMap = Collections.singletonMap("Hello", 5);
+		Map<String, Integer> expected = Collections.singletonMap("Hello", 5);
 		Map<String, Integer> stringsToLengthMap = getStringsToLengthMap(new String[] { "Hello", "Bad", "Little" });
-		Assertions.assertEquals(helloMap.get("Hello"), stringsToLengthMap.get("Hello"));
+		Assertions.assertEquals(expected.get("Hello"), stringsToLengthMap.get("Hello"));
 	}
 
 
 	Map<String, Integer> getStringsToLengthMap(String[] s) {
 		// @formatter:off
 		return Arrays.stream(s)
-				.collect(Collectors.toMap(Function.identity(),a->a.length()));
+				.collect(Collectors.toMap(Function.identity(),str->str.length()));
 		// @formatter:on
 	}
 
@@ -202,10 +200,10 @@ public class StreamsAPI {
 
 	String[] getStringInUpperCaseAndDesc(String[] s) {
 		// @formatter:off
-		String[] strings = Arrays.stream(s)
-				.map(str->str.toUpperCase())
-				.sorted((s1,s2)->s2.length()-s1.length())
-				.toArray(e->new String[e]);
+		String[] strings = Arrays.stream(Arrays.stream(s)
+							.map(str->str.toUpperCase())
+							.sorted((s1,s2)->s2.length()-s1.length())
+							.toArray()).toArray(str->new String[str]);
 		// @formatter:on
 
 		return strings;
@@ -225,8 +223,7 @@ public class StreamsAPI {
 
 	int getTheProductOfNumbers(int[] a) {
 		// @formatter:off
-		int reduce = Arrays.stream(a)
-				.reduce(1,(x,y)->x*y);
+		int reduce = Arrays.stream(a).reduce(1,(x,y)->x*y);
 		// @formatter:on
 
 		return reduce;
@@ -258,10 +255,9 @@ public class StreamsAPI {
 	String getTheLongestStringStartsWithA(String[] a) {
 		// @formatter:off
 		String op = Arrays.stream(a)
-				.filter(str->str.startsWith("a"))
+				.filter(s->s.startsWith("a"))
 				.sorted(Comparator.comparing(String::length).reversed())
-				.findFirst()
-				.orElse(null);
+				.findFirst().orElse(null);
 		// @formatter:on
 
 		return op;
@@ -286,9 +282,11 @@ public class StreamsAPI {
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 				.entrySet().stream()
 				.filter(e->e.getValue()>1)
-				.sorted((e1,e2)->e1.getKey()-e2.getKey())
-				.mapToInt(e->e.getKey())
-				.toArray();
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet())
+				.stream()
+				.mapToInt(Integer::valueOf).toArray();
+
 		// @formatter:on
 		return op;
 	}
@@ -315,8 +313,8 @@ public class StreamsAPI {
 
 
 	@Test
-	@DisplayName("Test Get Sum Of Squares Of Event")
-	void testGetSumOfSquaresOfEvent() {
+	@DisplayName("Test Get Sum Of Squares Of Even Nos")
+	void testGetSumOfSquaresOfEvenNos() {
 		//	Write a program that takes a stream of numbers and returns the sum of the squares of the even numbers.
 		double sumSquaresOfEvent = getSumSquaresOfEvent(new int[] { 1, 2, 3, 4 });
 		Assertions.assertEquals(20, (int) sumSquaresOfEvent);
@@ -327,9 +325,10 @@ public class StreamsAPI {
 	double getSumSquaresOfEvent(int[] a) {
 		// @formatter:off
 		double reduce = Arrays.stream(a)
-				.filter(i->i%2==0)
-				.mapToDouble(i->Math.pow(i,2))
-				.reduce(0.0,(x,y)->x+y);
+							.filter(i->i%2==0)
+							.mapToDouble(i->i)
+							.map(i->Math.pow(i,2))
+							.reduce(0.0,(x,y)->x+y);
 		// @formatter:on
 
 		return reduce;
@@ -408,14 +407,9 @@ public class StreamsAPI {
 	Map<String, Double> getGroupingByDepartmentsAndAvgSalary(List<Employee> listOfEmployees) {
 		// @formatter:off
 			Map<String,Double> collect = listOfEmployees.stream()
-						.collect(Collectors.groupingBy(e->e.getDepartment(),Collectors.mapping(e->e.getSalary(),Collectors.toList())))
-						.entrySet().stream()
-						.collect(Collectors.groupingBy(e->e.getKey().getName(),Collectors.averagingDouble(t->t.getValue().stream().mapToDouble(i->i.getFixedPay()).average().getAsDouble())));
+					.collect(Collectors.groupingBy(emp->emp.getDepartment().getName(),Collectors.averagingDouble(emp->emp.getSalary().getFixedPay())));
 		// @formatter:on
-
-		Map<String, Double> collect1 = listOfEmployees.stream().collect(Collectors.groupingBy(e -> e.getDepartment().getName(), Collectors.averagingInt(e -> e.getSalary().getFixedPay())));
-
-		return null;
+		return collect;
 	}
 
 	class Product {

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class StackApi3 {
@@ -241,4 +242,134 @@ public class StackApi3 {
 	}
 
 
+	@Test
+	@DisplayName("Test Find Largest Rect Area In Histogram")
+	void testFindLargestRectAreaInHistogram() {
+		int area = findTheLargestRectAreaInHistogram(new int[] { 6, 2, 5, 4, 5, 1, 6 });
+		Assertions.assertEquals(12, area);
+	}
+
+
+	int findTheLargestRectAreaInHistogram(int[] a) {
+		int i = 1;
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int maxArr = Integer.MIN_VALUE;
+
+		while (i < a.length) {
+			if (st.isEmpty()) {
+				st.push(i);
+				i++;
+			} else if (a[i] > a[st.peek()]) {
+				st.push(i);
+				i++;
+			} else {
+				int h = a[st.pop()];
+				int arr = h * (st.isEmpty() ? i : i - st.peek() - 1);
+				if (arr > maxArr) {
+					maxArr = arr;
+				}
+			}
+		}
+
+		while (!st.isEmpty()) {
+			int h = a[st.pop()];
+			int arr = h * (st.isEmpty() ? i - 1 : i - st.peek() - 1);
+			if (arr > maxArr) {
+				maxArr = arr;
+			}
+		}
+
+		return maxArr;
+	}
+
+
+	@Test
+	@DisplayName("Test Reverse The Given Number")
+	void testReverseTheGivenNumber() {
+		int i = reverseGivenNumber(365);
+		Assertions.assertEquals(563, i);
+	}
+
+
+
+	int reverseGivenNumber(int a) {
+		int i = a;
+		Stack<Integer> st = new Stack<>();
+
+		_reverseHelper(i, st);
+
+		StringBuilder sb = new StringBuilder();
+		while (!st.isEmpty()) {
+			sb.append(st.pop());
+		}
+
+		return Integer.valueOf(sb.toString());
+
+		//		// @formatter:off
+//		String str = st.stream()
+//				.map(String::valueOf)
+//				.reduce("",(x,y)->y+x);
+//		// @formatter:on
+		//
+		//		return Integer.valueOf(str);
+	}
+
+	private void _reverseHelper(int i, Stack<Integer> st) {
+		int x = -1;
+		if (i / 10 != 0) {
+			x = i % 10;
+			_reverseHelper(i / 10, st);
+		} else {
+			x = i;
+		}
+		st.push(x);
+	}
+
+
+	@Test
+	@DisplayName("Test Delete Consecutive Words And Return Size")
+	void testDeleteConsecutiveWordsAndReturnSize() {
+		int i = deleteConsecutiveWordsAndReturnSize(Arrays.asList("Tom", "Jerry", "Jerry", "Tom"));
+		Assertions.assertEquals(0, i);
+
+	}
+
+
+
+	@Test
+	@DisplayName("Test Delete Consecutive Words And Return Size")
+	void testDeleteConsecutiveWordsAndReturnSize1() {
+		int i = deleteConsecutiveWordsAndReturnSize(Arrays.asList("ab", "aa", "aa", "bcd", "ab"));
+		Assertions.assertEquals(3, i);
+
+	}
+
+
+	@Test
+	@DisplayName("Test Delete Consecutive Words And Return Size")
+	void testDeleteConsecutiveWordsAndReturnSize2() {
+		int i = deleteConsecutiveWordsAndReturnSize(Arrays.asList("ab", "aa", "aa", "aa", "ab"));
+		Assertions.assertEquals(3, i);
+
+	}
+
+
+	int deleteConsecutiveWordsAndReturnSize(List<String> lst) {
+		int i = 0;
+		Stack<String> st = new Stack<String>();
+
+		while (i < lst.size()) {
+			if (st.empty() || (!st.isEmpty() && !st.peek().equals(lst.get(i)))) {
+				st.push(lst.get(i));
+			} else {
+				while (!st.isEmpty() && st.peek().equals(lst.get(i))) {
+					st.pop();
+				}
+			}
+			i++;
+		}
+
+		return st.size();
+	}
 }

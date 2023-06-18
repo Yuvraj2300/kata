@@ -1555,11 +1555,7 @@ public class ArraysApi2 {
 
 
 	int[] quickSort(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
-
-		_qSrtHlpr(a, l, h);
-
+		_qSrtHlpr(a, 0, a.length - 1);
 		return a;
 	}
 
@@ -1572,9 +1568,9 @@ public class ArraysApi2 {
 	}
 
 	private int _partitionForSortAsc(int[] a, int l, int h) {
+		int i = l;
 		int pe = a[h];
-		int i = 0;
-		int k = -1;
+		int k = l - 1;
 		while (i < h) {
 			if (a[i] < pe) {
 				k++;
@@ -1582,8 +1578,8 @@ public class ArraysApi2 {
 			}
 			i++;
 		}
-		k++;
-		swap(a, h, k);
+
+		swap(a, h, ++k);
 
 		return k;
 	}
