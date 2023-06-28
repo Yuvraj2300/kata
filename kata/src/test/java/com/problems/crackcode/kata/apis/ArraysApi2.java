@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+
 public class ArraysApi2 {
 
 	@Test
@@ -21,25 +28,22 @@ public class ArraysApi2 {
 	}
 
 	private void allRotations(String s) {
-		int j = 0;
-		char[] charArray = s.toCharArray();
-		while (j < s.length()) {
-			int i = 0;
-			char temp = charArray[0];
-			while (i < s.length()) {
-				if (i < s.length() - 1) {
-					charArray[i] = charArray[i + 1];
+		char[] chars = s.toCharArray();
+		int i = 0;
+		while (i < s.length()) {
+			int j = chars.length - 1;
+			char last = s.charAt(s.length() - 1);
+			while (j >= 0) {
+				if (j == 0) {
+					chars[j] = last;
 				} else {
-					charArray[i] = temp;
+					chars[j] = chars[j - 1];
 				}
-				i++;
+				j--;
 			}
-			System.out.println();
-			for (char c : charArray) {
-				System.out.print(c);
-			}
-			j++;
+			i++;
 		}
+
 	}
 
 
@@ -485,15 +489,15 @@ public class ArraysApi2 {
 		}
 
 		// @formatter:off
-		Map<Integer, Integer> valueSortedMap = 
+		Map<Integer, Integer> valueSortedMap =
 				hm.entrySet().stream()
-					.sorted(Collections.reverseOrder(Entry.comparingByValue()))
-					.collect(
-							Collectors.toMap(
-									Entry::getKey, Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
- 
+						.sorted(Collections.reverseOrder(Entry.comparingByValue()))
+						.collect(
+								Collectors.toMap(
+										Entry::getKey, Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-// @formatter:on
+
+		// @formatter:on
 
 		for (Map.Entry<Integer, Integer> e : valueSortedMap.entrySet()) {
 			int j = 0;
@@ -1829,12 +1833,11 @@ public class ArraysApi2 {
 
 		while (j >= 0) {
 			int i = a.length - 1;
-			int last = a[a.length - 1];
+			int last = a[i];
 			while (i >= 0 && a[i] > b[j]) {
 				a[i] = a[i - 1];
 				i--;
 			}
-
 			a[i + 1] = b[j];
 			b[j] = last;
 
@@ -1846,6 +1849,8 @@ public class ArraysApi2 {
 		System.out.println();
 		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
 	}
+
+
 
 
 
@@ -2107,7 +2112,578 @@ public class ArraysApi2 {
 		return opList.stream().mapToInt(k -> k).toArray();
 	}
 
+
+
+	@Test
+	@DisplayName("Test Sort Two Sorted Arrays Without Using Space")
+	void testSortTwoSortedArraysWithoutUsingSpace() {
+		int[] a = { 2, 3, 7, 9, 999 };
+		int[] b = { 5, 7, 88 };
+		sortTwoSortedArraysWithoutUsingSpaceAtAll(a, b);
+
+		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		System.out.println();
+		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
+
+		_sortedChecker(a, b);
+	}
+
+	private void _sortedChecker(int[]... a) {
+		for (int[] arr : a) {
+			int[] copy = Arrays.copyOf(arr, arr.length);
+			Arrays.sort(copy);
+			assertArrayEquals(copy, arr);
+		}
+	}
+
+
+
+	void sortTwoSortedArraysWithoutUsingSpaceAtAll(int[] a, int[] b) {
+
+		int j = b.length - 1;
+		while (j >= 0) {
+			int i = a.length - 1;
+			int last = a[i];
+
+			while (i > 0 && a[i] > b[j]) {
+				a[i] = a[i - 1];
+				i--;
+			}
+			a[i + 1] = b[j];
+			b[j] = last;
+			j--;
+		}
+	}
+
+
+
+	//	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 3);
+		assertEquals(0, leader);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection1() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 12);
+		assertEquals(1, leader);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection2() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 25);
+		assertEquals(1, leader);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection3() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 15);
+		assertEquals(0, leader);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection4() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 24);
+		assertEquals(0, leader);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection5() {
+		int[] p = { 0, 1, 1, 0, 0, 1, 0 };
+		int[] t = { 0, 5, 10, 15, 20, 25, 30 };
+
+		int leader = findLeadersInOnlineElection(p, t, 8);
+		assertEquals(1, leader);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection6() {
+		int[] p = { 0, 0, 0, 0, 1 };
+		int[] t = { 0, 6, 39, 52, 75 };
+
+		int leader = findLeadersInOnlineElection(p, t, 78);
+		assertEquals(0, leader);
+	}
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection7() {
+		int[] p = { 0, 0, 0, 0, 1 };
+		int[] t = { 0, 6, 39, 52, 75 };
+
+		int leader = findLeadersInOnlineElection(p, t, 99);
+		assertEquals(0, leader);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Find Leader In Election")
+	void testFindLeaderInElection8() {
+		int[] p = { 0, 1, 1, 0, 2, 2, 0, 2, 3, 1 };
+		int[] t = { 2, 4, 11, 17, 20, 43, 53, 81, 91, 97 };
+
+		int leader = findLeadersInOnlineElection(p, t, 20);
+		assertEquals(0, leader);
+	}
+
+	public int findLeadersInOnlineElection(int[] persons, int[] times, int t) {
+		if (t < times[0]) {
+			//not possible
+			return -1;
+		}
+
+		int idxToCheckLimit = -1;
+
+		if (t > times[times.length - 1]) {
+			idxToCheckLimit = persons.length - 1;
+		} else {
+			//find the index to check for in the person array based on the given query time
+			//using binary search since the time array will always be sorted
+			int l = 0;
+			int h = times.length - 1;
+
+
+			while (l <= h) {
+				int mid = l + (h - l) / 2;
+				if (mid != 0 && times[mid - 1] < t && t < times[mid]) {
+					idxToCheckLimit = mid - 1;
+					break;
+				} else if (t == times[mid]) {
+					idxToCheckLimit = mid;
+					break;
+				} else if (times[mid] > t) {
+					h = mid - 1;
+				} else {
+					l = mid + 1;
+				}
+			}
+		}
+
+		int maxCandidate = Integer.MIN_VALUE;
+		for (int i = 0; i < persons.length; i++) {
+			maxCandidate = persons[i] > maxCandidate ? persons[i] : maxCandidate;
+		}
+
+		//check for the leader with the calculation of frqMap only to save time
+		//if this was in a batch like when queries are coming in a batch
+		// you can create a class, and load the leadrs by time in memory and then
+		//binary search the index to return (Inital thought) !
+		int[] frqMap = new int[maxCandidate + 1];
+		int maxVotes = Integer.MIN_VALUE;
+		int maxVotesTo = -1;
+		for (int i = 0; i <= idxToCheckLimit; i++) {
+			int person = persons[i];
+			frqMap[person]++;
+			if (frqMap[person] > maxVotes) {
+				maxVotes = frqMap[person];
+				maxVotesTo = person;
+			} else if (frqMap[person] == maxVotes) {
+				maxVotesTo = person;
+			}
+		}
+		return maxVotesTo;
+	}
+
+
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion() {
+		int i = suggestInsertPosition(new int[] { 1, 3, 5, 6 }, 5);
+		assertEquals(2, i);
+	}
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion1() {
+		int i = suggestInsertPosition(new int[] { 1, 3, 5, 6 }, 2);
+		assertEquals(1, i);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion2() {
+		int i = suggestInsertPosition(new int[] { 1, 3, 5, 6 }, 7);
+		assertEquals(4, i);
+	}
+
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion3() {
+		int i = suggestInsertPosition(new int[] { 1, 3, 5, 6 }, 0);
+		assertEquals(0, i);
+	}
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion4() {
+		int i = suggestInsertPosition(new int[] { 1 }, 1);
+		assertEquals(0, i);
+	}
+
+
+	@Test
+	@DisplayName("Test Insert Position Suggestion")
+	void testInsertPositionSuggestion5() {
+		int i = suggestInsertPosition(new int[] { 1, 2, 3, 4, 5, 10 }, 2);
+		assertEquals(1, i);
+	}
+
+
+
+	int suggestInsertPosition(int[] a, int x) {
+		int l = 0;
+		int h = a.length - 1;
+
+		while (l <= h) {
+			if (x <= a[l]) {
+				return l;
+			}
+
+			if (l == h)
+				return l + 1;
+
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == x || (a[mid] > x && a[mid - 1] < x)) {
+				return mid;
+			} else if (a[mid] < x) {
+				l = mid + 1;
+			} else {
+				h = mid;
+			}
+		}
+
+		return -1;
+	}
+
+	// @formatter:off
+
+	
+	@Test
+	@DisplayName("Test Sudoku")
+	void testSudoku(){
+
+		char[][] mat = { 	{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+							{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+							{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+							{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+							{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+							{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+							{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+							{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+							{'.', '.', '.', '.', '8', '.', '.', '7', '9'}
+		};
+
+
+		boolean b = sudokuChecker(mat);
+		assertTrue(b);
+	}
+
+
+	@Test
+	@DisplayName("Test Sudoku")
+	void testSudoku1(){
+
+		char[][] mat = {
+				{'8', '3', '.', '.', '7', '.', '.', '.', '.'},
+				{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+				{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+				{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+				{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+				{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+				{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+				{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+				{'.', '.', '.', '.', '8', '.', '.', '7', '9'}
+		};
+
+
+		boolean b = sudokuChecker(mat);
+		assertFalse(b);
+	}
+
+
+
+	/**
+	 * Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following
+	 * rules:
+	 *
+	 * Each row must contain the digits 1-9 without repetition.
+	 * Each column must contain the digits 1-9 without repetition.
+	 * Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+	 *
+	 * Note:
+	 *
+	 * A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+	 * Only the filled cells need to be validated according to the mentioned rules.
+	 */
+	// @formatter:on
+	boolean sudokuChecker(char[][] mat) {
+		//check row wise
+		/*
+		int i = 0;
+		boolean validRowsFlag = true;
+		while (i < mat.length) {
+			if (validRowsFlag) {
+				int j = 0;
+				Set<Character> seenValues = new HashSet<>();
+				while (j < mat[i].length) {
+					char val = mat[i][j];
+					if (val != '.') {
+						if (!seenValues.contains(val)) {
+							seenValues.add(val);
+						} else {
+							validRowsFlag = false;
+							break;
+						}
+					}
+					j++;
+				}
+			} else {
+				break;
+			}
+			i++;
+		}
+*/
+
+		AtomicBoolean result = new AtomicBoolean(true);
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+		CyclicBarrier barrier = new CyclicBarrier(4);
+
+
+		SudokuRowIteratingWorker rowWorkerFullMatrix = new SudokuRowIteratingWorker(result, barrier, mat, mat.length, mat[0].length, false);
+		SudokuColumnIteratingWorker colWorkerFullMatrix = new SudokuColumnIteratingWorker(result, barrier, mat, mat.length, mat[0].length, false);
+
+		SudokuRowIteratingWorker rowWorkerQuarters = new SudokuRowIteratingWorker(result, barrier, mat, mat.length, mat[0].length, true);
+		SudokuColumnIteratingWorker colWorkerQuarters = new SudokuColumnIteratingWorker(result, barrier, mat, mat.length, mat[0].length, true);
+
+		executorService.submit(rowWorkerFullMatrix);
+		executorService.submit(rowWorkerQuarters);
+		executorService.submit(colWorkerFullMatrix);
+		executorService.submit(colWorkerQuarters);
+
+		executorService.shutdown();
+
+		//check Col wise
+		/*
+		int j = 0;
+		boolean validColFlag = true;
+		while (j < mat[0].length) {
+			int row = 0;
+			if (validColFlag) {
+				Set<Character> seenValues = new HashSet<>();
+				while (row < mat.length) {
+					char val = mat[row][j];
+					if (val != '.') {
+						if (!seenValues.contains(val)) {
+							seenValues.add(val);
+						} else {
+							validColFlag = false;
+							break;
+						}
+					}
+					row++;
+				}
+			} else {
+				break;
+			}
+			j++;
+		}
+		*/
+
+
+		return result.get();
+	}
 }
+
+
+class SudokuRowIteratingWorker implements Runnable {
+
+	CyclicBarrier barrier;
+
+
+	char[][] mat;
+	int rowLimit;
+	int colLimit;
+
+	boolean quarterWorker;
+	boolean validRowsFlag;
+	AtomicBoolean resultCapture;
+
+	public SudokuRowIteratingWorker(AtomicBoolean resultCapture, CyclicBarrier barrier, char[][] mat, int rowLimit, int colLimit, boolean quarterWorker) {
+		this.barrier = barrier;
+		this.resultCapture = resultCapture;
+		this.mat = mat;
+		this.rowLimit = rowLimit;
+		this.colLimit = colLimit;
+		this.validRowsFlag = true;
+		this.quarterWorker = quarterWorker;
+	}
+
+	@Override
+	public void run() {
+		if (quarterWorker) {
+			while (rowLimit < mat.length && colLimit < mat[0].length) {
+				_checkValidity(0, 0, 3, 3);
+				rowLimit = rowLimit + 3;
+				colLimit = rowLimit + 3;
+			}
+		} else {
+			_checkValidity(0, 0, rowLimit, colLimit);
+		}
+		resultCapture.set(validRowsFlag);
+		try {
+			barrier.await();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (BrokenBarrierException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void _checkValidity(int startRow, int startColumn, int rowLimit, int colLimit) {
+		int i = startRow;
+		while (i < rowLimit) {
+			if (validRowsFlag) {
+				int j = startColumn;
+				Set<Character> seenValues = new HashSet<>();
+				while (j < colLimit) {
+					char val = mat[i][j];
+					if (val != '.') {
+						if (!seenValues.contains(val)) {
+							seenValues.add(val);
+						} else {
+							validRowsFlag = false;
+							break;
+						}
+					}
+					j++;
+				}
+			} else {
+				break;
+			}
+			i++;
+		}
+	}
+}
+
+
+
+
+class SudokuColumnIteratingWorker implements Runnable {
+
+	CyclicBarrier barrier;
+	char[][] mat;
+	int rowLimit;
+	int colLimit;
+
+	boolean quarterWorker;
+	boolean validColFlag;
+
+	AtomicBoolean resultCapture;
+
+	public SudokuColumnIteratingWorker(AtomicBoolean resultCapture, CyclicBarrier barrier, char[][] mat, int rowLimit, int colLimit, boolean quarterWorker) {
+		this.barrier = barrier;
+		this.resultCapture = resultCapture;
+		this.mat = mat;
+		this.rowLimit = rowLimit;
+		this.colLimit = colLimit;
+		this.validColFlag = true;
+		this.quarterWorker = quarterWorker;
+	}
+
+	@Override
+	public void run() {
+		if (quarterWorker) {
+			while (rowLimit < mat.length && colLimit < mat[0].length) {
+				_checkValidity(0, 0, 3, 3);
+				rowLimit = rowLimit + 3;
+				colLimit = rowLimit + 3;
+			}
+		} else {
+			_checkValidity(0, 0, rowLimit, colLimit);
+		}
+		resultCapture.set(validColFlag);
+		try {
+			barrier.await();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (BrokenBarrierException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+
+	private void _checkValidity(int startRow, int startColumn, int rowLimit, int colLimit) {
+		int j = 0;
+		while (j < colLimit) {
+			int row = 0;
+			if (validColFlag) {
+				Set<Character> seenValues = new HashSet<>();
+				while (row < rowLimit) {
+					char val = mat[row][j];
+					if (val != '.') {
+						if (!seenValues.contains(val)) {
+							seenValues.add(val);
+						} else {
+							validColFlag = false;
+							break;
+						}
+					}
+					row++;
+				}
+			} else {
+				break;
+			}
+			j++;
+		}
+	}
+}
+
 
 
 

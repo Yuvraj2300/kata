@@ -17,12 +17,13 @@ public class Indexer implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				System.out.println("Taking work from the work queue.");
+//				Thread.sleep(2000);
+				System.out.println("LOG : " + Thread.currentThread().getName() + " - Taking work from the work queue.");
 				indexFile(workQueue.take());
 			} catch (InterruptedException e) {
 				Thread currentThread = Thread.currentThread();
 
-				System.out.println("Indexer Interrupted, Thread name : " + currentThread.getName());
+				System.out.println("LOG : " + Thread.currentThread().getName() + " - Indexer Interrupted, Thread name : " + currentThread.getName());
 				currentThread.interrupt();
 				break;
 			}
@@ -31,7 +32,8 @@ public class Indexer implements Runnable {
 
 	private void indexFile(File file) {
 		String name = file.getName();
-		System.out.println("Indexing File with name : " + name);
+		System.out.println("LOG : " + Thread.currentThread().getName() + " - Indexing File with name : " + name);
 		index.add(name);
+		System.out.println("LOG : " + Thread.currentThread().getName() + " - File with name : " + name + " Indexed !");
 	}
 }

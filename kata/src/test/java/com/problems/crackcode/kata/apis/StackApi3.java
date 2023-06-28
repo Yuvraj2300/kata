@@ -32,20 +32,20 @@ public class StackApi3 {
 
 	int[] findNGEs(int[] a) {
 		int[] op = new int[a.length];
-		int i = 0;
 		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int i = 1;
 
 		while (i < a.length) {
-			if (!st.isEmpty() && a[i] > st.peek()) {
-				while (!st.isEmpty() && a[i] > a[st.peek()]) {
-					op[st.pop()] = a[i];
-				}
+			while (!st.isEmpty() && a[i] > a[st.peek()]) {
+				op[st.pop()] = a[i];
 			}
-			st.push(i++);
+			st.push(i);
+
+			i++;
 		}
 
 		while (!st.isEmpty()) {
-
 			op[st.pop()] = -1;
 		}
 		return op;
@@ -71,22 +71,25 @@ public class StackApi3 {
 	}
 
 
-
 	int[] solveStockSpan(int[] a) {
-		Stack<Integer> st = new Stack<>();
-		int[] op = new int[a.length];
-		op[0] = 1;
-		st.push(0);
+		int[] s = new int[a.length];
+		s[0] = 1;
 		int i = 1;
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+
 		while (i < a.length) {
-			while (!st.isEmpty() && a[st.peek()] < a[i]) {
-				st.pop();
+			if (!st.isEmpty() && a[i] >= a[st.peek()]) {
+				while (!st.isEmpty() && a[i] >= a[st.peek()]) {
+					st.pop();
+				}
 			}
-			op[i] = st.empty() ? i + 1 : i - st.peek();
+			s[i] = st.isEmpty() ? i + 1 : i - st.peek();
 			st.push(i);
 			i++;
 		}
-		return op;
+
+		return s;
 	}
 
 

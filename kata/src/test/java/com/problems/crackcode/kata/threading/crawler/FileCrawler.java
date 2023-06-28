@@ -28,18 +28,23 @@ public class FileCrawler implements Runnable {
 		this.root = root;
 		this.index = index;
 		this.workQueue = workQueue;
+		this.setRunning(true);
 	}
 
 	@Override
 	public void run() {
 		try {
 			if (isRunning()) {
+//				Thread.sleep(2000);
 				crawl(root);
+			} else {
+				System.out.println("LOG : "+Thread.currentThread().getName()+" - Thread State was not in Running : isRunning ->" + isRunning());
+				throw new InterruptedException();
 			}
 		} catch (Exception e) {
-			System.out.println("ERROR : " + e.getMessage());
+			System.out.println("LOG : "+Thread.currentThread().getName()+" - ERROR : " + e.getMessage());
 			Thread currentThread = Thread.currentThread();
-			System.out.println("Crawler Interrupted, Thread name : " + currentThread.getName());
+			System.out.println("LOG : "+Thread.currentThread().getName()+" - Crawler Interrupted, Thread name : " + currentThread.getName());
 
 			//housekeeping
 			this.setRunning(false);
@@ -54,21 +59,23 @@ public class FileCrawler implements Runnable {
 		if (Objects.nonNull(files)) {
 			for (File file : files) {
 				if (file.isDirectory()) {
-					System.out.println("Crawiling into directory : " + file.getName());
+					System.out.println("LOG : "+Thread.currentThread().getName()+" - Crawling into directory : " + file.getName());
 					crawl(file);
 				} else {
 					if (!alreadyIndexed(file)) {
-						System.out.println("File " + file.getName() + " is not indexed, putting the file on the work queue");
+						System.out.println("LOG : "+Thread.currentThread().getName()+" - File " + file.getName() + " is not indexed, putting the file on the work queue");
 						workQueue.put(file);
 					}
 				}
 			}
+		} else {
+			System.out.println("LOG : "+Thread.currentThread().getName()+" - There were no FILES !!!");
 		}
 
 	}
 
 	private boolean alreadyIndexed(File file) {
-		System.out.println("Checking if file : " + file.getName() + " is already indexed.");
+		System.out.println("LOG : "+Thread.currentThread().getName()+" - Checking if file : " + file.getName() + " is already indexed.");
 		if (index.contains(file)) {
 			return true;
 		}
