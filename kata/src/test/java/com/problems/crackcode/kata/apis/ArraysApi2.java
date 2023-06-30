@@ -2537,6 +2537,80 @@ public class ArraysApi2 {
 
 		return result.get();
 	}
+
+
+
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum() {
+		int[] expected = { 1, 3, 2 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 1, 2, 3 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum1() {
+		int[] expected = { 1, 5, 1 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 1, 1, 5 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum2() {
+		int[] expected = { 4, 5, 6, 2, 8 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 4, 5, 2, 8, 6 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum4() {
+		int[] expected = { 1, 2, 3 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 3, 2, 1 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum5() {
+		int[] expected = { 3, 1, 2 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 2, 3, 1 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
+	int[] getNextLexicoGr8trNumber(int[] a) {
+		int i = a.length - 2;
+		while (i >= 0 && a[i] >= a[i + 1]) {
+			i--;
+		}
+
+		if (i < 0) {
+			_reverse(a, 0, a.length - 1);
+			return a;
+		}
+
+		int k = a.length - 1;
+		while (k >= 0 && a[i] >= a[k]) {
+			k--;
+		}
+		swap(a, i, k);
+		_reverse(a, i + 1, a.length-1);
+		return a;
+	}
+
+	private void _reverse(int[] a, int start, int end) {
+		while (start <= end) {
+			swap(a, start, end);
+			start++;
+			end--;
+		}
+	}
 }
 
 

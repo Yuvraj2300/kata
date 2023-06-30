@@ -24,10 +24,9 @@ public class StreamsAPI {
 	private Map<Character, ? extends Number> stringArrayToFrqMap(String[] a) {
 
 		// @formatter:off
-		Map<Character,Long> collect = Arrays.stream(a)
-				.flatMap(s->s.chars().mapToObj(c->(char)c))
-				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
-
+	Map<Character,?extends Number> collect=		Arrays.stream(a)
+												.flatMap(s->s.chars().mapToObj(c->(char)c))
+												.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
 		// @formatter:on
 
 		return collect;
@@ -46,7 +45,7 @@ public class StreamsAPI {
 
 	int getSumOfEvenNumbers(int[] a) {
 		// @formatter:off
-		int sum =Arrays.stream(a).filter(i->i%2==0).sum();
+		int sum = Arrays.stream(a).filter(i->i%2==0).sum();
 		// @formatter:on
 		return sum;
 	}
@@ -441,10 +440,10 @@ public class StreamsAPI {
 
 	List<String> getProductsSortedByTotalPrice(List<Product> products) {
 		// @formatter:off
-		List<String> collect = products.stream()
-					.sorted((p1,p2)->(p2.getPrice()+p2.getTax()+p2.getVat())-(p1.getPrice()+p1.getTax()+p1.getVat()))
-					.map(p->p.getName())
-					.collect(Collectors.toList());
+	List<String> collect=	products.stream()
+								.sorted((p1,p2)->p2.getPrice()+p2.getVat()+p2.getTax()-p1.getPrice()+p1.getVat()+p1.getTax())
+								.map(p->p.getName())
+								.collect(Collectors.toList());
 		// @formatter:on
 		return collect;
 	}
@@ -484,10 +483,10 @@ public class StreamsAPI {
 	List<Integer> getListOfAllIntsInAscOrder(List<List<Integer>> list) {
 		List<Integer> op =
 				// @formatter:off
-			list.stream()
-					.flatMap(l->l.stream())
-					.sorted(Comparator.comparingInt(Integer::intValue))
-					.collect(Collectors.toList());
+		list.stream()
+				.flatMap(l->l.stream())
+				.sorted(Comparator.comparingInt(Integer::intValue))
+				.collect(Collectors.toList());
 		// @formatter:on
 
 		return op;
@@ -510,10 +509,10 @@ public class StreamsAPI {
 	List<Character> getAllCharsInAlphOrder(List<String> list) {
 		// @formatter:off
 		List<Character> collect = list.stream()
-				.map(s->s.toLowerCase())
-				.flatMap(l->l.chars().mapToObj(c->(char)c))
-				.distinct()
+				.flatMap(s->s.chars().mapToObj(c->(char)c))
+				.map(c->c.toLowerCase(c))
 				.sorted()
+				.distinct()
 				.collect(Collectors.toList());
 		// @formatter:on
 		return collect;
@@ -571,11 +570,12 @@ public class StreamsAPI {
 	//	Write a program that takes a list of optional integers and returns the sum of all the non-empty optionals.
 	int getSumOfNonEmptyOptionals(List<Optional<Integer>> list) {
 		// @formatter:off
-			list.stream()
-					.filter(o->o.isPresent())
-					.flatMap(l->l.stream())
-					.mapToInt(i->i)
-					.sum();
+		list.stream()
+				.filter(l->l.isPresent())
+//				.flatMap(opt->opt.stream())
+				.map(o->o.get())
+				.mapToInt(i->i)
+				.sum();
 		// @formatter:on
 		return -1;
 	}
