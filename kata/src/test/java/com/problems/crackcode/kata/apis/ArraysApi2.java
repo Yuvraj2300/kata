@@ -1475,25 +1475,20 @@ public class ArraysApi2 {
 
 	int[] findSubArrayIdxWithSum(int[] a, int sum) {
 		int[] op = new int[2];
-		int i = 0;
-		int currSum = 0;
-		int j = 0;
-		while (i < a.length) {
-			if (currSum < sum) {
-				currSum += a[i];
-			}
-			while (j < i && currSum > sum) {
-				currSum -= a[j];
-				j++;
-			}
-			if (currSum == sum) {
-				break;
-			} else {
-				i++;
-			}
+		int s = 0;
+		int e = 0;
+		int csum = 0;
+		while (e < a.length && csum <= sum) {
+			csum += a[e];
+			e++;
 		}
-		op[0] = j;
-		op[1] = i;
+
+		while (e < a.length && csum > sum) {
+			csum -= a[s];
+			s++;
+		}
+		op[0] = s;
+		op[1] = e - 1;
 		return op;
 	}
 
@@ -1821,7 +1816,8 @@ public class ArraysApi2 {
 	@DisplayName("Test Merge Two Sorted Arrays In Relative Order")
 	void testMergeTwoSortedArraysInRelativeOrder() {
 		// @formatter:off
-		mergeTwoSortedArraysInRelativeOrders(new int[] {1, 5, 9, 10, 15, 20},
+		mergeTwoSortedArraysInRelativeOrders(
+				new int[] {1, 5, 9, 10, 15, 20},
 				new int[] {2, 3, 8, 13});
 		// @formatter:on
 
@@ -1829,25 +1825,22 @@ public class ArraysApi2 {
 
 
 	void mergeTwoSortedArraysInRelativeOrders(int[] a, int[] b) {
+		int i = a.length - 1;
 		int j = b.length - 1;
 
 		while (j >= 0) {
-			int i = a.length - 1;
-			int last = a[i];
+			int last = a[a.length - 1];
 			while (i >= 0 && a[i] > b[j]) {
 				a[i] = a[i - 1];
 				i--;
 			}
 			a[i + 1] = b[j];
 			b[j] = last;
-
 			j--;
 		}
-
-
-		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		Arrays.stream(a).forEach(val -> System.out.print(val + ","));
 		System.out.println();
-		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
+		Arrays.stream(b).forEach(val -> System.out.print(val + ","));
 	}
 
 
@@ -2139,13 +2132,11 @@ public class ArraysApi2 {
 
 
 	void sortTwoSortedArraysWithoutUsingSpaceAtAll(int[] a, int[] b) {
-
 		int j = b.length - 1;
 		while (j >= 0) {
 			int i = a.length - 1;
-			int last = a[i];
-
-			while (i > 0 && a[i] > b[j]) {
+			int last = a[a.length - 1];
+			while (i >= 0 && a[i] > b[j]) {
 				a[i] = a[i - 1];
 				i--;
 			}
@@ -2600,7 +2591,7 @@ public class ArraysApi2 {
 			k--;
 		}
 		swap(a, i, k);
-		_reverse(a, i + 1, a.length-1);
+		_reverse(a, i + 1, a.length - 1);
 		return a;
 	}
 

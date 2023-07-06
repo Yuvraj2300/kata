@@ -66,10 +66,10 @@ public class StreamsAPI {
 	int[] findLengthOfStringSortInDesc(String[] a) {
 		// @formatter:off
 		int[] ints = Arrays.stream(a)
-			.map(s->s.length())
-			.sorted(Comparator.comparingInt(i->(int)i).reversed())
-			.mapToInt(i->i)
-			.toArray();
+						.map(s->s.length())
+						.sorted(Comparator.comparingInt(i->(int)i).reversed())
+						.mapToInt(i->i)
+						.toArray();
 		// @formatter:on
 
 		return ints;
@@ -94,9 +94,8 @@ public class StreamsAPI {
 
 	Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
 		// @formatter:off
-		Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
-				.collect(Collectors.toMap(e->e.getKey(),
-						e->e.getValue().stream().collect(Collectors.averagingDouble(i->i))));
+			Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey,e->e.getValue().stream().collect(Collectors.averagingInt(i->(int)i))));
 		// @formatter:on
 
 		return collect;
@@ -119,10 +118,8 @@ public class StreamsAPI {
 		String s = Arrays.stream(a)
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 				.entrySet().stream()
-				.sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
-				.findFirst().get()
-				.getKey();
-
+				.sorted((e1,e2)->(int)(e2.getValue()-e1.getValue()))
+				.findFirst().get().getKey();
 		// @formatter:on
 		return s;
 	}
@@ -132,7 +129,7 @@ public class StreamsAPI {
 	@Test
 	@DisplayName("Test Find the second greatest Value")
 	void testFindTheSecondGreatestValue() {
-		//Write a program that takes a stream of numbers and returns an optional value containing the second smallest number in the stream using streams.
+		//Write a program that takes a stream of numbers and returns an optional value containing the second greatest number in the stream using streams.
 		int theSecondGreatestNumber = findTheSecondGreatestNumber(new int[] { 98, 65, 23, 123, 3, 1 });
 		Assertions.assertEquals(98, theSecondGreatestNumber);
 	}
@@ -140,7 +137,7 @@ public class StreamsAPI {
 
 	int findTheSecondGreatestNumber(int[] a) {
 		// @formatter:off
-		int integer = Arrays.stream(a)
+		Integer integer = Arrays.stream(a)
 				.mapToObj(Integer::valueOf)
 				.sorted(Comparator.comparingInt(i->(int)i).reversed())
 				.skip(1)
@@ -149,6 +146,20 @@ public class StreamsAPI {
 		return integer;
 	}
 
+
+	@Test
+	@DisplayName("Test Find the second smallest Value")
+	void testFindTheSecondSmallestValue() {
+		//Write a program that takes a stream of numbers and returns an optional value containing the second smallest number in the stream using streams.
+		int theSecondsmallestNumber = findTheSecondSmallestValue(new int[] { 98, 65, 23, 123, 3, 1 });
+		Assertions.assertEquals(3, theSecondsmallestNumber);
+	}
+
+
+
+	int findTheSecondSmallestValue(int[] a) {
+		return Arrays.stream(a).sorted().skip(1).findFirst().orElse(-1);
+	}
 
 	@Test
 	@DisplayName("Test Get Sum Of Squares of the Numbers")
@@ -161,9 +172,7 @@ public class StreamsAPI {
 
 	int getTheSumOfTheSquaresOfTheNums(int[] a) {
 		// @formatter:off
-		int sum = Arrays.stream(a)
-				.map(i->(int)Math.pow(i,2))
-				.sum();
+	int sum = Arrays.stream(a).map(i->(int)Math.pow(i,2)).sum();
 
 		// @formatter:on
 		return sum;
@@ -181,8 +190,7 @@ public class StreamsAPI {
 
 	Map<String, Integer> getStringsToLengthMap(String[] s) {
 		// @formatter:off
-	return	Arrays.stream(s)
-				.collect(Collectors.toMap(Function.identity(),str->str.length()));
+		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),e->e.length()));
 		// @formatter:on
 	}
 
@@ -201,9 +209,9 @@ public class StreamsAPI {
 		// @formatter:off
 		String[] strings = Arrays.stream(s)
 				.map(str->str.toUpperCase())
-				.sorted(Comparator.comparing(String::length).reversed())
+				.sorted((s1,s2)->s2.length()-s1.length())
 				.toArray(str->new String[str]);
-			// @formatter:on
+		// @formatter:on
 
 		return strings;
 	}
@@ -222,10 +230,8 @@ public class StreamsAPI {
 
 	int getTheProductOfNumbers(int[] a) {
 		// @formatter:off
-		int reduce = Arrays.stream(a).reduce(1, (x, y) -> x * y);
+		return Arrays.stream(a).reduce(1,(x,y)->x*y);
 		// @formatter:on
-
-		return reduce;
 	}
 
 
@@ -253,10 +259,10 @@ public class StreamsAPI {
 	//Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
 	String getTheLongestStringStartsWithA(String[] a) {
 		// @formatter:off
-		String op =Arrays.stream(a)
-				.filter(s->s.startsWith("a"))
-				.sorted(Comparator.comparing(String::length).reversed())
-				.findFirst().orElse("");
+		String op =	Arrays.stream(a)
+				.filter(str->str.startsWith("a"))
+				.sorted((s1,s2)->s2.length()-s1.length())
+				.findFirst().orElse("-1");
 		// @formatter:on
 
 		return op;
@@ -281,9 +287,8 @@ public class StreamsAPI {
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 				.entrySet().stream()
 				.filter(e->e.getValue()>1)
-				.map(Map.Entry::getKey)
-				.sorted(Comparator.comparingInt(Integer::intValue))
-				.mapToInt(i->(int)i)
+				.map(e->e.getKey())
+				.mapToInt(i->i)
 				.toArray();
 		// @formatter:on
 	}

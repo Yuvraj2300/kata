@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class Memorizer2<A, V> implements Computable<A, V> {
-	final Map<A, Future<V>> cache = new ConcurrentHashMap<>();
-	Computable<A, V> toCompute;
+	private final Map<A, Future<V>> cache = new ConcurrentHashMap<>();
+	private final Computable<A, V> toCompute;
 
 	public Memorizer2(Computable<A, V> toCompute) {
 		this.toCompute = toCompute;

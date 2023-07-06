@@ -38,16 +38,17 @@ public class StackApi3 {
 
 		while (i < a.length) {
 			while (!st.isEmpty() && a[i] > a[st.peek()]) {
-				op[st.pop()] = a[i];
+				op[st.peek()] = a[i];
+				st.pop();
 			}
 			st.push(i);
-
 			i++;
 		}
 
 		while (!st.isEmpty()) {
 			op[st.pop()] = -1;
 		}
+
 		return op;
 	}
 
@@ -72,24 +73,22 @@ public class StackApi3 {
 
 
 	int[] solveStockSpan(int[] a) {
-		int[] s = new int[a.length];
-		s[0] = 1;
-		int i = 1;
+		int[] op = new int[a.length];
+		op[0] = 1;
 		Stack<Integer> st = new Stack<>();
 		st.push(0);
+		int i = 1;
 
 		while (i < a.length) {
-			if (!st.isEmpty() && a[i] >= a[st.peek()]) {
-				while (!st.isEmpty() && a[i] >= a[st.peek()]) {
-					st.pop();
-				}
+			while (!st.isEmpty() && a[st.peek()] < a[i]) {
+				st.pop();
 			}
-			s[i] = st.isEmpty() ? i + 1 : i - st.peek();
+			op[i] = st.isEmpty() ? i + 1 : i - st.peek();
 			st.push(i);
 			i++;
 		}
 
-		return s;
+		return op;
 	}
 
 
@@ -374,5 +373,213 @@ public class StackApi3 {
 		}
 
 		return st.size();
+	}
+
+
+	// @formatter:off
+
+	/**
+	 *LEETCODE
+You are given an integer array cookies, where cookies[i] denotes the number of cookies in the ith bag. You are also given an integer k that denotes the number of children to distribute all the bags of cookies to. All the cookies in the same bag must go to the same child and cannot be split up.
+
+The unfairness of a distribution is defined as the maximum total cookies obtained by a single child in the distribution.
+
+Return the minimum unfairness of all distributions.
+
+
+
+Example 1:
+
+Input: cookies = [8,15,10,20,8], k = 2
+Output: 31
+Explanation: One optimal distribution is [8,15,8] and [10,20]
+- The 1st child receives [8,15,8] which has a total of 8 + 15 + 8 = 31 cookies.
+- The 2nd child receives [10,20] which has a total of 10 + 20 = 30 cookies.
+The unfairness of the distribution is max(31,30) = 31.
+It can be shown that there is no distribution with an unfairness less than 31.
+Example 2:
+
+Input: cookies = [6,1,3,2,2,4,1,2], k = 3
+Output: 7
+Explanation: One optimal distribution is [6,1], [3,2,2], and [4,1,2]
+- The 1st child receives [6,1] which has a total of 6 + 1 = 7 cookies.
+- The 2nd child receives [3,2,2] which has a total of 3 + 2 + 2 = 7 cookies.
+- The 3rd child receives [4,1,2] which has a total of 4 + 1 + 2 = 7 cookies.
+The unfairness of the distribution is max(7,7,7) = 7.
+It can be shown that there is no distribution with an unfairness less than 7.
+
+	 */
+	// @formatter:on
+	@Test
+	@DisplayName("Test find Unfairness")
+	void testFindUnfairness() {
+		int unfairness = findUnfairness(new int[] { 8, 15, 10, 20, 8 }, 2);
+		Assertions.assertEquals(31, unfairness);
+	}
+
+
+	@Test
+	@DisplayName("Test find Unfairness")
+	void testFindUnfairness1() {
+		int unfairness = findUnfairness(new int[] { 6, 1, 3, 2, 2, 4, 1, 2 }, 3);
+		Assertions.assertEquals(7, unfairness);
+	}
+
+
+	@Test
+	@DisplayName("Test find Unfairness")
+	void testFindUnfairness2() {
+		int unfairness = findUnfairness(new int[] { 1, 8, 16, 5, 6, 14 }, 6);
+		Assertions.assertEquals(16, unfairness);
+	}
+
+	@Test
+	@DisplayName("Test find Unfairness")
+	void testFindUnfairness3() {
+		int unfairness = findUnfairness(new int[] { 3, 19, 17, 19, 10 }, 4);
+		Assertions.assertEquals(19, unfairness);
+	}
+
+	int findUnfairness(int[] a, int k) {
+
+		if (k >= a.length) {
+			Arrays.sort(a);
+			return a[a.length - 1];
+		}
+
+		int cm = 0;
+		for (int i = 0; i < a.length; i++) {
+			cm += a[i];
+		}
+		cm = cm / k;
+
+		int[] t = new int[k];
+		int min = Integer.MAX_VALUE;
+		int ti = 0;
+
+		Stack<Integer> st = new Stack<>();
+		st.push(0);
+		int i = 1;
+
+		int currSum = a[0];
+		while (i < a.length) {
+			if (ti < t.length && currSum + a[i] > cm) {
+				while (!st.isEmpty() && currSum + a[i] > cm) {
+					t[ti] += a[st.pop()];
+				}
+				min = t[ti] < min ? t[ti] : min;
+
+				ti++;
+				currSum = 0;
+			} else {
+				currSum += a[i];
+				st.push(i);
+				i++;
+			}
+
+		}
+
+		while (!st.isEmpty() && ti < t.length) {
+			if (ti < t.length) {
+				t[ti] += a[st.pop()];
+			}
+		}
+		//		min = t[ti] < min ? t[ti] : min;
+		min = t[ti - 1] < min ? t[ti - 1] : min;
+		if (st.isEmpty()) {
+			return min;
+		} else {
+			while (!st.isEmpty()) {
+				min += a[st.pop()];
+			}
+		}
+
+		return min;
+	}
+
+
+	// @formatter:off
+	/**
+	 * Given n non-negative integers representing an elevation map where
+	 * the width of each bar is 1, compute how much water it can trap
+	 * after raining.
+	 *
+	 *
+	 *
+	 * Example 1:
+	 * link : https://leetcode.com/problems/trapping-rain-water/
+	 *
+	 * Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+	 * Output: 6
+	 * Explanation: The above elevation map (black section)
+	 * is represented by array [0,1,0,2,1,0,1,3,2,1,2,1].
+	 * In this case, 6 units of rain water (blue section) are being trapped.
+	 *
+	 *
+	 * Example 2:
+	 *
+	 * Input: height = [4,2,0,3,2,5]
+	 * Output: 9
+	 */
+	// @formatter:on
+	@Test
+	@DisplayName("Test Water Can Be Trapped")
+	void testWaterCanBeTrapped() {
+		int[] a = { 0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1 };
+		int op = findWaterThatCanBeTrapped(a);
+		Assertions.assertEquals(6, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Water Can Be Trapped")
+	void testWaterCanBeTrappe4() {
+		int[] a = { 2, 1, 2, 3 };
+		int op = findWaterThatCanBeTrapped(a);
+		Assertions.assertEquals(1, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Water Can Be Trapped")
+	void testWaterCanBeTrappe5() {
+		int[] a = { 2, 1, 1, 3 };
+		int op = findWaterThatCanBeTrapped(a);
+		Assertions.assertEquals(2, op);
+	}
+
+	@Test
+	@DisplayName("Test Water Can Be Trapped")
+	void testWaterCanBeTrapped1() {
+		int[] a = { 4, 2, 0, 3, 2, 5 };
+		int op = findWaterThatCanBeTrapped(a);
+		Assertions.assertEquals(9, op);
+	}
+
+	@Test
+	@DisplayName("Test Water Can Be Trapped")
+	void testWaterCanBeTrapped2() {
+		int[] a = { 2, 1, 0, 1, 2 };
+		int op = findWaterThatCanBeTrapped(a);
+		Assertions.assertEquals(4, op);
+	}
+
+
+	int findWaterThatCanBeTrapped(int[] a) {
+		int op = 0;
+		Stack<Integer> st = new Stack<>();
+		for (int i = a.length - 1; i >= 0; i--) {
+			st.push(i);
+		}
+
+		while (!st.isEmpty()) {
+			int pop = st.pop();
+			while (!st.empty() && a[pop] > a[st.peek()]) {
+				op += a[pop] - a[st.peek()];
+				st.pop();
+			}
+		}
+
+		return op;
 	}
 }
