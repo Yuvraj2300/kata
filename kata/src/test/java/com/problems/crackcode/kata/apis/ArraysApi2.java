@@ -1181,23 +1181,26 @@ public class ArraysApi2 {
 	 * Give first array as the larger one please
 	 */
 	public int[] getSortedMergeArray(int[] a, int[] b) {
-		int i = 0;
-		while (a[i + 1] != 0) {
-			i++;
-		}
-
-		int j = a.length - 1;
-		int k = b.length - 1;
-
-		while (k >= 0) {
-			if (a[i] < b[k]) {
-				a[j] = b[k];
+		int k = 0;
+		for (int i = 0; i < a.length; i++) {
+			if (a[i + 1] != 0) {
+				k++;
 			} else {
-				int temp = a[i];
-				a[i] = b[k];
-				a[j] = temp;
+				break;
 			}
-			k--;
+		}
+		int i = a.length - 1;
+		int j = b.length - 1;
+
+		while (j >= 0) {
+			if (a[k] < b[j]) {
+				a[i] = b[j];
+			} else {
+				int temp = a[k];
+				a[k] = b[j];
+				a[i] = temp;
+			}
+			i--;
 			j--;
 		}
 
@@ -1567,10 +1570,12 @@ public class ArraysApi2 {
 		}
 	}
 
+
 	private int _partitionForSortAsc(int[] a, int l, int h) {
-		int i = l;
 		int pe = a[h];
+		int i = l;
 		int k = l - 1;
+
 		while (i < h) {
 			if (a[i] < pe) {
 				k++;
@@ -1578,9 +1583,8 @@ public class ArraysApi2 {
 			}
 			i++;
 		}
-
-		swap(a, h, ++k);
-
+		k++;
+		swap(a, h, k);
 		return k;
 	}
 
@@ -2578,7 +2582,7 @@ public class ArraysApi2 {
 
 	int[] getNextLexicoGr8trNumber(int[] a) {
 		int i = a.length - 2;
-		while (i >= 0 && a[i] >= a[i + 1]) {
+		while (i >= 0 && a[i] > a[i + 1]) {
 			i--;
 		}
 
@@ -2587,12 +2591,14 @@ public class ArraysApi2 {
 			return a;
 		}
 
-		int k = a.length - 1;
-		while (k >= 0 && a[i] >= a[k]) {
-			k--;
+		int j = a.length - 1;
+		while (j >= 0 && a[j] < a[i]) {
+			j--;
 		}
-		swap(a, i, k);
+
+		swap(a, i, j);
 		_reverse(a, i + 1, a.length - 1);
+
 		return a;
 	}
 
@@ -2681,32 +2687,31 @@ public class ArraysApi2 {
 
 
 	int findWaterThatCanBeTrapped(int[] a) {
-		//HC : Holding Capacity
-		int tHC = 0;
-		Stack<Integer> st = new Stack<>();
-		for (int i = a.length - 1; i >= 0; i--) {
-			st.push(i);
-		}
-
-		while (!st.isEmpty()) {
-			int currHC = 0;
-			int pop = st.pop();
-			int i = pop + 1;
-			while (i < a.length && !st.empty() && a[pop] > a[i]) {
-				currHC += a[pop] - a[i];
-				i++;
-			}
-			if (i < a.length && a[i] >= a[pop]) {
-				int j = pop + 1;
-				while (j < i) {
-					st.pop();
-					j++;
+		int lmax = 0;
+		int rmax = 0;
+		int l = 0;
+		int h = a.length - 1;
+		int totalCap = 0;
+		while (l < h) {
+			int currCap = 0;
+			if (a[l] < a[h]) {
+				if (lmax > a[l]) {
+					currCap = lmax - a[l];
+				} else {
+					lmax = a[l];
 				}
-				tHC += currHC;
+				l++;
+			} else {
+				if (rmax > a[h]) {
+					currCap = rmax - a[h];
+				} else {
+					rmax = a[h];
+				}
+				h--;
 			}
+			totalCap += currCap;
 		}
-
-		return tHC;
+		return totalCap;
 	}
 }
 
