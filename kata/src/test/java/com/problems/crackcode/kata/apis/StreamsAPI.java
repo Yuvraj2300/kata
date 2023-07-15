@@ -173,10 +173,8 @@ public class StreamsAPI {
 
 	int getTheSumOfTheSquaresOfTheNums(int[] a) {
 		// @formatter:off
-	int sum = Arrays.stream(a).map(i->(int)Math.pow(i,2)).sum();
-
+		return Arrays.stream(a).map(i->(int)Math.pow(i,2)).sum();
 		// @formatter:on
-		return sum;
 	}
 
 	@Test
@@ -191,7 +189,7 @@ public class StreamsAPI {
 
 	Map<String, Integer> getStringsToLengthMap(String[] s) {
 		// @formatter:off
-		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),e->e.length()));
+		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),str->str.length()));
 		// @formatter:on
 	}
 
@@ -209,9 +207,9 @@ public class StreamsAPI {
 	String[] getStringInUpperCaseAndDesc(String[] s) {
 		// @formatter:off
 		String[] strings = Arrays.stream(s)
-				.map(str->str.toUpperCase())
+				.map(st->st.toUpperCase())
 				.sorted((s1,s2)->s2.length()-s1.length())
-				.toArray(str->new String[str]);
+				.toArray(st->new String[st]);
 		// @formatter:on
 
 		return strings;
@@ -260,10 +258,10 @@ public class StreamsAPI {
 	//Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
 	String getTheLongestStringStartsWithA(String[] a) {
 		// @formatter:off
-		String op =	Arrays.stream(a)
-				.filter(str->str.startsWith("a"))
+		String op = Arrays.stream(a)
+				.filter(s->s.startsWith("a"))
 				.sorted((s1,s2)->s2.length()-s1.length())
-				.findFirst().orElse("-1");
+				.findFirst().orElse(null);
 		// @formatter:on
 
 		return op;

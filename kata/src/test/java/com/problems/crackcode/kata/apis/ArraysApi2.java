@@ -2139,10 +2139,10 @@ public class ArraysApi2 {
 	void sortTwoSortedArraysWithoutUsingSpaceAtAll(int[] a, int[] b) {
 		int j = b.length - 1;
 		while (j >= 0) {
-			int i = a.length - 1;
 			int last = a[a.length - 1];
+			int i = a.length - 2;
 			while (i >= 0 && a[i] > b[j]) {
-				a[i] = a[i - 1];
+				a[i + 1] = a[i];
 				i--;
 			}
 			a[i + 1] = b[j];
