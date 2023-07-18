@@ -11,7 +11,7 @@ public class BacktrackingApi {
 
 	// @formatter:off
 	/**
-	 * In java Given an array nums of distinct integers, return all the possible permutations. You can return the answer
+	 * Given an array nums of distinct integers, return all the possible permutations. You can return the answer
 	 * in any order.
 	 *
 	 *
@@ -45,28 +45,32 @@ public class BacktrackingApi {
 
 	List<List<Integer>> possiblePermutations(int[] a) {
 		List<List<Integer>> result = new ArrayList<>();
+		List<Integer> curr = new ArrayList<>();
 
-		List<Integer> temp = new ArrayList<>();
-		_permuate(a, result, temp);
+		_generatePerms(a, result, curr);
+
 
 		return result;
 	}
 
-	private static void _permuate(int[] a, List<List<Integer>> result, List<Integer> temp) {
-		if (temp.size() == a.length) {
-			result.add(new ArrayList<>(temp));
-		} else {
-			int i = 0;
-			while (i < a.length) {
-				if (!temp.contains(a[i])) {
-					temp.add(a[i]);
-					_permuate(a, result, temp);
-					temp.remove(temp.size() - 1);
+	private static void _generatePerms(int[] a, List<List<Integer>> result, List<Integer> curr) {
+		int i = 0;
+		while (i < a.length) {
+			if (curr.size() == a.length) {
+				result.add(new ArrayList<>(curr));
+				return;
+			} else {
+				if (!curr.contains(a[i])) {
+					curr.add(a[i]);
+					_generatePerms(a, result, curr);
+					curr.remove(curr.size() - 1);
 				}
-				i++;
 			}
+			i++;
 		}
 	}
+
+
 
 
 }

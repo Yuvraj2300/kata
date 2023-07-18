@@ -326,7 +326,7 @@ public class StreamsAPI {
 		int reduce = Arrays.stream(a)
 				.filter(i->i%2==0)
 				.map(i->(int)Math.pow(i,2))
-				.sum();
+				.reduce(0,(x,y)->x+y);
 		// @formatter:on
 
 		return reduce;
@@ -398,6 +398,7 @@ public class StreamsAPI {
 	void testGetGroupingByDepartmentsAndAvgSalary() {
 		//	Write a program that takes a stream of employees and returns the average salary of the employees grouped by their department.
 
+
 	}
 
 
@@ -405,7 +406,7 @@ public class StreamsAPI {
 	Map<String, Double> getGroupingByDepartmentsAndAvgSalary(List<Employee> listOfEmployees) {
 		// @formatter:off
 		Map<String,Double> collect = listOfEmployees.stream()
-					.collect(Collectors.groupingBy(emp->emp.getDepartment().getName(),Collectors.averagingInt(emp->emp.getSalary().getFixedPay())));
+				.collect(Collectors.groupingBy(employee -> employee.getDepartment().getName(),Collectors.averagingDouble(emp->emp.getSalary().getFixedPay())));
 		// @formatter:on
 		return collect;
 	}
@@ -445,9 +446,10 @@ public class StreamsAPI {
 	List<String> getProductsSortedByTotalPrice(List<Product> products) {
 		// @formatter:off
 		List<String> collect = products.stream()
-					.sorted(Comparator.comparingInt((Product p)->p.getPrice()+p.getTax()+p.getVat()).reversed())
-					.map(p->p.getName())
-					.collect(Collectors.toList());
+				.sorted(Comparator.comparingInt((Product p)->p.getTax()+p.getPrice()+p.getVat()).reversed())
+//				.sorted((p1,p2)->p2.getTax()+p2.getVat()+p2.getTax()-p1.getTax()+p1.getVat()+p1.getTax())
+				.map(p->p.getName())
+				.collect(Collectors.toList());
 		// @formatter:on
 		return collect;
 	}

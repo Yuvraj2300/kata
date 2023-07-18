@@ -1780,39 +1780,44 @@ public class ArraysApi2 {
 
 
 	int[] findSubArrayWithSumGreaterThanGiven(int[] a, int x) {
-		int end = 0;
-		int start = 0;
-		int fs = 0;
-		int fe = 0;
-		int sum = 0;
+		int i = 0;
+		int j = 0;
+
+		int fi = 0;
+		int fj = 0;
 		int minL = a.length;
 
-		while (end < a.length) {
-			while (end < a.length && sum <= x) {
-				sum += a[end];
-				end++;
+
+		int csum = 0;
+		//check the coomplete array to see if a shorter sub array is present ?
+		while (i < a.length) {
+			while (i < a.length && csum <= x) {
+				csum += a[i];
+				i++;
 			}
 
-			while (start < a.length && sum > x) {
-				sum -= a[start];
-				start++;
+			while (j < a.length && j < i && csum > x) {
+				csum -= a[j];
+				j++;
 			}
 
-			if (end - start < minL) {
-				minL = end - start + 1;
-				fs = start - 1;
-				fe = end - 1;
+			if (i - j + 1 < minL) {
+				fi = i - 1;
+				fj = j - 1;
+				minL = fi - fj + 1;
+				csum = 0;
 
-				sum = 0;
-				start = end;
+				j = i;
 			}
 		}
 
-		int[] op = new int[minL];
-		for (int i = fs; i <= fe; i++) {
-			op[i - fs] = a[i];
+		int[] ans = new int[minL];
+		int m = 0;
+		for (int k = fj; k <= fi; k++) {
+			ans[m] = a[k];
+			m++;
 		}
-		return op;
+		return ans;
 	}
 
 
@@ -1820,32 +1825,30 @@ public class ArraysApi2 {
 	@Test
 	@DisplayName("Test Merge Two Sorted Arrays In Relative Order")
 	void testMergeTwoSortedArraysInRelativeOrder() {
-		// @formatter:off
-		mergeTwoSortedArraysInRelativeOrders(
-				new int[] {1, 5, 9, 10, 15, 20},
-				new int[] {2, 3, 8, 13});
-		// @formatter:on
+		int[] a = { 1, 5, 9, 10, 15, 20 };
+		int[] b = { 2, 3, 8, 13 };
+		mergeTwoSortedArraysInRelativeOrders(a, b);
 
+		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		System.out.println();
+		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
 	}
 
 
 	void mergeTwoSortedArraysInRelativeOrders(int[] a, int[] b) {
-		int i = a.length - 1;
 		int j = b.length - 1;
 
 		while (j >= 0) {
 			int last = a[a.length - 1];
+			int i = a.length - 2;
 			while (i >= 0 && a[i] > b[j]) {
-				a[i] = a[i - 1];
+				a[i + 1] = a[i];
 				i--;
 			}
 			a[i + 1] = b[j];
 			b[j] = last;
 			j--;
 		}
-		Arrays.stream(a).forEach(val -> System.out.print(val + ","));
-		System.out.println();
-		Arrays.stream(b).forEach(val -> System.out.print(val + ","));
 	}
 
 

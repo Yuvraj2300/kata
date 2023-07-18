@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StringApi2 {
 
 	@Test
@@ -78,4 +81,106 @@ public class StringApi2 {
 		}
 		return sb.toString();
 	}
+
+
+
+	@Test
+	@DisplayName("Test Get Min Flips")
+	void testGetMinFlips() {
+		int flips = getMinFlipsForAlternatingBinary("1001");
+		Assertions.assertEquals(2, flips);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Min Flips")
+	void testGetMinFlips1() {
+		int flips = getMinFlipsForAlternatingBinary("0001010111");
+		Assertions.assertEquals(2, flips);
+	}
+
+
+	int getMinFlipsForAlternatingBinary(String s) {
+		int min = Math.min(_minFlipsWithExpected(s, '0'), _minFlipsWithExpected(s, '1'));
+		return min;
+	}
+
+
+
+	private static int _minFlipsWithExpected(String s, char expected) {
+		int i = 0;
+		int flips = 0;
+		char[] chars = s.toCharArray();
+
+		while (i < chars.length) {
+			if (chars[i] == expected) {
+				flips++;
+			}
+			expected = expected == '0' ? '1' : '0';
+			i++;
+		}
+		return flips;
+	}
+
+
+	@Test
+	@DisplayName("Convert Number To Binary")
+	void convertNumberToBinary() {
+		String s = convertANumberToBinary(5);
+		Assertions.assertEquals("101", s);
+	}
+
+
+	String convertANumberToBinary(int n) {
+		int x = n;
+		StringBuilder sb = new StringBuilder();
+
+		while (x != 0) {
+			int rem = x % 2;
+			sb.append(rem);
+			x = x / 2;
+		}
+		return sb.toString();
+	}
+
+
+	@Test
+	@DisplayName("Print SubStrings")
+	void printSubStrings() {
+		List<String> res = substringsOfString("abc");
+	}
+
+
+	@Test
+	@DisplayName("Print SubStrings")
+	void printSubStrings1() {
+		List<String> res = substringsOfString("abcd");
+	}
+
+
+	List<String> substringsOfString(String s) {
+		int start = 1;
+		List<String> toRet = new ArrayList<>();
+		char[] a = s.toCharArray();
+
+		while (start < a.length) {
+			int end = start;
+			while (end < a.length) {
+				int printer = start - 1;
+				StringBuilder sb = new StringBuilder();
+				while (printer <= end) {
+					System.out.print(a[printer] + ",");
+					sb.append(a[printer]);
+					printer++;
+				}
+				System.out.println();
+				toRet.add(sb.toString());
+				end++;
+			}
+			start++;
+		}
+
+		return toRet;
+	}
+
 }
