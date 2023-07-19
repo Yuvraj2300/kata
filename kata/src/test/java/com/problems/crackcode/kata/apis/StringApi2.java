@@ -147,40 +147,33 @@ public class StringApi2 {
 	@Test
 	@DisplayName("Print SubStrings")
 	void printSubStrings() {
-		List<String> res = substringsOfString("abc");
+		substringsOfString("abc");
 	}
 
 
 	@Test
 	@DisplayName("Print SubStrings")
 	void printSubStrings1() {
-		List<String> res = substringsOfString("abcd");
+		substringsOfString("abcd");
 	}
 
 
-	List<String> substringsOfString(String s) {
-		int start = 1;
-		List<String> toRet = new ArrayList<>();
+	void substringsOfString(String s) {
+		int start = 0;
 		char[] a = s.toCharArray();
 
 		while (start < a.length) {
 			int end = start;
 			while (end < a.length) {
-				int printer = start - 1;
-				StringBuilder sb = new StringBuilder();
+				int printer = start;
 				while (printer <= end) {
-					System.out.print(a[printer] + ",");
-					sb.append(a[printer]);
+					System.out.print(a[printer]);
 					printer++;
 				}
 				System.out.println();
-				toRet.add(sb.toString());
 				end++;
 			}
 			start++;
 		}
-
-		return toRet;
 	}
-
 }

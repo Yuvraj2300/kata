@@ -45,32 +45,26 @@ public class BacktrackingApi {
 
 	List<List<Integer>> possiblePermutations(int[] a) {
 		List<List<Integer>> result = new ArrayList<>();
-		List<Integer> curr = new ArrayList<>();
+		List<Integer> temp = new ArrayList<>();
 
-		_generatePerms(a, result, curr);
-
+		_permuate(a, temp, result);
 
 		return result;
 	}
 
-	private static void _generatePerms(int[] a, List<List<Integer>> result, List<Integer> curr) {
-		int i = 0;
-		while (i < a.length) {
-			if (curr.size() == a.length) {
-				result.add(new ArrayList<>(curr));
-				return;
-			} else {
-				if (!curr.contains(a[i])) {
-					curr.add(a[i]);
-					_generatePerms(a, result, curr);
-					curr.remove(curr.size() - 1);
+	private static void _permuate(int[] a, List<Integer> temp, List<List<Integer>> result) {
+		if (temp.size() == a.length) {
+			result.add(new ArrayList<>(temp));
+		} else {
+			int i = 0;
+			while (i < a.length) {
+				if (!temp.contains(a[i])) {
+					temp.add(a[i]);
+					_permuate(a, temp, result);
+					temp.remove(temp.size() - 1);
 				}
+				i++;
 			}
-			i++;
 		}
 	}
-
-
-
-
 }

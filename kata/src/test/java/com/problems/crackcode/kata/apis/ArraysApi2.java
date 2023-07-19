@@ -2716,7 +2716,95 @@ public class ArraysApi2 {
 		}
 		return totalCap;
 	}
+
+
+
+	/**
+	 * Tigerman is jumping on the varying heights of buildings in his town. While jumping from one building of height h1
+	 * to another building of height h2. He lost his |h1 - h2| powers. Now he wants to calculate the minimum energy he
+	 * loses if he jumps from 1 building and reaches the last building. He can jump at most 2 buildings in a jump.
+	 *
+	 * (Note: Jump 2 buildings mean he can skip 1 building at most)
+	 *
+	 * "Constraints. 0 <= N <= 100000 0 <= heights[i] <= 100
+	 *
+	 * Test Cases: [20, 10, 30, 40] = 20 [0,0,10,10] = 20;
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * (20  30) + (30 - 40)  = 20
+	 *
+	 * [7,4,4,2,6,6,3,4] = 7
+	 *
+	 * 7  4 6 6  4 =  7
+	 *
+	 * [4,8,3,10,4,4] = 2
+	 *
+	 *
+	 *
+	 *
+	 * [0,10,10,5] = 15 [6,3,5,4,10,6] = 4
+	 */
+
+	@Test
+	@DisplayName("Test Name")
+	void testGetMinEnergy() {
+		int minMumEnergy = findMinMumEnergy(new int[] { 20, 10, 30, 40 });
+		assertEquals(20, minMumEnergy);
+
+	}
+
+
+
+	@Test
+	@DisplayName("Test Name")
+	void testGetMinEnergy1() {
+		int minMumEnergy = findMinMumEnergy(new int[] { 0, 10, 10, 5 });
+		assertEquals(15, minMumEnergy);
+	}
+
+
+	@Test
+	@DisplayName("Test Name")
+	void testGetMinEnergy2() {
+		int minMumEnergy = findMinMumEnergy(new int[] { 7, 4, 4, 2, 6, 6, 3, 4 });
+		assertEquals(8, minMumEnergy);
+	}
+
+
+	int findMinMumEnergy(int[] a) {
+		//Test Cases: [20, 10, 30, 40] = 20 [0,0,10,10] = 20;
+		int[] ans = new int[a.length];
+
+		int firstJump = _calculateEnergy(a, 0, 1);
+		int secondJump = _calculateEnergy(a, 0, 2);
+
+		int i = firstJump < secondJump ? 1 : 2;
+		ans[i] = Math.min(firstJump, secondJump);
+		i++;
+		while (i < a.length) {
+			//ans[2] = 10
+			//			[0, 0, 10, 10];
+			//			currSum += Math.min(_calculateEnergy(a, i - 1, i), _calculateEnergy(a, i - 2, i));
+			ans[i] = Math.min(_calculateEnergy(a, i - 1, i), _calculateEnergy(a, i - 2, i));
+			i++;
+		}
+		return Arrays.stream(ans).sum();
+	}
+
+	private int _calculateEnergy(int[] a, int x, int y) {
+		int e = a[x] - a[y];
+		if (e < 0) {
+			return -e;
+		} else {
+			return e;
+		}
+	}
 }
+
 
 
 class SudokuRowIteratingWorker implements Runnable {

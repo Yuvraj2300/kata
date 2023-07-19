@@ -489,10 +489,10 @@ public class StreamsAPI {
 	List<Integer> getListOfAllIntsInAscOrder(List<List<Integer>> list) {
 
 		// @formatter:off
-	List<Integer> collect = list.stream()
-			.flatMap(l->l.stream())
-			.sorted(Comparator.comparingInt(i->i))
-			.collect(Collectors.toList());
+		List<Integer> collect = list.stream()
+				.flatMap(l->l.stream())
+				.sorted(Comparator.comparingInt(i->i))
+				.collect(Collectors.toList());
 		// @formatter:on
 
 		return collect;
@@ -514,11 +514,12 @@ public class StreamsAPI {
 	//	Write a program that takes a list of strings and returns a new list containing all the distinct characters from all the strings, sorted in alphabetical order.
 	List<Character> getAllCharsInAlphOrder(List<String> list) {
 		// @formatter:off
-			List<Character> collect=	list.stream()
-											.map(s->s.toLowerCase())
-											.flatMap(s->s.chars().mapToObj(c->(char)c))
-											.sorted((c1,c2)->c1-c2)
-											.collect(Collectors.toList());
+		List<Character> collect = list.stream()
+				.map(s->s.toLowerCase())
+				.flatMap(s->s.chars().mapToObj(c->(char)c))
+				.distinct()
+				.sorted((c1,c2)->c1.compareTo(c2))
+				.collect(Collectors.toList());
 		// @formatter:on
 		return collect;
 	}
