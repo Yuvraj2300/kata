@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class StringApi2 {
@@ -147,7 +148,9 @@ public class StringApi2 {
 	@Test
 	@DisplayName("Print SubStrings")
 	void printSubStrings() {
-		substringsOfString("abc");
+		String[] expected = { "a", "ab", "abc", "b", "bc", "c", };
+		String[] substrings = substringsOfString("abc");
+		Assertions.assertArrayEquals(expected, substrings);
 	}
 
 
@@ -158,22 +161,27 @@ public class StringApi2 {
 	}
 
 
-	void substringsOfString(String s) {
-		int start = 0;
-		char[] a = s.toCharArray();
+	String[] substringsOfString(String s) {
+		List<String> toReturn = new LinkedList<>();
 
-		while (start < a.length) {
+		char[] chars = s.toCharArray();
+		int start = 0;
+		while (start < chars.length) {
 			int end = start;
-			while (end < a.length) {
+			while (end < chars.length) {
+				StringBuilder sb = new StringBuilder();
 				int printer = start;
 				while (printer <= end) {
-					System.out.print(a[printer]);
+					System.out.print(chars[printer]);
+					sb.append(chars[printer]);
 					printer++;
 				}
-				System.out.println();
+				System.out.print(", ");
+				toReturn.add(sb.toString());
 				end++;
 			}
 			start++;
 		}
+		return toReturn.stream().toArray(str -> new String[str]);
 	}
 }

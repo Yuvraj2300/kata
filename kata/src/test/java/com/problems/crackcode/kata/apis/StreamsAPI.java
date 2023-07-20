@@ -559,7 +559,7 @@ public class StreamsAPI {
 	//	Write a program that takes a list of sets of integers and returns a new set containing the union of all the sets.
 	Set<Integer> getAllTheIntegersInTheSet(List<Set<Integer>> list) {
 		// @formatter:off
-		Set<Integer> collect = list.stream().flatMap(s->s.stream()).collect(Collectors.toSet());
+		Set<Integer> collect = list.stream().flatMap(l->l.stream()).collect(Collectors.toSet());
 		// @formatter:on
 		return collect;
 	}
@@ -576,14 +576,12 @@ public class StreamsAPI {
 	//	Write a program that takes a list of optional integers and returns the sum of all the non-empty optionals.
 	int getSumOfNonEmptyOptionals(List<Optional<Integer>> list) {
 		// @formatter:off
-		list.stream()
-				.filter(l->l.isPresent())
-//				.flatMap(opt->opt.stream())
+		Integer reduce = list.stream()
+				.filter(o->o.isPresent())
 				.map(o->o.get())
-				.mapToInt(i->i)
-				.sum();
+				.reduce(0,(x,y)->x+y);
 		// @formatter:on
-		return -1;
+		return reduce;
 	}
 
 }
