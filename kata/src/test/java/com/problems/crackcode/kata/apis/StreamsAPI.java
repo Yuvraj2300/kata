@@ -25,8 +25,8 @@ public class StreamsAPI {
 
 		// @formatter:off
 		Map<Character,Long> collect = Arrays.stream(a)
-				.flatMap(s->s.chars().mapToObj(c->(char)c))
-				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
+										.flatMap(s->s.chars().mapToObj(c->(char)c))
+										.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
 		// @formatter:on
 
 		return collect;
@@ -68,7 +68,7 @@ public class StreamsAPI {
 		int[] ints = Arrays.stream(a)
 				.map(s->s.length())
 				.sorted(Comparator.comparingInt(i->(int)i).reversed())
-				.mapToInt(Integer::valueOf)
+				.mapToInt(i->i)
 				.toArray();
 		// @formatter:on
 
@@ -94,7 +94,8 @@ public class StreamsAPI {
 
 	Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
 		// @formatter:off
-		 Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
+		Map<String,Double> collect = mapOfStudentNameGrades
+				.entrySet().stream()
 				.collect(Collectors.toMap(e->e.getKey(),e->e.getValue().stream().collect(Collectors.averagingInt(i->i))));
 		// @formatter:on
 
@@ -115,11 +116,12 @@ public class StreamsAPI {
 
 	String findTheMostFrequentWord(String[] a) {
 		// @formatter:off
-		String s =	Arrays.stream(a)
+		String s = Arrays.stream(a)
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 				.entrySet().stream()
 				.sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
-				.findFirst().get().getKey();
+				.map(i->i.getKey())
+				.findFirst().orElse("");
 		// @formatter:on
 		return s;
 	}

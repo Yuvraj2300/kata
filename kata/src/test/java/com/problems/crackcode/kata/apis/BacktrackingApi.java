@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BacktrackingApi {
@@ -44,27 +43,25 @@ public class BacktrackingApi {
 
 
 	List<List<Integer>> possiblePermutations(int[] a) {
-		List<List<Integer>> result = new ArrayList<>();
+		List<List<Integer>> res = new ArrayList<>();
 		List<Integer> temp = new ArrayList<>();
-
-		_permuate(a, temp, result);
-
-		return result;
+		_permuate(a, temp, res);
+		return res;
 	}
 
-	private static void _permuate(int[] a, List<Integer> temp, List<List<Integer>> result) {
+	private static void _permuate(int[] a, List<Integer> temp, List<List<Integer>> res) {
 		if (temp.size() == a.length) {
-			result.add(new ArrayList<>(temp));
-		} else {
-			int i = 0;
-			while (i < a.length) {
-				if (!temp.contains(a[i])) {
-					temp.add(a[i]);
-					_permuate(a, temp, result);
-					temp.remove(temp.size() - 1);
-				}
-				i++;
+			res.add(new ArrayList<>(temp));
+			return;
+		}
+		int i = 0;
+		while (i < a.length) {
+			if (!temp.contains(a[i])) {
+				temp.add(a[i]);
+				_permuate(a, temp, res);
+				temp.remove(temp.size() - 1);
 			}
+			i++;
 		}
 	}
 }

@@ -1556,37 +1556,38 @@ public class ArraysApi2 {
 		assertArrayEquals(expected, sorted);
 	}
 
-
-	int[] quickSort(int[] a) {
-		_qSrtHlpr(a, 0, a.length - 1);
-		return a;
+	private int[] quickSort(int[] ints) {
+		int l = 0;
+		int h = ints.length - 1;
+		_qsortHelper(l, h, ints);
+		return ints;
 	}
 
-	private void _qSrtHlpr(int[] a, int l, int h) {
+	private void _qsortHelper(int l, int h, int[] ints) {
 		if (l < h) {
-			int pi = _partitionForSortAsc(a, l, h);
-			_qSrtHlpr(a, l, pi - 1);
-			_qSrtHlpr(a, pi + 1, h);
+			int pi = _partition(l, h, ints);
+			_qsortHelper(l, pi - 1, ints);
+			_qsortHelper(pi + 1, h, ints);
 		}
 	}
 
-
-	private int _partitionForSortAsc(int[] a, int l, int h) {
-		int pe = a[h];
+	private int _partition(int l, int h, int[] a) {
 		int i = l;
-		int k = l - 1;
+		int k = -1;
+		int pi = h;
 
-		while (i < h) {
-			if (a[i] < pe) {
+		while (i < pi) {
+			if (a[i] < a[pi]) {
 				k++;
 				swap(a, i, k);
 			}
 			i++;
 		}
 		k++;
-		swap(a, h, k);
+		swap(a, pi, k);
 		return k;
 	}
+
 
 
 	@Test
@@ -2803,6 +2804,38 @@ public class ArraysApi2 {
 			return e;
 		}
 	}
+
+
+	@Test
+	@DisplayName("Test Find The Missing Natural Number")
+	void testFindTheMissingNaturalNumber() {
+		int missingNum = findTheMissingNaturalNumber(new int[] { 1, 2, 4, 5 }, 5);
+		assertEquals(3, missingNum);
+	}
+
+
+
+	int findTheMissingNaturalNumber(int[] a, int x) {
+
+		int as = 0;
+		for (int i = 0; i <= x; i++) {
+			as += i;
+		}
+
+		int cs = 0;
+		for (int i = 0; i < a.length; i++) {
+			cs += a[i];
+		}
+
+		if (cs < as) {
+			return as - cs;
+		} else if (cs == as) {
+			throw new RuntimeException("");
+		} else {
+			throw new RuntimeException("");
+		}
+	}
+
 }
 
 

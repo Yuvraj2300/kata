@@ -5,8 +5,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StringApi2 {
 
@@ -162,26 +164,65 @@ public class StringApi2 {
 
 
 	String[] substringsOfString(String s) {
-		List<String> toReturn = new LinkedList<>();
+		char[] a = s.toCharArray();
+		List<String> lst = new LinkedList<>();
 
-		char[] chars = s.toCharArray();
 		int start = 0;
-		while (start < chars.length) {
+		while (start < a.length) {
 			int end = start;
-			while (end < chars.length) {
+			while (end < a.length) {
 				StringBuilder sb = new StringBuilder();
 				int printer = start;
 				while (printer <= end) {
-					System.out.print(chars[printer]);
-					sb.append(chars[printer]);
+					sb.append(a[printer]);
 					printer++;
 				}
-				System.out.print(", ");
-				toReturn.add(sb.toString());
+				lst.add(sb.toString());
 				end++;
 			}
 			start++;
 		}
-		return toReturn.stream().toArray(str -> new String[str]);
+		return lst.stream().toArray(i -> new String[i]);
 	}
+
+
+	@Test
+	@DisplayName("TestGetStringSequences")
+	void testGetStringSequences() {
+		List<String> op = getSequencesOfString("abc");
+		System.out.println(op);
+	}
+
+	//aaa
+	@Test
+	@DisplayName("TestGetStringSequences")
+	void testGetStringSequences1() {
+		//abc
+		List<String> op = getSequencesOfString("aaa");
+		System.out.println(op);
+	}
+
+
+
+	private List<String> getSequencesOfString(String s) {
+		String ans = "";
+		List<String> res = new ArrayList<>();
+		_sequenceHelper(s, ans, res);
+		return res;
+	}
+
+
+
+	private static void _sequenceHelper(String s, String ans, List<String> res) {
+		if (s.isEmpty()) {
+			res.add(ans);
+			return;
+		}
+		_sequenceHelper(s.substring(1), ans + s.charAt(0), res);
+		_sequenceHelper(s.substring(1), ans, res);
+	}
+
+
+
 }
+
