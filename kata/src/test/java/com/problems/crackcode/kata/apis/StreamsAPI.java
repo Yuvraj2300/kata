@@ -139,10 +139,9 @@ public class StreamsAPI {
 
 	int findTheSecondGreatestNumber(int[] a) {
 		// @formatter:off
-		int integer = Arrays.stream(a)
+		Integer integer = Arrays.stream(a)
 				.mapToObj(Integer::valueOf)
 				.sorted(Comparator.comparingInt(i->(int)i).reversed())
-				.mapToInt(i->i)
 				.skip(1)
 				.findFirst().orElse(-1);
 		// @formatter:on
@@ -161,7 +160,14 @@ public class StreamsAPI {
 
 
 	int findTheSecondSmallestValue(int[] a) {
-		return Arrays.stream(a).sorted().skip(1).findFirst().orElse(-1);
+		// @formatter:off
+		return Arrays.stream(a)
+				.mapToObj(Integer::valueOf)
+				.sorted(Comparator.comparingInt(i->(int)i))
+				.skip(1)
+				.findFirst().orElse(-1);
+		// @formatter:on
+
 	}
 
 	@Test
@@ -209,9 +215,9 @@ public class StreamsAPI {
 	String[] getStringInUpperCaseAndDesc(String[] s) {
 		// @formatter:off
 		String[] strings = Arrays.stream(s)
-				.map(st->st.toUpperCase())
+				.map(str->str.toUpperCase())
 				.sorted((s1,s2)->s2.length()-s1.length())
-				.toArray(st->new String[st]);
+				.toArray(str->new String[str]);
 		// @formatter:on
 
 		return strings;
@@ -263,7 +269,7 @@ public class StreamsAPI {
 		String op = Arrays.stream(a)
 				.filter(s->s.startsWith("a"))
 				.sorted((s1,s2)->s2.length()-s1.length())
-				.findFirst().orElse(null);
+				.findFirst().orElse("");
 		// @formatter:on
 
 		return op;
@@ -288,7 +294,8 @@ public class StreamsAPI {
 				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
 				.entrySet().stream()
 				.filter(e->e.getValue()>1)
-				.map(e->e.getKey())
+				.map(Map.Entry::getKey)
+				.sorted(Comparator.comparingInt(i->i))
 				.mapToInt(i->i)
 				.toArray();
 		// @formatter:on

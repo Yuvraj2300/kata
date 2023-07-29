@@ -339,74 +339,60 @@ public class ArraysApi2 {
 
 
 	int[] sortAlternatively(int[] a) {
-		int[] toRet = new int[a.length];
-
 		Arrays.sort(a);
-		int i = 0;
-		int j = a.length - 1;
+		int[] temp = new int[a.length];
 		int k = 0;
 
-		while (i <= j) {
-			if (i == j) {
-				toRet[k] = a[j];
-				k++;
-				break;
+		int i = 0;
+		int j = a.length - 1;
+
+		while (i <= j && k < temp.length) {
+			temp[k++] = a[j--];
+			if (k < temp.length) {
+				temp[k++] = a[i++];
 			}
-
-			toRet[k] = a[j];
-			k++;
-			toRet[k] = a[i];
-			k++;
-
-			i++;
-			j--;
 		}
 
-		return toRet;
+		return temp;
 	}
 
 
-
+	//Given an unsorted array of integers, sort the array into a wave array. An array arr[0..n-1] is sorted in wave form if:
+	//arr[0] >= arr[1] <= arr[2] >= arr[3] <= arr[4] >= …..
 	@Test
 	void testSortInWaveForm() throws Exception {
+		int[] expected = { 10, 5, 6, 2, 20, 3, 100, 80 };
 		int[] a = { 10, 5, 6, 3, 2, 20, 100, 80 };
 		int[] sortedArr = sortInWaveForm(a);
 
-		for (int i : sortedArr) {
-			System.out.print(i + ", ");
-		}
+		assertArrayEquals(expected, a);
 	}
 
 
 
 	@Test
 	void testSortInWaveForm_1() throws Exception {
+		int[] expected = { 90, 10, 49, 1, 5, 2, 23 };
 		int[] a = { 10, 90, 49, 2, 1, 5, 23 };
 		int[] sortedArr = sortInWaveForm(a);
 
-		for (int i : sortedArr) {
-			System.out.print(i + ", ");
-		}
+		assertArrayEquals(expected, a);
 	}
 
 
 
 	int[] sortInWaveForm(int[] a) {
-		int i = 0;
-
+		int i = 1;
 		while (i < a.length) {
-			if (i % 2 == 0) {
-				if (i < a.length - 1 && !(a[i] > a[i + 1])) {
-					_swap(a, i);
-				}
-			} else {
-				if (i < a.length - 1 && !(a[i] < a[i + 1])) {
-					_swap(a, i);
-				}
-
+			if (!(a[i] <= a[i - 1])) {
+				swap(a, i, i - 1);
 			}
-			i++;
+			if (i < a.length - 1 && !(a[i] <= a[i + 1])) {
+				swap(a, i, i + 1);
+			}
+			i += 2;
 		}
+
 		return a;
 	}
 
@@ -466,21 +452,90 @@ public class ArraysApi2 {
 
 	@Test
 	void testGetArraySortedBy() throws Exception {
+		int[] expected = { 8, 8, 8, 2, 2, 5, 5, 6 };
 		int[] a = { 2, 5, 2, 8, 5, 6, 8, 8 };
-		getArraySortedByFreq(a);
+		int[] sorted = getArraySortedByFreq(a);
+		assertArrayEquals(expected, sorted);
 	}
+
+
+	@Test
+	void testGetArraySortedBy1() throws Exception {
+		int[] expected = { 4, 4, 4, 4, 4, 1, 1, 2 };
+		int[] a = { 4, 4, 4, 4, 4, 2, 1, 1 };
+		int[] sorted = getArraySortedByFreq(a);
+		assertArrayEquals(expected, sorted);
+	}
+
+
+	//this logic is only good for arrays that do not ahve BIG numbers in the like 999999999 due to the extra frq array we are creating
+	// and positive numbers only , otherwise we need to write some way by whihc we can store negative numerb freq as well
+	private int[] getArraySortedByFreq(int[] a) {
+		int MAX = Integer.MIN_VALUE;
+		for (int i = 0; i < a.length; i++) {
+			MAX = a[i] > MAX ? a[i] : MAX;
+		}
+		int[] frq = new int[MAX + 1];
+
+		for (int i = 0; i < a.length; i++) {
+			frq[a[i]]++;
+		}
+
+		//this is a partition logic to partition the array based on the condition of frequency
+		//ofocurse we need to partinition the halves hence the below code :
+		int l = 0;
+		int h = a.length - 1;
+		_helperPartitionBasedOnFreq(l, h, a, frq);
+
+		return a;
+	}
+
+
+
+	private void _helperPartitionBasedOnFreq(int l, int h, int[] a, int[] frq) {
+		if (l < h) {
+			int pi = _partitionOnFrq(l, h, a, frq);
+			_helperPartitionBasedOnFreq(l, pi - 1, a, frq);
+			_helperPartitionBasedOnFreq(pi + 1, h, a, frq);
+		}
+	}
+
+
+
+	private int _partitionOnFrq(int l, int h, int[] a, int[] frq) {
+		int k = l - 1;
+		int i = l;
+		while (i < h) {
+			if (frq[a[i]] > frq[a[h]]) {
+				k++;
+				swap(a, i, k);
+			} else if (frq[a[i]] == frq[a[h]]) {
+				if (a[i] == a[h]) {
+					k++;
+					swap(a, i, k);
+				}
+			}
+			i++;
+		}
+		k++;
+		swap(a, k, h);
+		return k;
+	}
+
 
 
 
 	@Test
 	void testGetArraySortedBy_1() throws Exception {
 		int[] a = { 2, 5, 2, 6, -1, 9999999, 5, 8, 8, 8 };
-		getArraySortedByFreq(a);
+		int[] expected = { 8, 8, 8, 2, 2, 5, 5, 6, -1, 9999999 };
+		getArraySortedByFreq_ByStreamsAndHashMap(a);
+		//int[] sorted = getArraySortedByFreq_ByStreamsAndHashMap(a);
+		//		assertArrayEquals(expected, sorted);
 	}
 
 
-
-	void getArraySortedByFreq(int[] a) {
+	void getArraySortedByFreq_ByStreamsAndHashMap(int[] a) {
 		Map<Integer, Integer> hm = new HashMap<>();
 		int i = 0;
 
@@ -516,16 +571,15 @@ public class ArraysApi2 {
 		int[] a = { 1, 5, 9, 10, 15, 20 };
 		int[] b = { 2, 3, 8, 13 };
 
-		PairOfArrays sortedPair = mergeSortedArraysContents(new PairOfArrays(a, b));
+		mergeSortedArraysContents(a, b);
 
-		for (int i : sortedPair.getA()) {
+		for (int i : a) {
 			System.out.print(i + ", ");
 		}
 		System.out.println();
-		for (int i : sortedPair.getB()) {
+		for (int i : b) {
 			System.out.print(i + ", ");
 		}
-
 	}
 
 
@@ -534,14 +588,13 @@ public class ArraysApi2 {
 	void testMergeSortedArraysContent_1() throws Exception {
 		int[] a = { 10 };
 		int[] b = { 2, 3 };
+		mergeSortedArraysContents(a, b);
 
-		PairOfArrays sortedPair = mergeSortedArraysContents(new PairOfArrays(a, b));
-
-		for (int i : sortedPair.getA()) {
+		for (int i : a) {
 			System.out.print(i + ", ");
 		}
 		System.out.println();
-		for (int i : sortedPair.getB()) {
+		for (int i : b) {
 			System.out.print(i + ", ");
 		}
 
@@ -549,45 +602,21 @@ public class ArraysApi2 {
 
 
 
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
-	class PairOfArrays {
-		int[] a;
-		int[] b;
-	}
 
 	//when it comes to sorting and swapping always do from the posterior end :P 
-	PairOfArrays mergeSortedArraysContents(PairOfArrays pair) {
-		int[] a = pair.getA();
-		int[] b = pair.getB();
-
-		int i = 0;
-		int j = 0;
-		int k = a.length - 1;
-
-		while (i <= k && j < b.length) {
-			if (a[i] < b[j]) {
-				i++;
-			} else {
-				//swap from k
-				int temp = a[k];
-				a[k] = b[j];
-				b[j] = temp;
-				k--;
-
-				j++;
+	void mergeSortedArraysContents(int[] a, int[] b) {
+		int j = b.length - 1;
+		while (j >= 0) {
+			int i = a.length - 2;
+			int last = a[a.length - 1];
+			while (i >= 0 && a[i] > b[j]) {
+				a[i + 1] = a[i];
+				i--;
 			}
+			a[i + 1] = b[j];
+			b[j] = last;
+			j--;
 		}
-
-
-		Arrays.sort(a);
-		Arrays.sort(b);
-
-		pair.setA(a);
-		pair.setB(b);
-
-		return pair;
 	}
 
 	@Test
@@ -1256,21 +1285,21 @@ public class ArraysApi2 {
 
 
 	int[] moveZerosToTheLeft(int[] a) {
-		int count = 0;
 		int i = 0;
+		int j = 0;
 
 		while (i < a.length) {
 			if (a[i] != 0) {
-				a[count] = a[i];
-				count++;
+				a[j] = a[i];
+				j++;
 			}
 			i++;
 		}
-
-		while (count < a.length) {
-			a[count] = 0;
-			count++;
+		while (j < a.length) {
+			a[j] = 0;
+			j++;
 		}
+		
 		return a;
 	}
 
@@ -2378,17 +2407,17 @@ public class ArraysApi2 {
 		int l = 0;
 		int h = a.length - 1;
 
+		if (a[0] >= x) {
+			return 0;
+		}
+		if (a[a.length - 1] <= x) {
+			return a.length;
+		}
+
 		while (l <= h) {
-			if (x <= a[l]) {
-				return l;
-			}
-
-			if (l == h)
-				return l + 1;
-
 			int mid = l + (h - l) / 2;
 
-			if (a[mid] == x || (a[mid] > x && a[mid - 1] < x)) {
+			if (a[mid] == x || a[mid] >= x && a[mid - 1] < x) {
 				return mid;
 			} else if (a[mid] < x) {
 				l = mid + 1;
@@ -2833,6 +2862,77 @@ public class ArraysApi2 {
 			throw new RuntimeException("");
 		} else {
 			throw new RuntimeException("");
+		}
+	}
+
+
+	@Test
+	@DisplayName("Test My Merge Sort")
+	void testMyMergeSort() {
+		int[] expected = { 1, 3, 3, 5, 9, 21, 44 };
+		int[] a = { 9, 3, 1, 3, 44, 21, 5 };
+		sortUsingMergeSort(a);
+		assertArrayEquals(expected, a);
+	}
+
+
+
+	void sortUsingMergeSort(int[] a) {
+		int l = 0;
+		int h = a.length - 1;
+		_mergeSortHelper(a, l, h);
+	}
+
+	private void _mergeSortHelper(int[] a, int l, int h) {
+		if (l < h) {
+			int mid = l + (h - l) / 2;
+			_mergeSortHelper(a, l, mid);
+			_mergeSortHelper(a, mid + 1, h);
+			_merge(a, l, h, mid);
+		}
+
+	}
+
+	private void _merge(int[] a, int l, int h, int mid) {
+		int l1 = mid - l + 1;
+		int l2 = h - mid;
+
+		int[] t1 = new int[l1];
+		int[] t2 = new int[l2];
+
+		for (int i = 0; i < l1; i++) {
+			t1[i] = a[l + i];
+		}
+
+		for (int i = 0; i < l2; i++) {
+			t2[i] = a[mid + 1 + i];
+		}
+
+		int k = l;
+		int i = 0;
+		int j = 0;
+
+		while (i < t1.length && j < t2.length) {
+			if (t1[i] <= t2[j]) {
+				a[k] = t1[i];
+				i++;
+			} else {
+				a[k] = t2[j];
+				j++;
+			}
+			k++;
+		}
+
+		while (i < t1.length) {
+			a[k] = t1[i];
+			k++;
+			i++;
+		}
+
+		while (j < t2.length) {
+			a[k] = t2[j];
+			k++;
+			j++;
 		}
 	}
 

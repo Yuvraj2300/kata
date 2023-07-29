@@ -202,27 +202,90 @@ public class StringApi2 {
 		System.out.println(op);
 	}
 
-
-
 	private List<String> getSequencesOfString(String s) {
 		String ans = "";
-		List<String> res = new ArrayList<>();
-		_sequenceHelper(s, ans, res);
-		return res;
+		List<String> lst = new ArrayList<>();
+		_sequenceHelper(lst, ans, s);
+		return lst;
 	}
 
-
-
-	private static void _sequenceHelper(String s, String ans, List<String> res) {
-		if (s.isEmpty()) {
-			res.add(ans);
+	private void _sequenceHelper(List<String> lst, String ans, String s) {
+		if (s.length() == 0) {
+			lst.add(new String(ans));
 			return;
 		}
-		_sequenceHelper(s.substring(1), ans + s.charAt(0), res);
-		_sequenceHelper(s.substring(1), ans, res);
+		_sequenceHelper(lst, ans + s.charAt(0), s.substring(1));
+		_sequenceHelper(lst, ans, s.substring(1));
 	}
 
 
+
+	@Test
+	@DisplayName("Test Get Number Of Distinct Subsequences")
+	void testGetNumberOfDistinctSubsequences() {
+		int count = getNumberOfDistinctSubsequences("banana", "ban");
+		Assertions.assertEquals(3, count);
+	}
+
+
+	@Test
+	@DisplayName("Test Get Number Of Distinct Subsequences")
+	void testGetNumberOfDistinctSubsequences1() {
+		int count = getNumberOfDistinctSubsequences("geeksforgeeks", "ge");
+		Assertions.assertEquals(6, count);
+	}
+
+
+	int getNumberOfDistinctSubsequences(String s, String t) {
+		String ans = "";
+		List<Integer> lst = new ArrayList<>();
+		_helperNumOfDistSubSeq(s, t, ans, lst);
+		return lst.size();
+	}
+
+	private void _helperNumOfDistSubSeq(String s, String t, String ans, List<Integer> lst) {
+		if (s.isEmpty()) {
+			if (ans.equals(t)) {
+				lst.add(1);
+			}
+			return;
+		} else if (ans.equals(t)) {
+			lst.add(1);
+			return;
+		}
+
+		_helperNumOfDistSubSeq(s.substring(1), t, ans + s.charAt(0), lst);
+		_helperNumOfDistSubSeq(s.substring(1), t, ans, lst);
+
+	}
+
+	@Test
+	@DisplayName("Test Get Number Of Distinct Subsequences")
+	void testGetNumberOfDistinctSubsequences_check() {
+		int count = getNumberOfDistinctSubsequencescheck("banana", "ban");
+		Assertions.assertEquals(3, count);
+	}
+
+	private int getNumberOfDistinctSubsequencescheck(String s, String t) {
+		String ans = "";
+		List<Integer> lst = new ArrayList<>();
+		return _helperNumOfDistSubSeq1(s, t, ans, 0);
+	}
+
+	private int _helperNumOfDistSubSeq1(String s, String t, String ans, int count) {
+		if (s.isEmpty()) {
+			if (ans.equals(t)) {
+				count++;
+			}
+			return count;
+		} else if (ans.equals(t)) {
+			count++;
+			return count;
+		}
+
+		count = _helperNumOfDistSubSeq1(s.substring(1), t, ans + s.charAt(0), count) + _helperNumOfDistSubSeq1(s.substring(1), t, ans, count);
+		return count;
+	}
 
 }
 

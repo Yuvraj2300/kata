@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class BrowserPageImageRenderer {
+	final long TIME_BUDGET = 0l;
+	final ExecutorService exSvc = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	public void renderSequential(CharSequence input) {
 		renderText(input);
@@ -61,7 +63,7 @@ public class BrowserPageImageRenderer {
 	}
 
 	public void renderFasterWork(CharSequence input) {
-		ExecutorService exSvc = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 		CompletionService<ImageData> cSvc = new ExecutorCompletionService<>(exSvc);
 
 		List<ImageDataWrapper> images = _getImageData(input);
@@ -90,6 +92,34 @@ public class BrowserPageImageRenderer {
 	}
 
 
+	public void renderPageWithAd() {
+		long endTimeNanos = System.nanoTime() - TIME_BUDGET;
+		//task taht makes calls to a server for ads
+		Future<Ad> adsFuture = exSvc.submit(new GetAddTasks());
+		//render the page minus the ads
+		renderFasterWork(null);
+
+		Ad adToShow = null;
+		try {
+			adToShow = adsFuture.get(2, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			//create default Ad if ads not returned for the server
+			adToShow = new Ad();
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			//create default Ad if ads not returned for the server
+			adToShow = new Ad();
+			throw new RuntimeException(e);
+		} catch (TimeoutException e) {
+			//create default Ad if ads not returned for the server
+			adToShow = new Ad();
+			adsFuture.cancel(true);
+		}
+
+		//renderTheAddOnThePage()
+	}
+
+
 	private void renderImage(ImageData image) {
 	}
 
@@ -103,6 +133,16 @@ public class BrowserPageImageRenderer {
 	}
 
 
+}
+
+class Ad {
+}
+
+class GetAddTasks implements Callable<Ad> {
+	@Override
+	public Ad call() throws Exception {
+		return new Ad();
+	}
 }
 
 class ImageDataWrapper {
