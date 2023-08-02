@@ -332,10 +332,9 @@ public class StreamsAPI {
 
 	double getSumSquaresOfEvent(int[] a) {
 		// @formatter:off
-		int reduce = Arrays.stream(a)
+		double reduce = Arrays.stream(a)
 				.filter(i->i%2==0)
-				.map(i->(int)Math.pow(i,2))
-				.reduce(0,(x,y)->x+y);
+				.mapToDouble(i->(double)Math.pow(i,2)).reduce(0,(x,y)->x+y);
 		// @formatter:on
 
 		return reduce;
@@ -415,7 +414,7 @@ public class StreamsAPI {
 	Map<String, Double> getGroupingByDepartmentsAndAvgSalary(List<Employee> listOfEmployees) {
 		// @formatter:off
 		Map<String,Double> collect = listOfEmployees.stream()
-				.collect(Collectors.groupingBy(employee -> employee.getDepartment().getName(),Collectors.averagingDouble(emp->emp.getSalary().getFixedPay())));
+				.collect(Collectors.groupingBy(emp->emp.getDepartment().getName(),Collectors.averagingDouble(emp->emp.getSalary().getFixedPay())));
 		// @formatter:on
 		return collect;
 	}
@@ -455,8 +454,7 @@ public class StreamsAPI {
 	List<String> getProductsSortedByTotalPrice(List<Product> products) {
 		// @formatter:off
 		List<String> collect = products.stream()
-				.sorted(Comparator.comparingInt((Product p)->p.getTax()+p.getPrice()+p.getVat()).reversed())
-//				.sorted((p1,p2)->p2.getTax()+p2.getVat()+p2.getTax()-p1.getTax()+p1.getVat()+p1.getTax())
+				.sorted(Comparator.comparingInt((Product p)->p.getVat()+p.getPrice()+p.getTax()).reversed())
 				.map(p->p.getName())
 				.collect(Collectors.toList());
 		// @formatter:on
@@ -465,16 +463,66 @@ public class StreamsAPI {
 
 
 	//	Write a program that takes a stream of transactions and returns the total amount of the transactions that occurred in the last month.
+	@Test
+	@DisplayName("Test Transactions sum for last month")
+	void testTransactionsSumForLastMonth() {
+		// Create a list of transactions
+		List<Transaction> transactions = new ArrayList<>();
+
+		// Create a calendar object to calculate dates
+		Calendar cal = Calendar.getInstance();
+
+		// Add a transaction from two months ago
+		cal.set(Calendar.YEAR, 2023);
+		cal.set(Calendar.MONTH, Calendar.JUNE);
+		cal.set(Calendar.DAY_OF_MONTH, 2);
+		Transaction t1 = new Transaction();
+		t1.amount = 100;
+		t1.date = cal.getTime();
+		transactions.add(t1);
+
+		// Add a transaction from last month
+		cal.set(Calendar.YEAR, 2023);
+		cal.set(Calendar.MONTH, Calendar.JULY);
+		cal.set(Calendar.DAY_OF_MONTH, 2);
+		Transaction t2 = new Transaction();
+		t2.amount = 200;
+		t2.date = cal.getTime();
+		transactions.add(t2);
+
+		// Add another transaction from last month
+		Transaction t3 = new Transaction();
+		t3.amount = 300;
+		t3.date = cal.getTime();
+		transactions.add(t3);
+
+		// Calculate the total amount of transactions from last month
+		int totalAmount = calculateTotalAmountOfTransaction(transactions);
+
+		// Check that the result is correct
+		Assertions.assertEquals(500, totalAmount);
+	}
+
+
 	class Transaction {
 		int amount;
 		Date date;
 	}
 
 	int calculateTotalAmountOfTransaction(List<Transaction> transactions) {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MONDAY, -1);
-		Date lastMonth = cal.getTime();
-		return transactions.stream().filter(t -> t.date.after(lastMonth)).mapToInt(t -> t.amount).sum();
+		Calendar myCal = Calendar.getInstance();
+		myCal.add(Calendar.MONTH, -1);
+		Date startOfLastMonth = myCal.getTime();
+		myCal.add(Calendar.MONTH, 1);
+		Date startOfThisMonth = myCal.getTime();
+
+		// @formatter:off
+		int sum = transactions.stream()
+				.filter(t -> !t.date.before(startOfLastMonth) && t.date.before(startOfThisMonth))
+				.mapToInt(t -> t.amount)
+				.sum();
+		// @formatter:on
+		return sum;
 	}
 
 
@@ -526,8 +574,8 @@ public class StreamsAPI {
 		List<Character> collect = list.stream()
 				.map(s->s.toLowerCase())
 				.flatMap(s->s.chars().mapToObj(c->(char)c))
+				.sorted((c1,c2)->c1-c2)
 				.distinct()
-				.sorted((c1,c2)->c1.compareTo(c2))
 				.collect(Collectors.toList());
 		// @formatter:on
 		return collect;

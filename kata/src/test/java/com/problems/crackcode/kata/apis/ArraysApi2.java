@@ -1088,37 +1088,64 @@ public class ArraysApi2 {
 
 	@Test
 	void testSortArrayWithBuffer() throws Exception {
+		int[] expected = { 10, 12, 13, 14, 16, 17, 18, 19, 20, 22 };
+
 		int[] a = { 10, 12, 13, 14, 18, 0, 0, 0, 0, 0 };
 		int[] b = { 16, 17, 19, 20, 22 };
 
-		sortArrayWithBuffer(a, b);
+		int[] merged = sortArrayWithBuffer(a, b);
+		assertArrayEquals(expected, merged);
+	}
+
+
+	@Test
+	void testSortArrayWithBuffer1() throws Exception {
+		int[] expected = { 2, 4, 6, 7, 8, 10, 12, 13, 14, 18 };
+
+		int[] a = { 10, 12, 13, 14, 18, 0, 0, 0, 0, 0 };
+		int[] b = { 2, 4, 6, 7, 8 };
+
+		int[] merged = sortArrayWithBuffer(a, b);
+		assertArrayEquals(expected, merged);
 	}
 
 
 
 	int[] sortArrayWithBuffer(int[] a, int[] b) {
-		int k = 0;
-		while (a[k + 1] != 0) {
-			k++;
-		}
-
 		int i = a.length - 1;
 		int j = b.length - 1;
-
-		while (i >= 0 && j >= 0) {
-			if (a[k] < b[j]) {
-				a[i] = b[j];
+		int k = 0;
+		while (k < a.length) {
+			if (a[k + 1] != 0) {
+				k++;
 			} else {
-				int temp = a[k];
-				a[k] = b[j];
-				a[i] = temp;
+				break;
 			}
-			i--;
-			j--;
 		}
 
+		while (i >= 0 && j >= 0 && k >= 0) {
+			if (a[k] < b[j]) {
+				a[i] = b[j];
+				i--;
+				j--;
+			} else {
+				int temp = a[k];
+				a[k] = a[i];
+				a[i] = temp;
+				k--;
+				i--;
+			}
+		}
 
-
+		if (j >= 0) {
+			int x = 0;
+			int y = 0;
+			while (y <= j) {
+				a[x] = b[y];
+				y++;
+				x++;
+			}
+		}
 		return a;
 	}
 
@@ -1299,7 +1326,7 @@ public class ArraysApi2 {
 			a[j] = 0;
 			j++;
 		}
-		
+
 		return a;
 	}
 
@@ -1721,7 +1748,7 @@ public class ArraysApi2 {
 	@Test
 	@DisplayName("Test Find Smallest Missing Number")
 	void testFindSmallestMissingNumber() {
-		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 6, 9 });
+		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 6, 9 }, 10);
 		assertNotEquals(-1, op);
 		assertEquals(3, op);
 	}
@@ -1731,7 +1758,7 @@ public class ArraysApi2 {
 	@Test
 	@DisplayName("Test Find Smallest Missing Number")
 	void testFindSmallestMissingNumber1() {
-		int op = findSmallestMissingNo(new int[] { 4, 5, 10, 11 });
+		int op = findSmallestMissingNo(new int[] { 4, 5, 10, 11 }, 12);
 		assertNotEquals(-1, op);
 		assertEquals(0, op);
 	}
@@ -1741,30 +1768,39 @@ public class ArraysApi2 {
 	@Test
 	@DisplayName("Test Find Smallest Missing Number")
 	void testFindSmallestMissingNumber2() {
-		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 10 });
+		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 10 }, 11);
 		assertNotEquals(-1, op);
 		assertEquals(8, op);
 	}
 
 
 
-	int findSmallestMissingNo(int[] a) {
+	@Test
+	@DisplayName("Test Find Smallest Missing Number")
+	void testFindSmallestMissingNumber3() {
+		int op = findSmallestMissingNo(new int[] { 0, 1, 2, 3 }, 5);
+		assertNotEquals(-1, op);
+		assertEquals(4, op);
+	}
+
+
+
+	int findSmallestMissingNo(int[] a, int x) {
 		int l = 0;
 		int h = a.length - 1;
-
 		while (l <= h) {
 			if (a[l] != l) {
 				return l;
 			}
 			int mid = l + (h - l) / 2;
 
-			if (a[mid] == mid) {
+			if (mid == h && a[mid] < x) {
+				return a[mid] + 1;
+			} else if (a[mid] == mid) {
 				l = mid + 1;
-			} else if (a[mid] > mid) {
-				h = mid;
 			}
-
 		}
+
 		return -1;
 	}
 

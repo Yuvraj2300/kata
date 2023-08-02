@@ -5,10 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StringApi2 {
 
@@ -286,6 +284,142 @@ public class StringApi2 {
 		count = _helperNumOfDistSubSeq1(s.substring(1), t, ans + s.charAt(0), count) + _helperNumOfDistSubSeq1(s.substring(1), t, ans, count);
 		return count;
 	}
+
+
+	@Test
+	@DisplayName("Test Find the Superstring")
+	void testFindTheSuperstring() {
+		//This is a weird question tbh but it is interesting
+		// @formatter:off
+		/**
+		 * Given a set of n strings arr[], find the smallest string that contains each string in the given set as substring. We may assume that no string in arr[] is substring of another string.
+		 * Examples:
+		 *
+		 * Input:  arr[] = {"geeks", "quiz", "for"}
+		 * Output: geeksquizfor
+		 *
+		 * Input:  arr[] = {"catg", "ctaagt", "gcta", "ttca", "atgcatc"}
+		 * Output: gctaagttcatgcatc
+		 * */
+		// @formatter:on
+		//				String[] arr = { "catgc", "ctaagt", "gcta", "ttca", "atgcatc" };
+		//		String[] arr = { "ab", "bc", "cd" };
+		String[] arr = { "geeks", "quiz", "for" };
+
+		int len = arr.length;
+
+		System.out.println("The Shortest Superstring is " + findShortestSuperstring(arr));
+	}
+
+	static String str = "";
+
+	private String findShortestSuperstring(String[] arr) {
+
+		int len = arr.length;
+		// run len-1 times to consider every pair
+		while (len != 1) {
+
+			// To store maximum overlap
+			int max = Integer.MIN_VALUE;
+
+			// To store array index of strings
+			// involved in maximum overlap
+			int l = 0, r = 0;
+
+			// to store resultant string after
+			// maximum overlap
+			String resStr = "";
+
+			for (int i = 0; i < len; i++) {
+				for (int j = i + 1; j < len; j++) {
+
+					// res will store maximum
+					// length of the matching
+					// prefix and suffix str is
+					// passed by reference and
+					// will store the resultant
+					// string after maximum
+					// overlap of arr[i] and arr[j],
+					// if any.
+					int res = findOverlappingPair(arr[i], arr[j]);
+
+					// Check for maximum overlap
+					if (max < res) {
+						max = res;
+						resStr = str;
+						l = i;
+						r = j;
+					}
+				}
+			}
+
+			// Ignore last element in next cycle
+			len--;
+
+			// If no overlap,
+			// append arr[len] to arr[0]
+			if (max == Integer.MIN_VALUE)
+				arr[0] += arr[len];
+			else {
+
+				// Copy resultant string
+				// to index l
+				arr[l] = resStr;
+
+				// Copy string at last index
+				// to index r
+				arr[r] = arr[len];
+			}
+		}
+		return arr[0];
+	}
+
+	private int findOverlappingPair(String str1, String str2) {
+
+		// max will store maximum
+		// overlap i.e maximum
+		// length of the matching
+		// prefix and suffix
+		int max = Integer.MIN_VALUE;
+		int len1 = str1.length();
+		int len2 = str2.length();
+
+		// check suffix of str1 matches
+		// with prefix of str2
+		for (int i = 1; i <= Math.min(len1, len2); i++) {
+
+			// compare last i characters
+			// in str1 with first i
+			// characters in str2
+			if (str1.substring(len1 - i).compareTo(str2.substring(0, i)) == 0) {
+				if (max < i) {
+
+					// Update max and str
+					max = i;
+					str = str1 + str2.substring(i);
+				}
+			}
+		}
+
+		// check prefix of str1 matches
+		// with suffix of str2
+		for (int i = 1; i <= Math.min(len1, len2); i++) {
+
+			// compare first i characters
+			// in str1 with last i
+			// characters in str2
+			if (str1.substring(0, i).compareTo(str2.substring(len2 - i)) == 0) {
+				if (max < i) {
+
+					// update max and str
+					max = i;
+					str = str2 + str1.substring(i);
+				}
+			}
+		}
+		return max;
+	}
+
 
 }
 

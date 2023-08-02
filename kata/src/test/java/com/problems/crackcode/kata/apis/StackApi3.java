@@ -33,13 +33,13 @@ public class StackApi3 {
 	int[] findNGEs(int[] a) {
 		int[] op = new int[a.length];
 		Stack<Integer> st = new Stack<>();
-		st.push(0);
-		int i = 1;
+		int i = 0;
 
 		while (i < a.length) {
-			while (!st.isEmpty() && a[i] > a[st.peek()]) {
-				op[st.peek()] = a[i];
-				st.pop();
+			if (!st.isEmpty() && a[st.peek()] < a[i]) {
+				while (!st.isEmpty() && a[st.peek()] < a[i]) {
+					op[st.pop()] = a[i];
+				}
 			}
 			st.push(i);
 			i++;
@@ -48,7 +48,6 @@ public class StackApi3 {
 		while (!st.isEmpty()) {
 			op[st.pop()] = -1;
 		}
-
 		return op;
 	}
 
