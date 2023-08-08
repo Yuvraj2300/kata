@@ -2,60 +2,99 @@ package com.problems.crackcode.kata.threading.cancellation;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class PrimeGenerator implements Runnable {
 	private volatile boolean cancelFlag = false;
-	private final List<Integer> list;
 
-	public PrimeGenerator(List<Integer> list) {
-		this.list = list;
+	BlockingQueue<Integer> primesQueue;
+
+	public PrimeGenerator(BlockingQueue<Integer> primesQueue) {
+		this.primesQueue = primesQueue;
 	}
 
-	private List<Integer> getPrimes() {
+	void primeGenerator() {
 		BigInteger bi = BigInteger.ONE;
-		while (!cancelFlag) {
-			synchronized (this) {
-				list.add(bi.nextProbablePrime().intValue());
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				bi = bi.nextProbablePrime();
+				primesQueue.put(bi.intValue());
+			} catch (InterruptedException e) {
+				System.out.println("Prime Generator Thread was interrupted, thread name : " + Thread.currentThread().getName());
+				//preserving the interrupted status
+				Thread.currentThread().interrupt();
 			}
 		}
-		return list;
 	}
 
 
 	public void cancel() {
-		synchronized (this) {
-			this.cancelFlag = true;
-		}
+		Thread.currentThread().interrupt();
 	}
 
 
 
 	@Override
 	public void run() {
-		getPrimes();
+		primeGenerator();
 	}
 }
 
 
+class PrimeConsumer implements Runnable {
+	BlockingQueue<Integer> primesQueue;
+
+	public PrimeConsumer(BlockingQueue<Integer> primesQueue) {
+		this.primesQueue = primesQueue;
+	}
+
+	private void consumePrimes() {
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				Integer currPrime = primesQueue.take();
+				System.out.print("Prime Observed : " + currPrime + ", ");
+			} catch (InterruptedException e) {
+				System.out.println("Prime Consumer Thread was interrupted, thread name : " + Thread.currentThread().getName());
+				//preserving the interrupted status
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	public void cancel() {
+		Thread.currentThread().interrupt();
+	}
+
+	@Override
+	public void run() {
+		consumePrimes();
+	}
+}
+
 class TestPrimeGenerator {
 	public static void main(String[] args) {
-		LinkedList<Integer> generatedPrimes = new LinkedList<>();
-		PrimeGenerator primeGenerator = new PrimeGenerator(generatedPrimes);
-		Thread t = new Thread(primeGenerator);
+		ArrayBlockingQueue<Integer> primesQueue = new ArrayBlockingQueue<>(10);
 
-		t.start();
+		Thread generatorThread = new Thread(new PrimeGenerator(primesQueue));
+		Thread consumerThread = new Thread(new PrimeConsumer(primesQueue));
+		generatorThread.start();
+		consumerThread.start();
+
 
 		try {
 			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		} finally {
-			primeGenerator.cancel();
+			generatorThread.interrupt();
+			consumerThread.interrupt();
+			System.out.println();
+			System.out.println("State of the shared queue : ");
+			System.out.println(primesQueue);
 		}
 
-
-		System.out.println(generatedPrimes.size());
 	}
 }

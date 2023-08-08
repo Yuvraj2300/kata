@@ -238,43 +238,50 @@ public class ArraysApi2 {
 		int sum = 0;
 
 		SubArrayWindow subArray = findSubArray(a, sum);
-		assertNull(subArray);
+		assertEquals(0, subArray.getStart());
+		assertEquals(0, subArray.getEnd());
+	}
+
+	@Test
+	void testFindSubArray_3() throws Exception {
+		int[] a = { 1, 4, 5, 4, 6, 2 };
+		int sum = 9;
+
+		SubArrayWindow subArray = findSubArray(a, sum);
+		assertEquals(1, subArray.getStart());
+		assertEquals(2, subArray.getEnd());
 	}
 
 
-	SubArrayWindow findSubArray(int[] a, int sum) {
-		SubArrayWindow subArrayWindow = null;
 
+	SubArrayWindow findSubArray(int[] a, int sum) {
+		SubArrayWindow subArrayWindow = new SubArrayWindow();
+		int ts = 0;
 		int i = 0;
 		int j = 0;
 
-		int tempSum = 0;
-
-		while (i < a.length) {
-			tempSum += a[i];
-
-			//corner case
-			if (sum < tempSum) {
-				return null;
-			}
-
-			if (tempSum > sum) {
-				while (tempSum > sum) {
-					tempSum -= a[j];
-					j++;
-				}
-			}
-
-			if (tempSum == sum) {
-				subArrayWindow = new SubArrayWindow();
-				subArrayWindow.setStart(j);
-				subArrayWindow.setEnd(i);
-				break;
-			}
-
-
+		while (i < a.length && ts < sum) {
+			ts += a[i];
 			i++;
 		}
+
+		if (ts == sum) {
+			subArrayWindow.setStart(j);
+			subArrayWindow.setEnd(i);
+			return subArrayWindow;
+		}
+
+		while (j < a.length && ts > sum) {
+			ts -= a[j];
+			j++;
+		}
+
+		if (ts == sum) {
+			subArrayWindow.setStart(j);
+			subArrayWindow.setEnd(i - 1);
+			return subArrayWindow;
+		}
+
 		return subArrayWindow;
 	}
 
@@ -1445,15 +1452,12 @@ public class ArraysApi2 {
 	}
 
 	int[] evenBeforeOddSol1(int[] a) {
-		//idea is to keep a ptr before the odd postion
-		int oddPtr = -1;
+		int k = -1;
 		int i = 0;
 		while (i < a.length) {
 			if (a[i] % 2 == 0) {
-				oddPtr++;
-				int temp = a[i];
-				a[i] = a[oddPtr];
-				a[oddPtr] = temp;
+				k++;
+				swap(a, i, k);
 			}
 			i++;
 		}
@@ -1783,26 +1787,27 @@ public class ArraysApi2 {
 		assertEquals(4, op);
 	}
 
-
-
-	int findSmallestMissingNo(int[] a, int x) {
+	private int findSmallestMissingNo(int[] a, int i) {
 		int l = 0;
 		int h = a.length - 1;
+
 		while (l <= h) {
 			if (a[l] != l) {
 				return l;
 			}
 			int mid = l + (h - l) / 2;
-
-			if (mid == h && a[mid] < x) {
+			if (mid == a.length - 1) {
 				return a[mid] + 1;
-			} else if (a[mid] == mid) {
+			} else if (a[mid] + 1 != a[mid + 1]) {
+				return a[mid] + 1;
+			} else {
 				l = mid + 1;
 			}
 		}
-
 		return -1;
 	}
+
+
 
 
 
@@ -2097,6 +2102,18 @@ public class ArraysApi2 {
 		assertArrayEquals(expected, op);
 	}
 
+	@Test
+	@DisplayName("Test Find Leaders in The Array")
+	void testFindLeadersInTheArray1() {
+		int[] expected = { 17, 5, 2 };
+		int[] op = findLeadersInTheArray(new int[] { 16, 17, 4, 3, 5, 2, 2, 6, 1 });
+
+		for (int i : Arrays.stream(op).mapToObj(Integer::valueOf).collect(Collectors.toList())) {
+			System.out.print(i + ", ");
+		}
+	}
+
+
 
 
 	int[] findLeadersInTheArray(int[] a) {
@@ -2111,6 +2128,60 @@ public class ArraysApi2 {
 			i++;
 		}
 		return st.stream().map(index -> a[index]).mapToInt(v -> v.intValue()).toArray();
+	}
+
+
+	@Test
+	@DisplayName("Test Find Leaders in The Array")
+	void testFindLeadersInTheArrayOtherAlgo() {
+		int[] expected = { 17, 5, 2 };
+		int[] op = findLeadersInTheArrayAlgo1(new int[] { 16, 17, 4, 3, 5, 2 });
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Leaders in The Array")
+	void testFindLeadersInTheArrayOtherAlgo1() {
+		int[] expected = { 17, 6, 1 };
+		int[] op = findLeadersInTheArrayAlgo1(new int[] { 16, 17, 4, 3, 5, 2, 2, 6, 1 });
+		assertArrayEquals(expected, op);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Leaders in The Array")
+	void testFindLeadersInTheArrayOtherAlgo2() {
+		int[] expected = { 5, 2 };
+		int[] op = findLeadersInTheArrayAlgo1(new int[] { 1, 2, 3, 4, 5, 2 });
+		assertArrayEquals(expected, op);
+	}
+
+
+	int[] findLeadersInTheArrayAlgo1(int[] a) {
+		List<Integer> leaders = new LinkedList<>();
+		int i = 1;
+		int cl = Integer.MIN_VALUE;
+		while (i < a.length) {
+			if (i == a.length - 1) {
+				leaders.add(a[i]);
+			} else if (a[i] > a[i - 1] && a[i] > a[i + 1]) {
+				if (cl < a[i]) {
+					cl = a[i];
+					if (leaders.isEmpty()) {
+						leaders.add(a[i]);
+					} else {
+						leaders.remove(leaders.size() - 1);
+						leaders.add(cl);
+					}
+				} else {
+					cl = a[i];
+					leaders.add(a[i]);
+				}
+			}
+			i++;
+		}
+		return leaders.stream().mapToInt(intr -> intr).toArray();
 	}
 
 

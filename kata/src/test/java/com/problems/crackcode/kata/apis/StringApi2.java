@@ -302,9 +302,9 @@ public class StringApi2 {
 		 * Output: gctaagttcatgcatc
 		 * */
 		// @formatter:on
-		//				String[] arr = { "catgc", "ctaagt", "gcta", "ttca", "atgcatc" };
-		//		String[] arr = { "ab", "bc", "cd" };
-		String[] arr = { "geeks", "quiz", "for" };
+		//		String[] arr = { "catgc", "ctaagt", "gcta", "ttca", "atgcatc" };
+		String[] arr = { "ab", "bc", "cd" };
+		//		String[] arr = { "geeks", "quiz", "for" };
 
 		int len = arr.length;
 
@@ -313,113 +313,78 @@ public class StringApi2 {
 
 	static String str = "";
 
-	private String findShortestSuperstring(String[] arr) {
+	private String findShortestSuperstring(String[] a) {
+		int k = a.length;
 
-		int len = arr.length;
-		// run len-1 times to consider every pair
-		while (len != 1) {
+		while (k > 1) {
+			String combinedString = "";
+			int maxOverlap = Integer.MIN_VALUE;
+			int leftIdx = 0;
+			int rightIdx = 0;
+			for (int i = 0; i < a.length; i++) {
+				for (int j = i + 1; j < a.length; j++) {
+					StringOverlapWithMaxOverlap overlapObj = _findOverlap(a[i], a[j]);
+					if (maxOverlap < overlapObj.currOverlap) {
+						maxOverlap = overlapObj.currOverlap;
+						combinedString = overlapObj.combinedString;
 
-			// To store maximum overlap
-			int max = Integer.MIN_VALUE;
-
-			// To store array index of strings
-			// involved in maximum overlap
-			int l = 0, r = 0;
-
-			// to store resultant string after
-			// maximum overlap
-			String resStr = "";
-
-			for (int i = 0; i < len; i++) {
-				for (int j = i + 1; j < len; j++) {
-
-					// res will store maximum
-					// length of the matching
-					// prefix and suffix str is
-					// passed by reference and
-					// will store the resultant
-					// string after maximum
-					// overlap of arr[i] and arr[j],
-					// if any.
-					int res = findOverlappingPair(arr[i], arr[j]);
-
-					// Check for maximum overlap
-					if (max < res) {
-						max = res;
-						resStr = str;
-						l = i;
-						r = j;
+						leftIdx = i;
+						rightIdx = j;
 					}
 				}
 			}
-
-			// Ignore last element in next cycle
-			len--;
-
-			// If no overlap,
-			// append arr[len] to arr[0]
-			if (max == Integer.MIN_VALUE)
-				arr[0] += arr[len];
-			else {
-
-				// Copy resultant string
-				// to index l
-				arr[l] = resStr;
-
-				// Copy string at last index
-				// to index r
-				arr[r] = arr[len];
+			//reduce k once you have found overlaps for the first iteration
+			k--;
+			if (maxOverlap == Integer.MIN_VALUE) {
+				//no overlap
+				a[0] += a[k];
+			} else {
+				a[leftIdx] = combinedString;
+				//	since the value at k might not have been used yet, so you must replace the used string
+				//	at right index with the unused value.
+				a[rightIdx] = a[k];
 			}
 		}
-		return arr[0];
+
+		return a[0];
 	}
 
-	private int findOverlappingPair(String str1, String str2) {
+	private StringOverlapWithMaxOverlap _findOverlap(String s1, String s2) {
+		int overlap = Integer.MIN_VALUE;
 
-		// max will store maximum
-		// overlap i.e maximum
-		// length of the matching
-		// prefix and suffix
-		int max = Integer.MIN_VALUE;
-		int len1 = str1.length();
-		int len2 = str2.length();
+		String combinedString = "";
+		int min = Math.min(s1.length(), s2.length());
 
-		// check suffix of str1 matches
-		// with prefix of str2
-		for (int i = 1; i <= Math.min(len1, len2); i++) {
-
-			// compare last i characters
-			// in str1 with first i
-			// characters in str2
-			if (str1.substring(len1 - i).compareTo(str2.substring(0, i)) == 0) {
-				if (max < i) {
-
-					// Update max and str
-					max = i;
-					str = str1 + str2.substring(i);
+		for (int i = 1; i < min; i++) {
+			if (s1.substring(0, i).equals(s2.substring(s2.length() - i))) {
+				if (i > overlap) {
+					overlap = i;
+					combinedString = s1 + s2.substring(i);
 				}
 			}
 		}
 
-		// check prefix of str1 matches
-		// with suffix of str2
-		for (int i = 1; i <= Math.min(len1, len2); i++) {
-
-			// compare first i characters
-			// in str1 with last i
-			// characters in str2
-			if (str1.substring(0, i).compareTo(str2.substring(len2 - i)) == 0) {
-				if (max < i) {
-
-					// update max and str
-					max = i;
-					str = str2 + str1.substring(i);
+		for (int i = 1; i < min; i++) {
+			if (s1.substring(s1.length() - i).equals(s2.substring(0, i))) {
+				if (i > overlap) {
+					overlap = i;
+					combinedString = s1 + s2.substring(i);
 				}
 			}
 		}
-		return max;
+
+		return new StringOverlapWithMaxOverlap(combinedString, overlap);
 	}
 
+	class StringOverlapWithMaxOverlap {
+		public StringOverlapWithMaxOverlap(String combinedString, int currOverlap) {
+			this.combinedString = combinedString;
+			this.currOverlap = currOverlap;
+		}
+
+		String combinedString;
+		int currOverlap;
+	}
 
 }
 
