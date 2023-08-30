@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class StackApi3 {
 
@@ -33,13 +35,12 @@ public class StackApi3 {
 	int[] findNGEs(int[] a) {
 		int[] op = new int[a.length];
 		Stack<Integer> st = new Stack<>();
-		int i = 0;
+		st.push(0);
 
+		int i = 1;
 		while (i < a.length) {
-			if (!st.isEmpty() && a[st.peek()] < a[i]) {
-				while (!st.isEmpty() && a[st.peek()] < a[i]) {
-					op[st.pop()] = a[i];
-				}
+			while (!st.isEmpty() && a[st.peek()] < a[i]) {
+				op[st.pop()] = a[i];
 			}
 			st.push(i);
 			i++;
@@ -48,6 +49,7 @@ public class StackApi3 {
 		while (!st.isEmpty()) {
 			op[st.pop()] = -1;
 		}
+
 		return op;
 	}
 
@@ -73,9 +75,9 @@ public class StackApi3 {
 
 	int[] solveStockSpan(int[] a) {
 		int[] op = new int[a.length];
-		op[0] = 1;
-		Stack<Integer> st = new Stack<>();
+		Stack<Integer> st = new Stack();
 		st.push(0);
+		op[0] = 1;
 		int i = 1;
 
 		while (i < a.length) {

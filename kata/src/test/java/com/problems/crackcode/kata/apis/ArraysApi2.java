@@ -15,10 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 
 public class ArraysApi2 {
@@ -152,23 +148,30 @@ public class ArraysApi2 {
 		assertEquals(-1, getEquilibIndex(A));
 	}
 
+	@Test
+	void testGetEquilibIndex_2() throws Exception {
+		int[] A = { -1, 3, -4, 5, 1, -6, 2, 1 };
+		assertEquals(1, getEquilibIndex(A));
+	}
 
 
+	//Since the array can have multiple equilib indeices, we will consider the first one from the left
 	int getEquilibIndex(int[] a) {
+		int lsum = 0;
+		int rsum = 0;
+		int tsum = 0;
+		for (int i = 0; i < a.length; i++) {
+			tsum += a[i];
+		}
+		rsum = tsum;
 		int i = 0;
-		int j = a.length - 1;
-		int sumR = 0;
-		int sumL = 0;
-
-		while (i < a.length && j >= 0 && i < j) {
-			sumR += a[i];
-			sumL += a[j];
+		while (i < a.length) {
+			rsum -= a[i];
+			if (lsum == rsum) {
+				return i;
+			}
+			lsum += a[i];
 			i++;
-			j--;
-
-			if (sumL == sumR)
-				return i++;
-
 		}
 		return -1;
 	}
@@ -610,18 +613,22 @@ public class ArraysApi2 {
 
 
 
-	//when it comes to sorting and swapping always do from the posterior end :P 
+	//when it comes to sorting and swapping always do from the posterior end :P
 	void mergeSortedArraysContents(int[] a, int[] b) {
 		int j = b.length - 1;
+
 		while (j >= 0) {
-			int i = a.length - 2;
-			int last = a[a.length - 1];
-			while (i >= 0 && a[i] > b[j]) {
-				a[i + 1] = a[i];
-				i--;
+			int i = a.length - 1;
+			if (a[i] > b[j]) {
+				int temp = b[j];
+				b[j] = a[i];
+				int k = i - 1;
+				while (a[k] > temp && k >= 0) {
+					a[k + 1] = a[k];
+					k--;
+				}
+				a[k + 1] = temp;
 			}
-			a[i + 1] = b[j];
-			b[j] = last;
 			j--;
 		}
 	}
@@ -684,27 +691,25 @@ public class ArraysApi2 {
 
 	int[] mergeSortedArraysWithBuffer(int[] a, int[] b) {
 		// assuming a is the array with buffer always
-		int k = -1;
-		for (int i = 0; i < a.length; i++) {
-			if (a[i + 1] == 0) {
-				k = i;
-				break;
-			}
+		int k = 0;
+		while (a[k + 1] != 0) {
+			k++;
 		}
 
 		int i = a.length - 1;
 		int j = b.length - 1;
 
-		while (i > k) {
-			if (b[j] >= a[k]) {
+		while (i > k && j >= 0 && i >= 0) {
+			if (a[k] < b[j]) {
 				a[i] = b[j];
+				j--;
 			} else {
 				int temp = a[k];
-				a[k] = b[j];
+				a[k] = a[i];
 				a[i] = temp;
+				k--;
 			}
 			i--;
-			j--;
 		}
 
 		return a;
@@ -916,7 +921,7 @@ public class ArraysApi2 {
 	}
 
 	//if all the elements of the array are negative then the largest negative number is the answer
-	//If the array contains all non-positive numbers, 
+	//If the array contains all non-positive numbers,
 	//then a solution is any subarray of size 1 containing the maximal value of the array (or the empty subarray, if it is permitted).
 	int findMaxSumOfSubArray(int[] a) {
 		int currSum = 0;
@@ -1616,35 +1621,36 @@ public class ArraysApi2 {
 		assertArrayEquals(expected, sorted);
 	}
 
+
 	private int[] quickSort(int[] ints) {
 		int l = 0;
 		int h = ints.length - 1;
-		_qsortHelper(l, h, ints);
+		_insertionSortHelper(l, h, ints);
 		return ints;
 	}
 
-	private void _qsortHelper(int l, int h, int[] ints) {
+	private void _insertionSortHelper(int l, int h, int[] a) {
 		if (l < h) {
-			int pi = _partition(l, h, ints);
-			_qsortHelper(l, pi - 1, ints);
-			_qsortHelper(pi + 1, h, ints);
+			int pi = _partition(l, h, a);
+			_insertionSortHelper(l, pi - 1, a);
+			_insertionSortHelper(pi + 1, h, a);
 		}
 	}
 
 	private int _partition(int l, int h, int[] a) {
+		int pe = a[h];
 		int i = l;
 		int k = -1;
-		int pi = h;
 
-		while (i < pi) {
-			if (a[i] < a[pi]) {
+		while (i < h) {
+			if (a[i] < pe) {
 				k++;
 				swap(a, i, k);
 			}
 			i++;
 		}
 		k++;
-		swap(a, pi, k);
+		swap(a, k, h);
 		return k;
 	}
 
@@ -1787,18 +1793,36 @@ public class ArraysApi2 {
 		assertEquals(4, op);
 	}
 
-	private int findSmallestMissingNo(int[] a, int i) {
+
+	@Test
+	@DisplayName("Test Find Smallest Missing Number")
+	void testFindSmallestMissingNumber4() {
+		// @formatter:off
+		assertThrows(
+				RuntimeException.class,
+				() -> findSmallestMissingNo(new int[] { 0, 1, 2, 3, 4 }, 5),
+				"No Number was missing at all");
+		// @formatter:on
+	}
+
+
+
+	private int findSmallestMissingNo(int[] a, int m) {
 		int l = 0;
 		int h = a.length - 1;
 
+		if (a[0] != 0)
+			return 0;
+
 		while (l <= h) {
-			if (a[l] != l) {
-				return l;
-			}
 			int mid = l + (h - l) / 2;
-			if (mid == a.length - 1) {
-				return a[mid] + 1;
-			} else if (a[mid] + 1 != a[mid + 1]) {
+			if (mid == h) {
+				if (a[mid] != m - 1) {
+					return a[mid] + 1;
+				} else {
+					throw new RuntimeException("No Number was missing at all");
+				}
+			} else if (a[mid + 1] != a[mid] + 1) {
 				return a[mid] + 1;
 			} else {
 				l = mid + 1;
@@ -2279,8 +2303,8 @@ public class ArraysApi2 {
 	void sortTwoSortedArraysWithoutUsingSpaceAtAll(int[] a, int[] b) {
 		int j = b.length - 1;
 		while (j >= 0) {
-			int last = a[a.length - 1];
 			int i = a.length - 2;
+			int last = a[a.length - 1];
 			while (i >= 0 && a[i] > b[j]) {
 				a[i + 1] = a[i];
 				i--;
@@ -2291,6 +2315,204 @@ public class ArraysApi2 {
 		}
 	}
 
+
+	@Test
+	@DisplayName("Test Find the Max Profit In Day Trading")
+	void testFindTheMaxProfitInDayTrading() {
+		int maxProfit = findTheMaxProfitInDayTrading(new int[] { 2, 4, 5, 30, 15, 10, 8, 25, 80 });
+		assertEquals(100, maxProfit);
+	}
+
+
+	@Test
+	@DisplayName("Test Find the Max Profit In Day Trading")
+	void testFindTheMaxProfitInDayTrading1() {
+		int maxProfit = findTheMaxProfitInDayTrading(new int[] { 10, 22, 5, 75, 65, 80 });
+		assertEquals(87, maxProfit);
+	}
+
+
+	int findTheMaxProfitInDayTrading(int[] a) {
+		int[] ledger = new int[a.length];
+
+		int minPrice = a[0];
+		int i = 1;
+		while (i < a.length) {
+			if (a[i] < minPrice) {
+				minPrice = a[i];
+			}
+			ledger[i] = Math.max(ledger[i - 1], a[i] - minPrice);
+			i++;
+		}
+
+		int maxPrice = a[a.length - 1];
+		i = a.length - 2;
+		while (i >= 0) {
+			if (a[i] > maxPrice) {
+				maxPrice = a[i];
+			}
+
+			ledger[i] = Math.max(ledger[i + 1], ledger[i] + maxPrice - a[i]);
+			i--;
+		}
+
+		return ledger[0];
+	}
+
+
+
+	@Test
+	@DisplayName("Test Min Jumps To make")
+	void testMinJumpsToMake() {
+		int jumps = findMinJumpsToReachEndOfArray(new int[] { 1, 3, 5, 8, 9, 2, 6, 7, 6, 8, 9 });
+		assertEquals(3, jumps);
+	}
+
+
+	int findMinJumpsToReachEndOfArray(int[] a) {
+		int n = a.length;
+		int jumps = 0;// _minJumpsHelper(a, n, 0, 0, Integer.MAX_VALUE);
+
+		return jumps;
+	}
+
+
+	@Test
+	@DisplayName("Test Rearrange A of I iteratively")
+	void testRearrangeAOfIIteratively() {
+		int[] expected = new int[] { -1, 1, 2, 3, 4, -1, 6, -1, -1, 9 };
+		int[] op = rearrangeForAofI(new int[] { -1, -1, 6, 1, 9, 3, 2, -1, 4, -1 });
+		assertArrayEquals(expected, op);
+	}
+
+	@Test
+	@DisplayName("Test Rearrange A of I iteratively")
+	void testRearrangeAOfIIteratively1() {
+		int[] expected = new int[] { -1, -1, 2, 3 };
+		int[] op = rearrangeForAofI(new int[] { -1, 3, -1, 2 });
+		assertArrayEquals(expected, op);
+	}
+
+	int[] rearrangeForAofI(int[] a) {
+		int i = 0;
+		while (i < a.length) {
+			if (a[i] != -1 && a[i] != i) {
+				int temp = a[i];
+				while (a[temp] != -1 && a[temp] != temp) {
+					int temp2 = a[temp];
+					a[temp] = temp;
+					temp = temp2;
+				}
+				a[temp] = temp;
+
+				if (a[i] != i) {
+					a[i] = -1;
+				}
+			}
+			i++;
+		}
+		return a;
+	}
+
+	@Test
+	@DisplayName("Test Find Fixed Point In Array")
+	void testFindFixedPointInArray() {
+		int pt = findFixedPointInArray(new int[] { -10, -6, 2, 4, 55 });
+		assertEquals(2, pt);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Fixed Point In Array")
+	void testFindFixedPointInArray1() {
+		int pt = findFixedPointInArray(new int[] { -10, -6, 4, 51, 55 });
+		assertEquals(-1, pt);
+	}
+
+
+	@Test
+	@DisplayName("Test Find Fixed Point In Array")
+	void testFindFixedPointInArray2() {
+		int pt = findFixedPointInArray(new int[] { -10, 1, 4, 51, 55 });
+		assertEquals(1, pt);
+	}
+
+
+	int findFixedPointInArray(int[] a) {
+		int l = 0, h = a.length - 1;
+
+		while (l <= h) {
+			int mid = l + (h - l) / 2;
+
+			if (a[mid] == mid)
+				return mid;
+
+			if (a[mid] > mid)
+				h = mid - 1;
+			else
+				l = mid + 1;
+		}
+
+		return -1;
+	}
+
+
+	@Test
+	@DisplayName("Test SubArray With Same Avg")
+	void testSubArrayWithSameAvg() {
+		int[] a = { 1, 5, 7, 2, 0 };
+		int sepPoint = findSubarraysWithSameAvg(a);
+
+		assertEquals(1, sepPoint);
+
+		System.out.println("Sub Array 1 :");
+		for (int i = 0; i <= sepPoint; i++) {
+			System.out.print(a[i] + ", ");
+		}
+		System.out.println();
+		System.out.println("Sub Array 2 :");
+		for (int i = sepPoint + 1; i < a.length; i++) {
+			System.out.print(a[i] + ", ");
+		}
+	}
+
+
+	@Test
+	@DisplayName("Test SubArray With Same Avg")
+	void testSubArrayWithSameAvg1() {
+		int[] a = { 4, 3, 5, 9, 11 };
+		int sepPoint = findSubarraysWithSameAvg(a);
+
+		assertEquals(-1, sepPoint);
+	}
+
+
+	int findSubarraysWithSameAvg(int[] a) {
+		int rsum = 0;
+		for (int i = 0; i < a.length; i++) {
+			rsum += a[i];
+		}
+
+		int lsum = 0, i = 0;
+		while (i < a.length) {
+			rsum -= a[i];
+			lsum += a[i];
+
+			int lavg = lsum / (i + 1);
+
+			int ravg = 0;
+			if (i + 1 < a.length) {
+				ravg = rsum / (a.length - (i + 1));
+			}
+
+			if (lavg == ravg)
+				return i;
+
+			i++;
+		}
+
+		return -1;
+	}
 
 
 	//	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
@@ -2538,7 +2760,7 @@ public class ArraysApi2 {
 
 	// @formatter:off
 
-	
+
 	@Test
 	@DisplayName("Test Sudoku")
 	void testSudoku(){
@@ -2720,19 +2942,26 @@ public class ArraysApi2 {
 		assertArrayEquals(expected, nextLexicoGr8trNumber);
 	}
 
+	@Test
+	@DisplayName("Test Get Next Lexico Gr8tr Num")
+	void testGetNextLexicoGr8TrNum6() {
+		int[] expected = { 1, 2, 4, 3, 5, 6 };
+		int[] nextLexicoGr8trNumber = getNextLexicoGr8trNumber(new int[] { 1, 2, 3, 6, 5, 4 });
+		assertArrayEquals(expected, nextLexicoGr8trNumber);
+	}
+
 	int[] getNextLexicoGr8trNumber(int[] a) {
 		int i = a.length - 2;
 		while (i >= 0 && a[i] > a[i + 1]) {
 			i--;
 		}
-
 		if (i < 0) {
 			_reverse(a, 0, a.length - 1);
 			return a;
 		}
 
 		int j = a.length - 1;
-		while (j >= 0 && a[j] < a[i]) {
+		while (j > i && a[j] < a[i]) {
 			j--;
 		}
 

@@ -1,5 +1,6 @@
 package com.problems.crackcode.kata.apis;
 
+import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -180,6 +181,7 @@ public class StringApi2 {
 			}
 			start++;
 		}
+		System.out.println(lst);
 		return lst.stream().toArray(i -> new String[i]);
 	}
 
@@ -201,20 +203,24 @@ public class StringApi2 {
 	}
 
 	private List<String> getSequencesOfString(String s) {
-		String ans = "";
-		List<String> lst = new ArrayList<>();
-		_sequenceHelper(lst, ans, s);
+		List<String> lst = new LinkedList<>();
+		_subseqHelper(s, "", lst);
 		return lst;
 	}
 
-	private void _sequenceHelper(List<String> lst, String ans, String s) {
-		if (s.length() == 0) {
-			lst.add(new String(ans));
+	private void _subseqHelper(String s, String temp, List<String> lst) {
+		if (Strings.isNullOrEmpty(s)) {
+			if (!Strings.isNullOrEmpty(temp)) {
+				lst.add(new String(temp));
+			}
 			return;
+		} else {
+			_subseqHelper(s.substring(1), temp + s.charAt(0), lst);
+			_subseqHelper(s.substring(1), temp, lst);
 		}
-		_sequenceHelper(lst, ans + s.charAt(0), s.substring(1));
-		_sequenceHelper(lst, ans, s.substring(1));
 	}
+
+
 
 
 
@@ -375,6 +381,35 @@ public class StringApi2 {
 
 		return new StringOverlapWithMaxOverlap(combinedString, overlap);
 	}
+
+	@Test
+	@DisplayName("Test Get Numeric Values Before Alphabets")
+	void testGetNumericValuesBeforeAlphabets() {
+		String op = getNumericFirstThenAlph("abc34a63");
+		Assertions.assertEquals("3463abca", op);
+	}
+
+
+	public String getNumericFirstThenAlph(String s) {
+		int i = 0;
+		char[] chars = s.toCharArray();
+
+		StringBuilder sbNumeric = new StringBuilder();
+		StringBuilder sbAlph = new StringBuilder();
+
+		while (i < chars.length) {
+			if (chars[i] > 47 && chars[i] < 58) {
+				sbNumeric.append(chars[i]);
+			} else {
+				sbAlph.append(chars[i]);
+			}
+			i++;
+		}
+
+		String finalOp = sbNumeric.append(sbAlph).toString();
+		return finalOp;
+	}
+
 
 	class StringOverlapWithMaxOverlap {
 		public StringOverlapWithMaxOverlap(String combinedString, int currOverlap) {
