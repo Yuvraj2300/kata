@@ -1930,18 +1930,35 @@ public class ArraysApi2 {
 	}
 
 
+
+	@Test
+	@DisplayName("Test Merge Two Sorted Arrays In Relative Order")
+	void testMergeTwoSortedArraysInRelativeOrder1() {
+		int[] a = { 10 };
+		int[] b = { 2, 3 };
+		mergeTwoSortedArraysInRelativeOrders(a, b);
+
+		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		System.out.println();
+		Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
+	}
+
+
 	void mergeTwoSortedArraysInRelativeOrders(int[] a, int[] b) {
 		int j = b.length - 1;
 
 		while (j >= 0) {
 			int last = a[a.length - 1];
-			int i = a.length - 2;
-			while (i >= 0 && a[i] > b[j]) {
-				a[i + 1] = a[i];
-				i--;
+			int k = a.length - 2;
+			if (last > b[j]) {
+				int temp = b[j];
+				b[j] = last;
+				while (k >= 0 && a[k] > temp) {
+					a[k + 1] = a[k];
+					k--;
+				}
+				a[k + 1] = temp;
 			}
-			a[i + 1] = b[j];
-			b[j] = last;
 			j--;
 		}
 	}
@@ -1972,24 +1989,30 @@ public class ArraysApi2 {
 
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < a.length; i++) {
-			if (max < a[i]) {
-				max = a[i];
+			max = max < a[i] ? a[i] : max;
+		}
+
+		int[] frq = new int[max + 1];
+
+		int i = 0;
+		while (i < a.length) {
+			frq[a[i]]++;
+			i++;
+		}
+
+		int majEle = -1, maxOccur = 0;
+
+		i = 0;
+
+		while (i < frq.length) {
+			if (frq[i] > maxOccur) {
+				maxOccur = frq[i];
+				majEle = i;
 			}
+			i++;
 		}
 
-		int freqHash[] = new int[max + 1];
-
-		for (int i = 0; i < a.length; i++) {
-			freqHash[a[i]]++;
-		}
-
-		for (int i = 0; i < a.length; i++) {
-			if (freqHash[a[i]] > reqLt) {
-				return a[i];
-			}
-		}
-
-		return -1;
+		return maxOccur > reqLt ? majEle : -1;
 	}
 
 
@@ -2514,6 +2537,45 @@ public class ArraysApi2 {
 		return -1;
 	}
 
+
+	@Test
+	@DisplayName("Test Reorder As Given Mapping")
+	void testReorderAsGivenMapping() {
+		int[] expectedA = { 40, 60, 90, 50, 70 };
+		int[] expectedIdx = { 0, 1, 2, 3, 4 };
+
+		int[] a = { 50, 40, 70, 60, 90 };
+		int[] idx = { 3, 0, 4, 1, 2 };
+		reorderAsPerMapping(a, idx);
+
+		assertArrayEquals(expectedA, a);
+		assertArrayEquals(expectedIdx, idx);
+
+		Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+		System.out.println();
+		Arrays.stream(idx).forEach(i -> System.out.print(i + ", "));
+	}
+
+
+
+	void reorderAsPerMapping(int[] a, int[] idx) {
+		int i = 0;
+		while (i < a.length) {
+			if (i != idx[i]) {
+				while (i != idx[i]) {
+					int mapping = idx[idx[i]];
+					int temp = a[idx[i]];
+
+					a[idx[i]] = a[i];
+					idx[idx[i]] = idx[i];
+
+					idx[i] = mapping;
+					a[i] = temp;
+				}
+			}
+			i++;
+		}
+	}
 
 	//	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
 

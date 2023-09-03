@@ -13,6 +13,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StreamsAPI {
+	//stream code to print fibonacci numbers till given length
+	@Test
+	@DisplayName("Test Print Fib Num")
+	void testPrintFibNum() {
+		printFibonacciNums(10);
+	}
+
+
+
+	void printFibonacciNums(int x) {
+		// @formatter:off
+		Stream.iterate(new long[]{0, 1}, f -> new long[]{f[1], f[0] + f[1]})
+				.limit(x)
+				.forEach(f -> System.out.print(f[0]+", "));
+		// @formatter:on
+	}
+
+
 	@Test
 	@DisplayName("Test String Array To Freq Map")
 	void testStringArrayToFreqMap() {
@@ -47,7 +65,7 @@ public class StreamsAPI {
 
 	int getSumOfEvenNumbers(int[] a) {
 		// @formatter:off
-		int sum = Arrays.stream(a).filter(s->s%2==0).sum();
+		int sum = Arrays.stream(a).filter(i->i%2==0).sum();
 		// @formatter:on
 		return sum;
 	}
@@ -62,7 +80,6 @@ public class StreamsAPI {
 
 		Arrays.stream(sortedByLength).forEach(s -> System.out.println(s + ", "));
 	}
-
 
 
 	int[] findLengthOfStringSortInDesc(String[] a) {
@@ -97,7 +114,7 @@ public class StreamsAPI {
 	Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
 		// @formatter:off
 		Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey,e->e.getValue().stream().collect(Collectors.averagingInt(i->i))));
+				.collect(Collectors.toMap(Map.Entry::getKey,e->e.getValue().stream().collect(Collectors.averagingDouble(i->(int)i))));
 		// @formatter:on
 
 		return collect;
@@ -118,13 +135,10 @@ public class StreamsAPI {
 	String findTheMostFrequentWord(String[] a) {
 		// @formatter:off
 		String s = Arrays.stream(a)
-					.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
-					.entrySet().stream()
-					.sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
-					.findFirst()
-					.map(Map.Entry::getKey)
-					.filter(op->!op.isEmpty())
-					.get();
+				.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+				.entrySet().stream()
+				.sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
+				.findFirst().get().getKey();
 		// @formatter:on
 		return s;
 	}
@@ -146,8 +160,7 @@ public class StreamsAPI {
 				.mapToObj(Integer::valueOf)
 				.sorted(Comparator.comparingInt(i->(int)i).reversed())
 				.skip(1)
-				.findFirst().orElse(-1);
-
+				.findFirst().get();
 		// @formatter:on
 		return integer;
 	}
