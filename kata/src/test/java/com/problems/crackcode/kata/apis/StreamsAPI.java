@@ -24,9 +24,9 @@ public class StreamsAPI {
 
 	void printFibonacciNums(int x) {
 		// @formatter:off
-		Stream.iterate(new long[]{0, 1}, f -> new long[]{f[1], f[0] + f[1]})
+		Stream.iterate(new int[]{0,1},f->new int[]{f[1],f[0]+f[1]})
 				.limit(x)
-				.forEach(f -> System.out.print(f[0]+", "));
+				.forEach(arr->System.out.print(arr[0]+", "));
 		// @formatter:on
 	}
 
@@ -213,7 +213,7 @@ public class StreamsAPI {
 
 	Map<String, Integer> getStringsToLengthMap(String[] s) {
 		// @formatter:off
-		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),String::length));
+		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),str->str.length()));
 		// @formatter:on
 	}
 
@@ -231,9 +231,9 @@ public class StreamsAPI {
 	String[] getStringInUpperCaseAndDesc(String[] s) {
 		// @formatter:off
 		String[] strings = Arrays.stream(s)
-				.map(String::toUpperCase)
-				.sorted((s1,s2)->s2.length()-s1.length())
-				.toArray(str->new String[str]);
+			.map(str->str.toUpperCase())
+			.sorted((s1,s2)->s2.length()-s1.length())
+			.toArray(str->new String[str]);
 		// @formatter:on
 
 		return strings;

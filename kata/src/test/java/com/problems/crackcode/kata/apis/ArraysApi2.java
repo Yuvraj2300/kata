@@ -2577,6 +2577,70 @@ public class ArraysApi2 {
 		}
 	}
 
+	@Test
+	@DisplayName("Test ReductionOfArrays")
+	void testReductionOfArrays() {
+		int[] expected = { 1, 2, 2, 3 };
+		int[] ints = reduceArrayWithKTimesEle(new int[] { 1, 2, 2, 2, 3 }, 2);
+		assertArrayEquals(expected, ints);
+	}
+
+
+	@Test
+	@DisplayName("Test ReductionOfArrays")
+	void testReductionOfArrays1() {
+		int[] expected = { 3 };
+		int[] ints = reduceArrayWithKTimesEle(new int[] { 3, 3, 3 }, 1);
+		assertArrayEquals(expected, ints);
+	}
+
+
+	@Test
+	@DisplayName("Test ReductionOfArrays")
+	void testReductionOfArrays2() {
+		int[] expected = { 1, 1, 2, 2, 3, 3, 4, 5 };
+		int[] ints = reduceArrayWithKTimesEle(new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 5 }, 2);
+		assertArrayEquals(expected, ints);
+	}
+
+
+	//Reduce the array such that each element appears at most K times
+	int[] reduceArrayWithKTimesEle(int[] a, int k) {
+		int i = 0;
+		int pele = -1;
+		int count = 0;
+		List<Integer> op = new LinkedList<>();
+
+		while (i < a.length) {
+			if (pele == -1 || pele == a[i]) {
+				pele = a[i];
+				count++;
+			} else {
+				int x = 0;
+				while (x < k && count != 0) {
+					op.add(pele);
+					x++;
+					count--;
+				}
+				pele = a[i];
+				count = 1;
+			}
+			i++;
+		}
+
+		if (count > 0) {
+			int x = 0;
+			while (x < k && count != 0) {
+				op.add(pele);
+				x++;
+				count--;
+			}
+		}
+
+		return op.stream().mapToInt(it -> it).toArray();
+	}
+
+
 	//	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
 
 
