@@ -28,1451 +28,1390 @@ import org.junit.platform.commons.util.StringUtils;
 import com.problems.crackcode.kata.exceptions.KataException;
 
 public class ArraysApi {
-	private void findThreeNumbers(int[] a, int arr_size, int sum) {
+    private void findThreeNumbers(int[] a, int arr_size, int sum) {
 
-		Set<Integer> hs = new HashSet<>();
+        Set<Integer> hs = new HashSet<>();
 
-		for (int i = 0; i < a.length; i++) {
-			int currSum = sum - a[i];
-			if (hs.contains(currSum)) {
-				for (int j = i + 1; j < a.length; j++) {
-					if (hs.contains(currSum - a[j])) {
-						System.out.println(a[i] + " " + a[j] + " " + (currSum - a[j]));
-						return;
-					}
-					hs.add(a[j]);
-				}
-			}
-			hs.add(a[i]);
-		}
+        for (int i = 0; i < a.length; i++) {
+            int currSum = sum - a[i];
+            if (hs.contains(currSum)) {
+                for (int j = i + 1; j < a.length; j++) {
+                    if (hs.contains(currSum - a[j])) {
+                        System.out.println(a[i] + " " + a[j] + " " + (currSum - a[j]));
+                        return;
+                    }
+                    hs.add(a[j]);
+                }
+            }
+            hs.add(a[i]);
+        }
 
-	}
+    }
 
 
+    private void findThreeNumbers_TwoPointer(int[] a, int arr_size, int sum) {
+        Arrays.sort(a);
+        List<Integer> resultBuffer = new ArrayList<>();
 
-	private void findThreeNumbers_TwoPointer(int[] a, int arr_size, int sum) {
-		Arrays.sort(a);
-		List<Integer> resultBuffer = new ArrayList<>();
+        int l = 0;
+        int h = arr_size - 1;
 
-		int l = 0;
-		int h = arr_size - 1;
 
+        while (l < h) {
+            int currSum = a[l] + a[h];
 
+            if (currSum == sum) {
+                resultBuffer.add(a[l]);
+                resultBuffer.add(a[h]);
+                break;
+            }
 
-		while (l < h) {
-			int currSum = a[l] + a[h];
+            if (currSum > sum) {
+                h--;
+            }
 
-			if (currSum == sum) {
-				resultBuffer.add(a[l]);
-				resultBuffer.add(a[h]);
-				break;
-			}
+            if (currSum < sum) {
+                l++;
+            }
+        }
 
-			if (currSum > sum) {
-				h--;
-			}
+        for (Integer integer : resultBuffer) {
+            System.out.print(integer + " ");
+        }
+    }
 
-			if (currSum < sum) {
-				l++;
-			}
-		}
 
-		for (Integer integer : resultBuffer) {
-			System.out.print(integer + " ");
-		}
-	}
+    @Test
+    void testFindThreeNumbers() throws Exception {
+        int A[] = {1, 4, 45, 6, 10, 8};
+        int sum = 22;
+        int arr_size = A.length;
 
+        findThreeNumbers(A, arr_size, sum);
+    }
 
 
-	@Test
-	void testFindThreeNumbers() throws Exception {
-		int A[] = { 1, 4, 45, 6, 10, 8 };
-		int sum = 22;
-		int arr_size = A.length;
+    @Test
+    void testFindThreeNumbers_1() throws Exception {
+        int A[] = {10, 20, 35, 50, 75, 80};
+        int sum = 70;
+        int arr_size = A.length;
 
-		findThreeNumbers(A, arr_size, sum);
-	}
+        findThreeNumbers_TwoPointer(A, arr_size, sum);
+    }
 
 
+    private int findMajorityElement(int[] arr) {
+        Map<Integer, Integer> mapOfValuesWithOccur = new HashMap<>();
 
-	@Test
-	void testFindThreeNumbers_1() throws Exception {
-		int A[] = { 10, 20, 35, 50, 75, 80 };
-		int sum = 70;
-		int arr_size = A.length;
+        for (int i = 0; i < arr.length; i++) {
+            if (mapOfValuesWithOccur.containsKey(arr[i])) {
+                mapOfValuesWithOccur.put(arr[i], mapOfValuesWithOccur.get(arr[i]) + 1);
+            } else {
+                mapOfValuesWithOccur.put(arr[i], 1);
+            }
+        }
 
-		findThreeNumbers_TwoPointer(A, arr_size, sum);
-	}
+        Integer value = Collections.max(mapOfValuesWithOccur.entrySet(), Map.Entry.comparingByValue()).getKey();
 
+        return value;
+    }
 
-	private int findMajorityElement(int[] arr) {
-		Map<Integer, Integer> mapOfValuesWithOccur = new HashMap<>();
 
-		for (int i = 0; i < arr.length; i++) {
-			if (mapOfValuesWithOccur.containsKey(arr[i])) {
-				mapOfValuesWithOccur.put(arr[i], mapOfValuesWithOccur.get(arr[i]) + 1);
-			} else {
-				mapOfValuesWithOccur.put(arr[i], 1);
-			}
-		}
+    @Test
+    void testFindMajorityElement() throws Exception {
+        int arr[] = {1, 1, 2, 1, 3, 5, 1};
+        int max = findMajorityElement(arr);
+        assertEquals(1, max);
+    }
 
-		Integer value = Collections.max(mapOfValuesWithOccur.entrySet(), Map.Entry.comparingByValue()).getKey();
 
-		return value;
-	}
+    @Test
+    void testFindMajorityElement_1() throws Exception {
+        int arr[] = {7, 7, 2, 7, 5, 1};
+        int max = findMajorityElement(arr);
+        assertEquals(7, max);
+    }
 
 
+    @Test
+    void testFindMajorityElement_2() throws Exception {
+        int arr[] = {3, 3, 4, 2, 4, 4, 2, 4, 4};
+        int max = findMajorityElement(arr);
+        assertEquals(4, max);
+    }
 
-	@Test
-	void testFindMajorityElement() throws Exception {
-		int arr[] = { 1, 1, 2, 1, 3, 5, 1 };
-		int max = findMajorityElement(arr);
-		assertEquals(1, max);
-	}
 
+    private int findEquilib(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
 
+        return _binaryToFindEquilib(a, l, h);
+    }
 
-	@Test
-	void testFindMajorityElement_1() throws Exception {
-		int arr[] = { 7, 7, 2, 7, 5, 1 };
-		int max = findMajorityElement(arr);
-		assertEquals(7, max);
-	}
 
+    private int _binaryToFindEquilib(int[] a, int l, int h) {
+        int mid = (l + h) / 2;
+        int sumL = 0;
+        int sumR = 0;
 
-	@Test
-	void testFindMajorityElement_2() throws Exception {
-		int arr[] = { 3, 3, 4, 2, 4, 4, 2, 4, 4 };
-		int max = findMajorityElement(arr);
-		assertEquals(4, max);
-	}
+        for (int i = 0; i < mid; i++) {
+            sumL += a[i];
+        }
 
+        for (int i = a.length - 1; i > mid; i--) {
+            sumR += a[i];
+        }
 
+        if (sumL == sumR) {
+            return mid;
+        } else if (sumL < sumR) {
+            return _binaryToFindEquilib(a, l, h--);
+        } else {
+            return _binaryToFindEquilib(a, l++, h);
+        }
+    }
 
-	private int findEquilib(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
 
-		return _binaryToFindEquilib(a, l, h);
-	}
+    @Test
+    void testFindEquilibriumIndex() throws Exception {
+        int a[] = {-7, 1, 5, 2, -4, 3, 0};
 
+        int equlibIdx = findEquilib(a);
+        assertEquals(3, equlibIdx);
 
+    }
 
-	private int _binaryToFindEquilib(int[] a, int l, int h) {
-		int mid = (l + h) / 2;
-		int sumL = 0;
-		int sumR = 0;
 
-		for (int i = 0; i < mid; i++) {
-			sumL += a[i];
-		}
+    private int findPeakElement(int[] a) {
 
-		for (int i = a.length - 1; i > mid; i--) {
-			sumR += a[i];
-		}
+        int l = 0;
+        int h = a.length - 1;
 
-		if (sumL == sumR) {
-			return mid;
-		} else if (sumL < sumR) {
-			return _binaryToFindEquilib(a, l, h--);
-		} else {
-			return _binaryToFindEquilib(a, l++, h);
-		}
-	}
 
+        return _binaryToSearchForPeak(a, l, h);
 
-	@Test
-	void testFindEquilibriumIndex() throws Exception {
-		int a[] = { -7, 1, 5, 2, -4, 3, 0 };
+    }
 
-		int equlibIdx = findEquilib(a);
-		assertEquals(3, equlibIdx);
 
-	}
+    private int _binaryToSearchForPeak(int[] a, int l, int h) {
+        int mid = l + h / 2;
 
+        if (mid == a.length - 1) {
+            return a[mid];
+        }
 
-	private int findPeakElement(int[] a) {
+        if (a[mid] == a[mid - 1] && a[mid] == a[mid + 1]) {
+            return a[mid];
+        }
 
-		int l = 0;
-		int h = a.length - 1;
 
+        if (a[mid] > a[mid + 1] && a[mid] > a[mid - 1]) {
+            return a[mid];
+        } else if (a[mid + 1] > a[mid]) {
+            return _binaryToSearchForPeak(a, l + 1, h);
+        } else {
+            return _binaryToSearchForPeak(a, l, h - 1);
+        }
 
-		return _binaryToSearchForPeak(a, l, h);
 
-	}
+    }
 
 
+    public int findPeak_1(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
 
-	private int _binaryToSearchForPeak(int[] a, int l, int h) {
-		int mid = l + h / 2;
+        return _binSearchPeakl(a, l, h);
+    }
 
-		if (mid == a.length - 1) {
-			return a[mid];
-		}
 
-		if (a[mid] == a[mid - 1] && a[mid] == a[mid + 1]) {
-			return a[mid];
-		}
+    private int _binSearchPeakl(int[] a, int l, int h) {
+        int mid = (h + l) / 2;
 
+        if (a[mid] > a[mid - 1] && a[mid] > a[mid + 1]) {
+            return a[mid];
+        } else {
+            //start a race b/w two threads to search other parts of the array
+            CountDownLatch ready = new CountDownLatch(2);
+            CountDownLatch start = new CountDownLatch(1);
 
-		if (a[mid] > a[mid + 1] && a[mid] > a[mid - 1]) {
-			return a[mid];
-		} else if (a[mid + 1] > a[mid]) {
-			return _binaryToSearchForPeak(a, l + 1, h);
-		} else {
-			return _binaryToSearchForPeak(a, l, h - 1);
-		}
 
+            Executor executor = Executors.newCachedThreadPool();
 
+            for (int i = 0; i < 2; i++) {
+                if (i == 0) {
+                    l = l + 1;
+                } else {
 
-	}
+                }
 
 
+                try {
+                    ready.countDown();
+                    executor.execute(() -> {
+                        try {
+                            start.await();
+                            //							_binSearchPeakl(a, l, h);
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+                    });
+                } catch (Exception e) {
 
-	public int findPeak_1(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
+                }
+            }
 
-		return _binSearchPeakl(a, l, h);
-	}
 
+            return 0;
 
+        }
+    }
 
-	private int _binSearchPeakl(int[] a, int l, int h) {
-		int mid = (h + l) / 2;
+    @Test
+    void testFindPeakElement() throws Exception {
+        int a[] = {5, 10, 20, 15};
 
-		if (a[mid] > a[mid - 1] && a[mid] > a[mid + 1]) {
-			return a[mid];
-		} else {
-			//start a race b/w two threads to search other parts of the array
-			CountDownLatch ready = new CountDownLatch(2);
-			CountDownLatch start = new CountDownLatch(1);
+        int peakElement = findPeakElement(a);
+        assertEquals(20, peakElement);
+    }
 
 
-			Executor executor = Executors.newCachedThreadPool();
+    @Test
+    void testFindPeakElement_1() throws Exception {
+        int a[] = {10, 20, 15, 2, 23, 90, 67};
 
-			for (int i = 0; i < 2; i++) {
-				if (i == 0) {
-					l = l + 1;
-				} else {
+        int peakElement = findPeakElement(a);
+        assertEquals(90, peakElement);
+    }
 
-				}
 
+    @Test
+    void testFindPeakElement_2() throws Exception {
+        int a[] = {10, 20, 30, 40, 50};
 
-				try {
-					ready.countDown();
-					executor.execute(() -> {
-						try {
-							start.await();
-							//							_binSearchPeakl(a, l, h);
-						} catch (Exception e) {
-							// TODO: handle exception
-						}
-					});
-				} catch (Exception e) {
+        int peakElement = findPeakElement(a);
+        assertEquals(50, peakElement);
+    }
 
-				}
-			}
 
+    @Test
+    void testFindPeakElement_3() throws Exception {
+        int a[] = {20, 20, 20, 20, 20};
 
+        int peakElement = findPeakElement(a);
+        assertEquals(20, peakElement);
+    }
 
-			return 0;
 
-		}
-	}
+    private List<Integer> findSubArray(int[] a, int sumToCheck) {
+        List<Integer> range = new ArrayList<Integer>();
 
-	@Test
-	void testFindPeakElement() throws Exception {
-		int a[] = { 5, 10, 20, 15 };
+        int p = 0;
+        int currSum = a[p];
 
-		int peakElement = findPeakElement(a);
-		assertEquals(20, peakElement);
-	}
+        int i = 1;
+        while (i < a.length) {
 
+            if (currSum == sumToCheck) {
+                range.add(p);
+                range.add(i - 1);
+                break;
+            }
 
+            if (currSum > sumToCheck) {
+                currSum -= a[p];
+                p++;
+            } else {
+                currSum += a[i];
+                i++;
+            }
+        }
 
-	@Test
-	void testFindPeakElement_1() throws Exception {
-		int a[] = { 10, 20, 15, 2, 23, 90, 67 };
 
-		int peakElement = findPeakElement(a);
-		assertEquals(90, peakElement);
-	}
+        return range;
+    }
 
 
-	@Test
-	void testFindPeakElement_2() throws Exception {
-		int a[] = { 10, 20, 30, 40, 50 };
+    @Test
+    void testFindSubArray() throws Exception {
+        int a[] = {1, 4, 20, 3, 10, 5};
 
-		int peakElement = findPeakElement(a);
-		assertEquals(50, peakElement);
-	}
+        List<Integer> range = findSubArray(a, 33);
+        System.out.println(range);
+    }
 
 
-	@Test
-	void testFindPeakElement_3() throws Exception {
-		int a[] = { 20, 20, 20, 20, 20 };
+    @Test
+    void testFindSubArray_1() throws Exception {
+        int a[] = {1, 4, 0, 0, 3, 10, 5};
 
-		int peakElement = findPeakElement(a);
-		assertEquals(20, peakElement);
-	}
+        List<Integer> range = findSubArray(a, 7);
+        System.out.println(range);
+    }
 
 
+    private int[] mySort(int[] a, String type) {
+        if (StringUtils.isBlank(type)) {
+            int l = 0;
+            int h = a.length - 1;
+            _mergeSort(a, l, h);
+        }
 
-	private List<Integer> findSubArray(int[] a, int sumToCheck) {
-		List<Integer> range = new ArrayList<Integer>();
+        if ("quick".equals(type)) {
+            _quickSort(a);
+        }
 
-		int p = 0;
-		int currSum = a[p];
+        return a;
+    }
 
-		int i = 1;
-		while (i < a.length) {
 
-			if (currSum == sumToCheck) {
-				range.add(p);
-				range.add(i - 1);
-				break;
-			}
+    private void _quickSort(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
 
-			if (currSum > sumToCheck) {
-				currSum -= a[p];
-				p++;
-			} else {
-				currSum += a[i];
-				i++;
-			}
-		}
+        _quickSortUtil(a, l, h);
+    }
 
 
+    private void _quickSortUtil(int[] a, int l, int h) {
+        int pivotIdx = l;
+        if (l < h) {
+            pivotIdx = _getPivotIdx(a, pivotIdx, l, h);
+            //			System.out.println("Pivot is at  : " + pivotIdx);
+            _quickSortUtil(a, l, pivotIdx - 1);
+            _quickSortUtil(a, pivotIdx + 1, h);
+        }
+    }
 
-		return range;
-	}
 
+    private int _getPivotIdx(int[] a, int pivotIdx, int l, int h) {
+        while (l != pivotIdx || h != pivotIdx) {
 
+            while (a[h] > a[pivotIdx]) {
+                h--;
+            }
 
-	@Test
-	void testFindSubArray() throws Exception {
-		int a[] = { 1, 4, 20, 3, 10, 5 };
+            if (a[h] < a[pivotIdx]) {
+                _swap(a, pivotIdx, h);
+            }
+            pivotIdx = h;
 
-		List<Integer> range = findSubArray(a, 33);
-		System.out.println(range);
-	}
+            while (a[l] < a[pivotIdx]) {
+                l++;
+            }
 
+            if (a[l] > a[pivotIdx]) {
+                _swap(a, pivotIdx, l);
+            }
+            pivotIdx = l;
+        }
+        return pivotIdx;
+    }
 
-	@Test
-	void testFindSubArray_1() throws Exception {
-		int a[] = { 1, 4, 0, 0, 3, 10, 5 };
 
-		List<Integer> range = findSubArray(a, 7);
-		System.out.println(range);
-	}
+    private void _swap(int[] a, int i, int j) {
+        int temp = a[j];
+        a[j] = a[i];
+        a[i] = temp;
+    }
 
 
+    @Test
+    void testQuickSort() throws Exception {
+        int[] a = {16, 20, 1, 2, 19};
 
-	private int[] mySort(int[] a, String type) {
-		if (StringUtils.isBlank(type)) {
-			int l = 0;
-			int h = a.length - 1;
-			_mergeSort(a, l, h);
-		}
+        mySort(a, "quick");
 
-		if ("quick".equals(type)) {
-			_quickSort(a);
-		}
+        for (int i : a) {
+            System.out.print(i + " ");
+        }
+    }
 
-		return a;
-	}
 
+    @Test
+    void testQuickSort_1() throws Exception {
+        int[] a = {90, 34, 1, 45, 21, -3};
 
+        mySort(a, "quick");
 
-	private void _quickSort(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
 
-		_quickSortUtil(a, l, h);
-	}
+        for (int i : a) {
+            System.out.print(i + " ");
+        }
+    }
 
+    private int[] _mergeSort(int[] a, int l, int h) {
 
+        if (l < h) {
+            int mid = (h + l) / 2;
 
-	private void _quickSortUtil(int[] a, int l, int h) {
-		int pivotIdx = l;
-		if (l < h) {
-			pivotIdx = _getPivotIdx(a, pivotIdx, l, h);
-			//			System.out.println("Pivot is at  : " + pivotIdx);
-			_quickSortUtil(a, l, pivotIdx - 1);
-			_quickSortUtil(a, pivotIdx + 1, h);
-		}
-	}
+            _mergeSort(a, l, mid);
+            _mergeSort(a, mid + 1, h);
+            merge(a, l, h, mid);
+        }
+        return a;
+    }
 
 
+    private void merge(int[] a, int l, int h, int mid) {
+        int splitSize1 = mid - l + 1;
+        int splitSize2 = h - mid;
 
-	private int _getPivotIdx(int[] a, int pivotIdx, int l, int h) {
-		while (l != pivotIdx || h != pivotIdx) {
+        int split1[] = new int[splitSize1];
+        int split2[] = new int[splitSize2];
 
-			while (a[h] > a[pivotIdx]) {
-				h--;
-			}
+        for (int i = 0; i < splitSize1; i++) {
+            split1[i] = a[l + i];
+        }
 
-			if (a[h] < a[pivotIdx]) {
-				_swap(a, pivotIdx, h);
-			}
-			pivotIdx = h;
+        for (int i = 0; i < splitSize2; i++) {
+            split2[i] = a[mid + 1 + i];
+        }
 
-			while (a[l] < a[pivotIdx]) {
-				l++;
-			}
+        int p = l;
 
-			if (a[l] > a[pivotIdx]) {
-				_swap(a, pivotIdx, l);
-			}
-			pivotIdx = l;
-		}
-		return pivotIdx;
-	}
+        int i = 0;
+        int j = 0;
+        while (i < splitSize1 && j < splitSize2) {
+            if (split1[i] <= split2[j]) {
+                a[p] = split1[i];
+                i++;
+            } else {
+                a[p] = split2[j];
+                j++;
+            }
+            p++;
+        }
 
 
+        while (i < splitSize1) {
+            a[p] = split1[i];
+            i++;
+            p++;
+        }
 
-	private void _swap(int[] a, int i, int j) {
-		int temp = a[j];
-		a[j] = a[i];
-		a[i] = temp;
-	}
 
+        while (j < splitSize2) {
+            a[p] = split2[j];
+            j++;
+            p++;
+        }
+    }
 
 
-	@Test
-	void testQuickSort() throws Exception {
-		int[] a = { 16, 20, 1, 2, 19 };
+    @Test
+    void testSortArray() {
+        int a[] = {2, 6, 18, 4};
+        int sorteda[] = mySort(a, "");
 
-		mySort(a, "quick");
+        for (int i : sorteda) {
+            System.out.print(i + ",");
+        }
+    }
 
-		for (int i : a) {
-			System.out.print(i + " ");
-		}
-	}
 
+    private void sortTwoArray(int[] a, int[] b) {
+        int size1 = a.length;
+        int size2 = b.length;
 
-	@Test
-	void testQuickSort_1() throws Exception {
-		int[] a = { 90, 34, 1, 45, 21, -3 };
+        int i = size1 - 1;
+        int j = size2 - 1;
 
-		mySort(a, "quick");
+        //		if (size2 > size1) {
+        while (i >= 0) {
+            while (j >= 0) {
+                if (b[j] < a[i]) {
+                    int temp = a[i];
+                    a[i] = b[j];
+                    b[j] = temp;
+                }
+                j--;
+            }
+            j = size2 - 1;
+            i--;
+        }
 
+        mySort(a, "");
+        mySort(b, "");
+    }
+    //&& i >= 0
+    //	else {
+    //
+    //		}
 
-		for (int i : a) {
-			System.out.print(i + " ");
-		}
-	}
+    //	}
 
-	private int[] _mergeSort(int[] a, int l, int h) {
+    @Test
+    void testSortTwoArrays() throws Exception {
+        int[] a = {4, 3, 8};
+        int[] b = {6, 18, 12, 5};
 
-		if (l < h) {
-			int mid = (h + l) / 2;
+        sortTwoArray(a, b);
 
-			_mergeSort(a, l, mid);
-			_mergeSort(a, mid + 1, h);
-			merge(a, l, h, mid);
-		}
-		return a;
-	}
+        for (int i : a) {
+            System.out.print(i + ",");
+        }
 
+        System.out.println();
+        for (int i : b) {
+            System.out.print(i + ",");
+        }
+    }
 
 
+    @Test
+    void testSortTwoArrays_1() throws Exception {
+        int[] a = {12, 3, 8, 4};
+        int[] b = {6, 18, 12, 5};
 
-	private void merge(int[] a, int l, int h, int mid) {
-		int splitSize1 = mid - l + 1;
-		int splitSize2 = h - mid;
+        sortTwoArray(a, b);
 
-		int split1[] = new int[splitSize1];
-		int split2[] = new int[splitSize2];
+        for (int i : a) {
+            System.out.print(i + ",");
+        }
 
-		for (int i = 0; i < splitSize1; i++) {
-			split1[i] = a[l + i];
-		}
+        System.out.println();
+        for (int i : b) {
+            System.out.print(i + ",");
+        }
+    }
 
-		for (int i = 0; i < splitSize2; i++) {
-			split2[i] = a[mid + 1 + i];
-		}
 
-		int p = l;
+    @Test
+    void testSortTwoArrays_2() throws Exception {
+        int[] a = {12, 3, 8, 4};
+        int[] b = {6, 18, 12};
 
-		int i = 0;
-		int j = 0;
-		while (i < splitSize1 && j < splitSize2) {
-			if (split1[i] <= split2[j]) {
-				a[p] = split1[i];
-				i++;
-			} else {
-				a[p] = split2[j];
-				j++;
-			}
-			p++;
-		}
+        sortTwoArray(a, b);
 
+        for (int i : a) {
+            System.out.print(i + ",");
+        }
 
-		while (i < splitSize1) {
-			a[p] = split1[i];
-			i++;
-			p++;
-		}
+        System.out.println();
+        for (int i : b) {
+            System.out.print(i + ",");
+        }
+    }
 
 
-		while (j < splitSize2) {
-			a[p] = split2[j];
-			j++;
-			p++;
-		}
-	}
+    private int[] mergeAndSortTwoArray(int[] a, int[] b) {
+        int size1 = a.length;
+        int size2 = b.length;
 
+        int[] res = new int[size1 + size2];
+        int p = 0;
 
+        int i = 0;
+        int j = 0;
+        while (i < size1) {
+            res[p] = a[i];
+            i++;
+            p++;
+        }
 
-	@Test
-	void testSortArray() {
-		int a[] = { 2, 6, 18, 4 };
-		int sorteda[] = mySort(a, "");
 
-		for (int i : sorteda) {
-			System.out.print(i + ",");
-		}
-	}
+        while (j < size2) {
+            res[p] = b[j];
+            j++;
+            p++;
+        }
 
+        int[] sorted = mySort(res, "");
 
-	private void sortTwoArray(int[] a, int[] b) {
-		int size1 = a.length;
-		int size2 = b.length;
+        return sorted;
+    }
 
-		int i = size1 - 1;
-		int j = size2 - 1;
 
-		//		if (size2 > size1) {
-		while (i >= 0) {
-			while (j >= 0) {
-				if (b[j] < a[i]) {
-					int temp = a[i];
-					a[i] = b[j];
-					b[j] = temp;
-				}
-				j--;
-			}
-			j = size2 - 1;
-			i--;
-		}
+    @Test
+    void testMergeAndSortTwoUnsortedArray() throws Exception {
+        int[] a = {12, 3, 8, 4};
+        int[] b = {6, 18, 12};
 
-		mySort(a, "");
-		mySort(b, "");
-	}
-	//&& i >= 0	
-	//	else {
-	//			
-	//		}
+        int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
 
-	//	}
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-	@Test
-	void testSortTwoArrays() throws Exception {
-		int[] a = { 4, 3, 8 };
-		int[] b = { 6, 18, 12, 5 };
 
-		sortTwoArray(a, b);
+    @Test
+    void testMergeAndSortTwoUnsortedArray_1() throws Exception {
+        int[] a = {4, 3, 8};
+        int[] b = {6, 18, 12, 5};
 
-		for (int i : a) {
-			System.out.print(i + ",");
-		}
+        int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
 
-		System.out.println();
-		for (int i : b) {
-			System.out.print(i + ",");
-		}
-	}
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
 
+    @Test
+    void testMergeAndSortTwoUnsortedArray_2() throws Exception {
+        int[] b = {4, 3, 8};
+        int[] a = {6, 18, 12, 5};
 
-	@Test
-	void testSortTwoArrays_1() throws Exception {
-		int[] a = { 12, 3, 8, 4 };
-		int[] b = { 6, 18, 12, 5 };
+        int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
 
-		sortTwoArray(a, b);
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-		for (int i : a) {
-			System.out.print(i + ",");
-		}
 
-		System.out.println();
-		for (int i : b) {
-			System.out.print(i + ",");
-		}
-	}
+    private int[] mergeTwoSortedArraysAsSorted(int[] a, int[] b) {
+        int size1 = a.length;
+        int size2 = b.length;
 
+        int[] res = new int[size1 + size2];
 
-	@Test
-	void testSortTwoArrays_2() throws Exception {
-		int[] a = { 12, 3, 8, 4 };
-		int[] b = { 6, 18, 12 };
+        int i = 0;
+        int j = 0;
+        int p = 0;
 
-		sortTwoArray(a, b);
+        while (i < size1 && j < size2) {
+            if (a[i] <= b[j]) {
+                res[p] = a[i];
+                i++;
+            } else {
+                res[p] = b[j];
+                j++;
+            }
+            p++;
+        }
 
-		for (int i : a) {
-			System.out.print(i + ",");
-		}
+        while (i < size1) {
+            res[p] = a[i];
+            i++;
+            p++;
+        }
 
-		System.out.println();
-		for (int i : b) {
-			System.out.print(i + ",");
-		}
-	}
+        while (j < size2) {
+            res[p] = b[j];
+            j++;
+            p++;
+        }
 
+        return res;
+    }
 
-	private int[] mergeAndSortTwoArray(int[] a, int[] b) {
-		int size1 = a.length;
-		int size2 = b.length;
 
-		int[] res = new int[size1 + size2];
-		int p = 0;
+    @Test
+    void testMergeTwoSortedArraysAsSorted() throws Exception {
+        int[] b = {1, 3, 4, 5};
+        int[] a = {2, 4, 6};
 
-		int i = 0;
-		int j = 0;
-		while (i < size1) {
-			res[p] = a[i];
-			i++;
-			p++;
-		}
+        int[] mergedSortedArray = mergeTwoSortedArraysAsSorted(a, b);
 
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-		while (j < size2) {
-			res[p] = b[j];
-			j++;
-			p++;
-		}
 
-		int[] sorted = mySort(res, "");
+    @Test
+    void testMergeTwoSortedArraysAsSorted_1() throws Exception {
+        int[] a = {5, 8, 9};
+        int[] b = {4, 7, 8};
 
-		return sorted;
-	}
+        int[] mergedSortedArray = mergeTwoSortedArraysAsSorted(a, b);
 
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
 
-	@Test
-	void testMergeAndSortTwoUnsortedArray() throws Exception {
-		int[] a = { 12, 3, 8, 4 };
-		int[] b = { 6, 18, 12 };
+    private int[] mergeTwoSortedArraysAsSortedInBiggerArray(int[] a, int[] b) {
+        int size1 = a.length;
+        int size2 = b.length;
 
-		int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
+        int[] biggerArray = null;
+        int[] smallerArray = null;
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        int i = 0;
+        int j = 0;
 
+        int actualValsOccupied = 0;
+        int totalIdx = 0;
 
-	@Test
-	void testMergeAndSortTwoUnsortedArray_1() throws Exception {
-		int[] a = { 4, 3, 8 };
-		int[] b = { 6, 18, 12, 5 };
+        if (size1 > size2) {
+            for (int k = 0; k < size1; k++) {
+                if (a[k] != -1) {
+                    actualValsOccupied++;
+                } else {
+                    break;
+                }
+            }
 
-		int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
+            biggerArray = a;
+            smallerArray = b;
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+            totalIdx = size1 - 1;
+            j = size2 - 1;
+        } else {
+            for (int k = 0; k < size2; k++) {
+                if (b[k] != -1) {
+                    actualValsOccupied++;
+                } else {
+                    break;
+                }
+            }
 
+            biggerArray = b;
+            smallerArray = a;
 
-	@Test
-	void testMergeAndSortTwoUnsortedArray_2() throws Exception {
-		int[] b = { 4, 3, 8 };
-		int[] a = { 6, 18, 12, 5 };
+            totalIdx = size2 - 1;
+            j = size1 - 1;
+        }
 
-		int[] mergedSortedArray = mergeAndSortTwoArray(a, b);
+        i = actualValsOccupied - 1;
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        while (i >= 0 && j >= 0) {
+            if (biggerArray[i] > smallerArray[j]) {
+                biggerArray[totalIdx] = biggerArray[i];
+                i--;
+            } else {
+                biggerArray[totalIdx] = smallerArray[j];
+                j--;
+            }
+            totalIdx--;
+        }
 
+        return biggerArray;
+    }
 
 
-	private int[] mergeTwoSortedArraysAsSorted(int[] a, int[] b) {
-		int size1 = a.length;
-		int size2 = b.length;
+    @Test
+    void testMergeTwoSortedArraysAsSortedInBiggerArray() throws Exception {
+        int a[] = {10, 12, 13, 14, 18, -1, -1, -1, -1, -1};
+        int b[] = {16, 17, 19, 20, 22};
 
-		int[] res = new int[size1 + size2];
+        int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
 
-		int i = 0;
-		int j = 0;
-		int p = 0;
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-		while (i < size1 && j < size2) {
-			if (a[i] <= b[j]) {
-				res[p] = a[i];
-				i++;
-			} else {
-				res[p] = b[j];
-				j++;
-			}
-			p++;
-		}
+    @Test
+    void testMergeTwoSortedArraysAsSortedInBiggerArray_1() throws Exception {
+        int b[] = {10, 12, 13, 14, 18, -1, -1, -1, -1, -1};
+        int a[] = {16, 17, 19, 20, 22};
 
-		while (i < size1) {
-			res[p] = a[i];
-			i++;
-			p++;
-		}
+        int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-		while (j < size2) {
-			res[p] = b[j];
-			j++;
-			p++;
-		}
 
-		return res;
-	}
+    @Test
+    void testMergeTwoSortedArraysAsSortedInBiggerArray_2() throws Exception {
+        int a[] = {1, 2, 3, 5, -1, -1, -1, -1, -1};
+        int b[] = {16, 17, 19, 20, 22};
 
+        int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
 
-	@Test
-	void testMergeTwoSortedArraysAsSorted() throws Exception {
-		int[] b = { 1, 3, 4, 5 };
-		int[] a = { 2, 4, 6 };
+    @Test
+    void testMergeTwoSortedArraysAsSortedInBiggerArray_3() throws Exception {
+        int b[] = {1, 4, 17, 22, 99, -1, -1, -1, -1, -1};
+        int a[] = {16, 17, 19, 20, 22};
 
-		int[] mergedSortedArray = mergeTwoSortedArraysAsSorted(a, b);
+        //		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
+        int[] mergedSortedArray = merge2SortedWithBuffer(a, b);
+        for (int i : mergedSortedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
 
+    private int[] merge2SortedWithBuffer(int[] a, int[] b) {
+        int[] biggerArray;
+        int[] smallerArray;
 
-	@Test
-	void testMergeTwoSortedArraysAsSorted_1() throws Exception {
-		int[] a = { 5, 8, 9 };
-		int[] b = { 4, 7, 8 };
+        int actualValues = 0;
+        if (a.length > b.length) {
 
-		int[] mergedSortedArray = mergeTwoSortedArraysAsSorted(a, b);
+            biggerArray = a;
+            smallerArray = b;
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        } else {
+            biggerArray = b;
+            smallerArray = a;
+        }
 
+        for (int i = 0; i < biggerArray.length; i++) {
+            if (biggerArray[i] != -1)
+                actualValues++;
+            else
+                break;
 
+        }
 
+        int i = biggerArray.length - 1;
+        int j = smallerArray.length - 1;
+        actualValues -= 1;
 
-	private int[] mergeTwoSortedArraysAsSortedInBiggerArray(int[] a, int[] b) {
-		int size1 = a.length;
-		int size2 = b.length;
+        while (i >= 0 && j >= 0) {
+            if (biggerArray[actualValues] > smallerArray[j]) {
+                biggerArray[i] = biggerArray[actualValues];
+                actualValues--;
+            } else {
+                biggerArray[i] = smallerArray[j];
+                j--;
+            }
+            i--;
+        }
 
-		int[] biggerArray = null;
-		int[] smallerArray = null;
 
-		int i = 0;
-		int j = 0;
+        return biggerArray;
+    }
 
-		int actualValsOccupied = 0;
-		int totalIdx = 0;
 
-		if (size1 > size2) {
-			for (int k = 0; k < size1; k++) {
-				if (a[k] != -1) {
-					actualValsOccupied++;
-				} else {
-					break;
-				}
-			}
+    private int[] rotateArrayBy(int[] a, int rotateTimes) {
+        while (rotateTimes > 0) {
+            int i = 0;
+            int first = a[0];
+            while (i < a.length) {
+                if (i == a.length - 1) {
+                    a[i] = first;
+                } else {
+                    a[i] = a[i + 1];
+                }
 
-			biggerArray = a;
-			smallerArray = b;
+                i++;
+            }
 
-			totalIdx = size1 - 1;
-			j = size2 - 1;
-		} else {
-			for (int k = 0; k < size2; k++) {
-				if (b[k] != -1) {
-					actualValsOccupied++;
-				} else {
-					break;
-				}
-			}
+            rotateTimes--;
+        }
 
-			biggerArray = b;
-			smallerArray = a;
+        return a;
+    }
 
-			totalIdx = size2 - 1;
-			j = size1 - 1;
-		}
 
-		i = actualValsOccupied - 1;
+    @Test
+    void testArrayRotation() throws Exception {
+        int a[] = {1, 2, 3, 4, 5, 6, 7};
 
-		while (i >= 0 && j >= 0) {
-			if (biggerArray[i] > smallerArray[j]) {
-				biggerArray[totalIdx] = biggerArray[i];
-				i--;
-			} else {
-				biggerArray[totalIdx] = smallerArray[j];
-				j--;
-			}
-			totalIdx--;
-		}
+        int[] rotatedArray = rotateArrayBy(a, 2);
 
-		return biggerArray;
-	}
+        for (int i : rotatedArray) {
+            System.out.print(i + ",");
+        }
+    }
 
 
+    private int timesRightRotated(int[] a) {
 
-	@Test
-	void testMergeTwoSortedArraysAsSortedInBiggerArray() throws Exception {
-		int a[] = { 10, 12, 13, 14, 18, -1, -1, -1, -1, -1 };
-		int b[] = { 16, 17, 19, 20, 22 };
+        int l = 0;
+        int h = a.length - 1;
 
-		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
+        int rotations = _binaryToFindTimesOfRightRotation(a, l, h);
+        return rotations;
+    }
 
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
 
-	@Test
-	void testMergeTwoSortedArraysAsSortedInBiggerArray_1() throws Exception {
-		int b[] = { 10, 12, 13, 14, 18, -1, -1, -1, -1, -1 };
-		int a[] = { 16, 17, 19, 20, 22 };
+    private int _binaryToFindTimesOfRightRotation(int[] a, int l, int h) {
 
-		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        if (!(l < h)) {
+            return 0;
+        }
 
+        int mid = (h + l) / 2;
 
+        if (mid == 0) {
+            return 0;
+        }
 
-	@Test
-	void testMergeTwoSortedArraysAsSortedInBiggerArray_2() throws Exception {
-		int a[] = { 1, 2, 3, 5, -1, -1, -1, -1, -1 };
-		int b[] = { 16, 17, 19, 20, 22 };
+        if (a[mid] < a[mid - 1]) {
+            return mid;
+        }
 
-		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        if (a[mid + 1] < a[mid]) {
+            return mid + 1;
+        }
 
+        if (a[h] > a[mid]) {
+            return _binaryToFindTimesOfRightRotation(a, l, mid);
+        } else {
+            return _binaryToFindTimesOfRightRotation(a, mid + 1, h);
+        }
+    }
 
 
-	@Test
-	void testMergeTwoSortedArraysAsSortedInBiggerArray_3() throws Exception {
-		int b[] = { 1, 4, 17, 22, 99, -1, -1, -1, -1, -1 };
-		int a[] = { 16, 17, 19, 20, 22 };
+    @Test
+    void testFindNumberOfTimesRoatedRightRotated() throws Exception {
+        int a[] = {6, 7, 1, 2, 3, 4, 5};
 
-		//		int[] mergedSortedArray = mergeTwoSortedArraysAsSortedInBiggerArray(a, b);
-		int[] mergedSortedArray = merge2SortedWithBuffer(a, b);
-		for (int i : mergedSortedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        int timesRotated = timesRightRotated(a);
+        assertEquals(2, timesRotated);
+    }
 
 
-	private int[] merge2SortedWithBuffer(int[] a, int[] b) {
-		int[] biggerArray;
-		int[] smallerArray;
+    @Test
+    void testFindNumberOfTimesRoatedRightRotated_1() throws Exception {
+        int a[] = {1, 2, 3, 4, 5};
 
-		int actualValues = 0;
-		if (a.length > b.length) {
+        int timesRotated = timesRightRotated(a);
+        assertEquals(0, timesRotated);
+    }
 
-			biggerArray = a;
-			smallerArray = b;
 
-		} else {
-			biggerArray = b;
-			smallerArray = a;
-		}
+    private int timesLeftRotated(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
 
-		for (int i = 0; i < biggerArray.length; i++) {
-			if (biggerArray[i] != -1)
-				actualValues++;
-			else
-				break;
+        return _binaryToSearchLeftRotation(a, l, h);
+    }
 
-		}
 
-		int i = biggerArray.length - 1;
-		int j = smallerArray.length - 1;
-		actualValues -= 1;
+    private int _binaryToSearchLeftRotation(int[] a, int l, int h) {
+        int mid = (h + l) / 2;
 
-		while (i >= 0 && j >= 0) {
-			if (biggerArray[actualValues] > smallerArray[j]) {
-				biggerArray[i] = biggerArray[actualValues];
-				actualValues--;
-			} else {
-				biggerArray[i] = smallerArray[j];
-				j--;
-			}
-			i--;
-		}
+        //		if (a[mid] < a[mid + 1]) {
+        //			return a.length - mid + 1;
+        //		}
 
+        if (mid == 0) {
+            return 0;
+        }
+        if (a[mid] < a[mid - 1]) {
+            return a.length - mid - 1 + 1;
+        }
 
-		return biggerArray;
-	}
+        if (a[h] < a[mid]) {
+            return _binaryToSearchLeftRotation(a, mid + 1, h);
+            //check right;
+        } else {
+            return _binaryToSearchLeftRotation(a, l, mid);
+        }
+    }
 
 
+    @Test
+    void testFindNumberOfTimesRoatedLeftRotated() throws Exception {
+        int a[] = {3, 4, 5, 6, 7, 1, 2};
 
-	private int[] rotateArrayBy(int[] a, int rotateTimes) {
-		while (rotateTimes > 0) {
-			int i = 0;
-			int first = a[0];
-			while (i < a.length) {
-				if (i == a.length - 1) {
-					a[i] = first;
-				} else {
-					a[i] = a[i + 1];
-				}
+        int timesRotated = timesLeftRotated(a);
+        assertEquals(2, timesRotated);
+    }
 
-				i++;
-			}
 
-			rotateTimes--;
-		}
+    @Test
+    void testFindNumberOfTimesRoatedLeftRotated_1() throws Exception {
+        int a[] = {1, 2, 4, 6, 8};
 
-		return a;
-	}
+        int[] rotatedArray = rotateArrayBy(a, 3);
 
+        int timesRotated = timesLeftRotated(rotatedArray);
+        assertEquals(3, timesRotated);
+    }
 
 
-	@Test
-	void testArrayRotation() throws Exception {
-		int a[] = { 1, 2, 3, 4, 5, 6, 7 };
+    @Test
+    void testFindNumberOfTimesRoatedLeftRotated_2() throws Exception {
+        int a[] = {1, 2, 4, 6, 8};
 
-		int[] rotatedArray = rotateArrayBy(a, 2);
+        int[] rotatedArray = rotateArrayBy(a, 4);
 
-		for (int i : rotatedArray) {
-			System.out.print(i + ",");
-		}
-	}
+        int timesRotated = timesLeftRotated(rotatedArray);
+        assertEquals(4, timesRotated);
+    }
 
+    @Test
+    void testFindNumberOfTimesRoatedLeftRotated_3() throws Exception {
+        int a[] = {1, 2, 3, 4};
 
+        int[] rotatedArray = rotateArrayBy(a, 0);
 
-	private int timesRightRotated(int[] a) {
+        int timesRotated = timesLeftRotated(rotatedArray);
+        assertEquals(0, timesRotated);
+    }
 
-		int l = 0;
-		int h = a.length - 1;
 
-		int rotations = _binaryToFindTimesOfRightRotation(a, l, h);
-		return rotations;
-	}
+    private int findMinValInARotatedArray(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
 
+        return _binrayToFindMinValInArray(a, l, h);
 
+    }
 
-	private int _binaryToFindTimesOfRightRotation(int[] a, int l, int h) {
 
-		if (!(l < h)) {
-			return 0;
-		}
+    private int _binrayToFindMinValInArray(int[] a, int l, int h) {
+        if (!(l < h)) {
+            return a[0];
+        }
 
-		int mid = (h + l) / 2;
+        int mid = (h + l) / 2;
 
-		if (mid == 0) {
-			return 0;
-		}
+        if (a[mid] < a[mid - 1]) {
+            return a[mid];
+        }
 
-		if (a[mid] < a[mid - 1]) {
-			return mid;
-		}
+        if (a[mid + 1] < a[mid]) {
+            return a[mid + 1];
+        }
 
-		if (a[mid + 1] < a[mid]) {
-			return mid + 1;
-		}
 
-		if (a[h] > a[mid]) {
-			return _binaryToFindTimesOfRightRotation(a, l, mid);
-		} else {
-			return _binaryToFindTimesOfRightRotation(a, mid + 1, h);
-		}
-	}
+        if (a[h] > a[mid]) {
+            return _binrayToFindMinValInArray(a, l, mid);
+        } else {
+            return _binrayToFindMinValInArray(a, mid + 1, h);
+        }
+    }
 
 
+    @Test
+    void testFindMinimumValuesFromRotatedArray() throws Exception {
+        int a[] = {-20, 1, 3, 4};
 
-	@Test
-	void testFindNumberOfTimesRoatedRightRotated() throws Exception {
-		int a[] = { 6, 7, 1, 2, 3, 4, 5 };
+        int[] rotatedArray = rotateArrayBy(a, 3);
 
-		int timesRotated = timesRightRotated(a);
-		assertEquals(2, timesRotated);
-	}
+        int minVal = findMinValInARotatedArray(rotatedArray);
+        assertEquals(-20, minVal);
+    }
 
 
+    @Test
+    void testFindMinimumValuesFromRotatedArray_1() throws Exception {
+        int a[] = {3, 4, 5, 6, 7, 1, 2};
 
-	@Test
-	void testFindNumberOfTimesRoatedRightRotated_1() throws Exception {
-		int a[] = { 1, 2, 3, 4, 5 };
+        int minVal = findMinValInARotatedArray(a);
+        assertEquals(1, minVal);
+    }
 
-		int timesRotated = timesRightRotated(a);
-		assertEquals(0, timesRotated);
-	}
 
+    private int[] rearrangeAsAi(int[] a) {
+        Arrays.sort(a);
 
+        int[] res = new int[a.length];
 
+        int p = 0;
+        while (p < a.length) {
+            int search = Arrays.binarySearch(a, p);
+            if (search != 0 && search >= 0) {
+                res[p] = a[search];
+            } else {
+                res[p] = -1;
+            }
+            p++;
+        }
 
-	private int timesLeftRotated(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
+        return res;
+    }
 
-		return _binaryToSearchLeftRotation(a, l, h);
-	}
 
+    @Test
+    void testRearrangeValuesAsAi() throws Exception {
+        int[] a = {-1, -1, 6, 1, 9, 3, 2, -1, 4, -1};
 
+        int[] updatedArr = rearrangeAsAi(a);
 
-	private int _binaryToSearchLeftRotation(int[] a, int l, int h) {
-		int mid = (h + l) / 2;
+        for (int i : updatedArr) {
+            System.out.print(i + ", ");
+        }
+    }
 
-		//		if (a[mid] < a[mid + 1]) {
-		//			return a.length - mid + 1;
-		//		}
 
-		if (mid == 0) {
-			return 0;
-		}
-		if (a[mid] < a[mid - 1]) {
-			return a.length - mid - 1 + 1;
-		}
+    private int[] sendValueBackOfArray(int[] a, int valToSendBack) {
+        int size = a.length;
 
-		if (a[h] < a[mid]) {
-			return _binaryToSearchLeftRotation(a, mid + 1, h);
-			//check right;
-		} else {
-			return _binaryToSearchLeftRotation(a, l, mid);
-		}
-	}
+        int i = 0;
+        int j = 0;
 
+        while (j < size) {
+            if (a[j] != valToSendBack) {
+                a[i] = a[j];
+                i++;
+            }
+            j++;
+        }
 
-	@Test
-	void testFindNumberOfTimesRoatedLeftRotated() throws Exception {
-		int a[] = { 3, 4, 5, 6, 7, 1, 2 };
+        while (i < size) {
+            a[i] = valToSendBack;
+            i++;
+        }
 
-		int timesRotated = timesLeftRotated(a);
-		assertEquals(2, timesRotated);
-	}
+        return a;
+    }
 
 
-	@Test
-	void testFindNumberOfTimesRoatedLeftRotated_1() throws Exception {
-		int a[] = { 1, 2, 4, 6, 8 };
+    @Test
+    void testSendAValueToEndOfArray() throws Exception {
+        int[] a = {1, 2, 0, 4, 6, 0, 0};
 
-		int[] rotatedArray = rotateArrayBy(a, 3);
+        int[] updatedArr = sendValueBackOfArray(a, 0);
 
-		int timesRotated = timesLeftRotated(rotatedArray);
-		assertEquals(3, timesRotated);
-	}
+        for (int i : updatedArr) {
+            System.out.print(i + ", ");
+        }
+    }
 
 
-	@Test
-	void testFindNumberOfTimesRoatedLeftRotated_2() throws Exception {
-		int a[] = { 1, 2, 4, 6, 8 };
+    @Test
+    void testSendAValueToEndOfArray_1() throws Exception {
+        int[] a = {1, 2, 2, 4, 6, 0, 0};
 
-		int[] rotatedArray = rotateArrayBy(a, 4);
+        int[] updatedArr = sendValueBackOfArray(a, 2);
 
-		int timesRotated = timesLeftRotated(rotatedArray);
-		assertEquals(4, timesRotated);
-	}
+        for (int i : updatedArr) {
+            System.out.print(i + ", ");
+        }
+    }
 
-	@Test
-	void testFindNumberOfTimesRoatedLeftRotated_3() throws Exception {
-		int a[] = { 1, 2, 3, 4 };
 
-		int[] rotatedArray = rotateArrayBy(a, 0);
+    private int kthSmallestElement(int[] a, int kthVal) {
 
-		int timesRotated = timesLeftRotated(rotatedArray);
-		assertEquals(0, timesRotated);
-	}
+        Set<Integer> set = new TreeSet<>();
 
+        for (int i : a) {
+            set.add(i);
+        }
 
+        int p = 0;
+        for (int i : set) {
+            if (p == kthVal - 1) {
+                return i;
+            }
+            p++;
+        }
 
-	private int findMinValInARotatedArray(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
+        return -1;
+    }
 
-		return _binrayToFindMinValInArray(a, l, h);
 
-	}
+    @Test
+    void testGetKthSmallestElement() throws Exception {
+        int[] a = {7, 10, 4, 3, 20, 15};
 
+        int value = kthSmallestElement(a, 3);
 
+        assertEquals(7, value);
+    }
 
-	private int _binrayToFindMinValInArray(int[] a, int l, int h) {
-		if (!(l < h)) {
-			return a[0];
-		}
 
-		int mid = (h + l) / 2;
+    @Test
+    void testSortString() throws Exception {
+        String s = "yuvraj";
+        String updatedString = sortString(s, "ASC");
+        System.out.println(updatedString);
 
-		if (a[mid] < a[mid - 1]) {
-			return a[mid];
-		}
+        //		String updatedString_1 = sortString(s, "DESC");
+        //		System.out.println(updatedString_1);
 
-		if (a[mid + 1] < a[mid]) {
-			return a[mid + 1];
-		}
+        sortString(s);
+        System.out.println();
+        sortStringDesc(s);
+    }
 
 
-		if (a[h] > a[mid]) {
-			return _binrayToFindMinValInArray(a, l, mid);
-		} else {
-			return _binrayToFindMinValInArray(a, mid + 1, h);
-		}
-	}
+    private String sortString(String s, String orderBy) {
 
+        String res = "";
+        int[] letter = new int[26];
 
+        for (int i = 0; i < s.length(); i++) {
+            letter[s.charAt(i) - 'a']++;
+        }
 
-	@Test
-	void testFindMinimumValuesFromRotatedArray() throws Exception {
-		int a[] = { -20, 1, 3, 4 };
+        if ("ASC" == orderBy) {
+            for (int i = 0; i < 26; i++) {
+                for (int j = 0; j < letter[i]; j++) {
+                    System.out.print((char) (i + 'a'));
+                }
+            }
+        } else if ("DESC" == orderBy) {
+            for (int i = 26 - 1; i >= 0; i++) {
+                for (int j = 0; j < letter[i]; j++) {
+                    System.out.print((char) (i + 'a'));
+                }
+            }
+        } else {
+            throw new KataException("");
+        }
 
-		int[] rotatedArray = rotateArrayBy(a, 3);
+        return res;
+    }
 
-		int minVal = findMinValInARotatedArray(rotatedArray);
-		assertEquals(-20, minVal);
-	}
+    private void sortString(String str) {
+        Set<Character> set = new TreeSet();
+        for (char c : str.toCharArray()) {
+            set.add(c);
+        }
 
+        for (Character character : set) {
+            System.out.print(character);
+        }
+    }
 
 
-	@Test
-	void testFindMinimumValuesFromRotatedArray_1() throws Exception {
-		int a[] = { 3, 4, 5, 6, 7, 1, 2 };
+    private void sortStringDesc(String str) {
+        TreeSet<Character> set = new TreeSet<>();
+        for (char c : str.toCharArray()) {
+            set.add(c);
+        }
+        TreeSet<Character> descendingSet = (TreeSet<Character>) set.descendingSet();
+        for (Character character : descendingSet) {
+            System.out.print(character);
+        }
+    }
 
-		int minVal = findMinValInARotatedArray(a);
-		assertEquals(1, minVal);
-	}
 
+    private void getAllRotations(String s) {
+        char[] charArray = s.toCharArray();
 
+        int p = charArray.length - 1;
+        while (p >= 0) {
+            int i = 0;
+            char last = charArray[0];
+            while (i < charArray.length) {
 
-	private int[] rearrangeAsAi(int[] a) {
-		Arrays.sort(a);
+                if (i == charArray.length - 1) {
+                    charArray[i] = last;
+                } else {
+                    charArray[i] = charArray[i + 1];
+                }
+                i++;
+            }
+            p--;
+        }
 
-		int[] res = new int[a.length];
+    }
 
-		int p = 0;
-		while (p < a.length) {
-			int search = Arrays.binarySearch(a, p);
-			if (search != 0 && search >= 0) {
-				res[p] = a[search];
-			} else {
-				res[p] = -1;
-			}
-			p++;
-		}
 
-		return res;
-	}
+    @Test
+    void testGetAllRotations() {
+        String s = "abc";
+        getAllRotations(s);
+    }
 
 
-	@Test
-	void testRearrangeValuesAsAi() throws Exception {
-		int[] a = { -1, -1, 6, 1, 9, 3, 2, -1, 4, -1 };
+    private boolean isRotation(String original, String toCheck) {
+        char[] originalArray = original.toCharArray();
+        char[] toCheckArray = toCheck.toCharArray();
 
-		int[] updatedArr = rearrangeAsAi(a);
+        Queue<Character> originalQueue = new LinkedList<>();
+        Queue<Character> toCheckQueue = new LinkedList<>();
 
-		for (int i : updatedArr) {
-			System.out.print(i + ", ");
-		}
-	}
+        boolean isRotation = false;
 
+        for (char c : originalArray) {
+            originalQueue.add(c);
+        }
+        for (char c : toCheckArray) {
+            toCheckQueue.add(c);
+        }
 
-	private int[] sendValueBackOfArray(int[] a, int valToSendBack) {
-		int size = a.length;
+        while (!originalQueue.isEmpty() || !toCheckQueue.isEmpty()) {
+            Character peek = originalQueue.peek();
+            Character poll = toCheckQueue.poll();
 
-		int i = 0;
-		int j = 0;
+            if (!(peek == poll)) {
+                toCheckQueue.add(poll);
+            } else {
+                isRotation = true;
+                originalQueue.remove();
+            }
 
-		while (j < size) {
-			if (a[j] != valToSendBack) {
-				a[i] = a[j];
-				i++;
-			}
-			j++;
-		}
+        }
 
-		while (i < size) {
-			a[i] = valToSendBack;
-			i++;
-		}
+        return isRotation;
+    }
 
-		return a;
-	}
 
+    @Test
+    void testDetermineRotation() throws Exception {
+        boolean rotation = isRotation("ABCD", "CDAB");
+        assertTrue(rotation);
+    }
 
-	@Test
-	void testSendAValueToEndOfArray() throws Exception {
-		int[] a = { 1, 2, 0, 4, 6, 0, 0 };
 
-		int[] updatedArr = sendValueBackOfArray(a, 0);
+    private boolean isReversible(String toCheck) {
+        int i = 0;
+        int j = toCheck.length() - 1;
 
-		for (int i : updatedArr) {
-			System.out.print(i + ", ");
-		}
-	}
+        while (i < j) {
+            if (toCheck.charAt(i) != toCheck.charAt(j)) {
+                return false;
+            }
+            i++;
+            j--;
+        }
 
+        return true;
+    }
 
-	@Test
-	void testSendAValueToEndOfArray_1() throws Exception {
-		int[] a = { 1, 2, 2, 4, 6, 0, 0 };
 
-		int[] updatedArr = sendValueBackOfArray(a, 2);
+    @Test
+    void testIsReversible() throws Exception {
+        boolean isReversible = isReversible("ABBA");
+        assertTrue(isReversible);
+    }
 
-		for (int i : updatedArr) {
-			System.out.print(i + ", ");
-		}
-	}
+    @Test
+    void testIsReversible_1() throws Exception {
+        boolean isReversible = isReversible("AB");
+        assertFalse(isReversible);
+    }
 
 
+    private String reverseByWord(String input) {
+        int j = input.length() - 1;
 
-	private int kthSmallestElement(int[] a, int kthVal) {
+        StringBuilder res = new StringBuilder();
+        StringBuilder sbInt = null;
 
-		Set<Integer> set = new TreeSet<>();
+        while (j >= 0) {
 
-		for (int i : a) {
-			set.add(i);
-		}
+            if (null == sbInt) {
+                sbInt = new StringBuilder();
+            }
 
-		int p = 0;
-		for (int i : set) {
-			if (p == kthVal - 1) {
-				return i;
-			}
-			p++;
-		}
+            if (input.charAt(j) != ' ') {
+                sbInt.append(input.charAt(j));
+            } else {
+                res.append(sbInt.reverse().toString());
+                res.append(input.charAt(j));
+                sbInt = null;
+            }
 
-		return -1;
-	}
+            j--;
+        }
 
+        if (sbInt.length() > 0) {
+            res.append(sbInt.reverse().toString());
+        }
 
+        return res.toString();
+    }
 
-	@Test
-	void testGetKthSmallestElement() throws Exception {
-		int[] a = { 7, 10, 4, 3, 20, 15 };
 
-		int value = kthSmallestElement(a, 3);
+    @Test
+    void testReversingByWords() {
+        String updatedString = reverseByWord("geeks quiz practice code");
+        assertEquals("code practice quiz geeks", updatedString);
+    }
 
-		assertEquals(7, value);
-	}
+    @Test
+    void testReversingByWords_1() {
+        String updatedString = reverseByWord("getting good at coding needs a lot of practice");
+        assertEquals("practice of lot a needs coding at good getting", updatedString);
+    }
 
 
-
-	@Test
-	void testSortString() throws Exception {
-		String s = "yuvraj";
-		String updatedString = sortString(s, "ASC");
-		System.out.println(updatedString);
-
-		//		String updatedString_1 = sortString(s, "DESC");
-		//		System.out.println(updatedString_1);
-
-		sortString(s);
-		System.out.println();
-		sortStringDesc(s);
-	}
-
-
-
-	private String sortString(String s, String orderBy) {
-
-		String res = "";
-		int[] letter = new int[26];
-
-		for (int i = 0; i < s.length(); i++) {
-			letter[s.charAt(i) - 'a']++;
-		}
-
-		if ("ASC" == orderBy) {
-			for (int i = 0; i < 26; i++) {
-				for (int j = 0; j < letter[i]; j++) {
-					System.out.print((char) (i + 'a'));
-				}
-			}
-		} else if ("DESC" == orderBy) {
-			for (int i = 26 - 1; i >= 0; i++) {
-				for (int j = 0; j < letter[i]; j++) {
-					System.out.print((char) (i + 'a'));
-				}
-			}
-		} else {
-			throw new KataException("");
-		}
-
-		return res;
-	}
-
-	private void sortString(String str) {
-		Set<Character> set = new TreeSet();
-		for (char c : str.toCharArray()) {
-			set.add(c);
-		}
-
-		for (Character character : set) {
-			System.out.print(character);
-		}
-	}
-
-
-	private void sortStringDesc(String str) {
-		TreeSet<Character> set = new TreeSet<>();
-		for (char c : str.toCharArray()) {
-			set.add(c);
-		}
-		TreeSet<Character> descendingSet = (TreeSet<Character>) set.descendingSet();
-		for (Character character : descendingSet) {
-			System.out.print(character);
-		}
-	}
-
-
-
-	private void getAllRotations(String s) {
-		char[] charArray = s.toCharArray();
-
-		int p = charArray.length - 1;
-		while (p >= 0) {
-			int i = 0;
-			char last = charArray[0];
-			while (i < charArray.length) {
-
-				if (i == charArray.length - 1) {
-					charArray[i] = last;
-				} else {
-					charArray[i] = charArray[i + 1];
-				}
-				i++;
-			}
-			p--;
-		}
-
-	}
-
-
-	@Test
-	void testGetAllRotations() {
-		String s = "abc";
-		getAllRotations(s);
-	}
-
-
-
-	private boolean isRotation(String original, String toCheck) {
-		char[] originalArray = original.toCharArray();
-		char[] toCheckArray = toCheck.toCharArray();
-
-		Queue<Character> originalQueue = new LinkedList<>();
-		Queue<Character> toCheckQueue = new LinkedList<>();
-
-		boolean isRotation = false;
-
-		for (char c : originalArray) {
-			originalQueue.add(c);
-		}
-		for (char c : toCheckArray) {
-			toCheckQueue.add(c);
-		}
-
-		while (!originalQueue.isEmpty() || !toCheckQueue.isEmpty()) {
-			Character peek = originalQueue.peek();
-			Character poll = toCheckQueue.poll();
-
-			if (!(peek == poll)) {
-				toCheckQueue.add(poll);
-			} else {
-				isRotation = true;
-				originalQueue.remove();
-			}
-
-		}
-
-		return isRotation;
-	}
-
-
-
-	@Test
-	void testDetermineRotation() throws Exception {
-		boolean rotation = isRotation("ABCD", "CDAB");
-		assertTrue(rotation);
-	}
-
-
-
-	private boolean isReversible(String toCheck) {
-		int i = 0;
-		int j = toCheck.length() - 1;
-
-		while (i < j) {
-			if (toCheck.charAt(i) != toCheck.charAt(j)) {
-				return false;
-			}
-			i++;
-			j--;
-		}
-
-		return true;
-	}
-
-
-
-	@Test
-	void testIsReversible() throws Exception {
-		boolean isReversible = isReversible("ABBA");
-		assertTrue(isReversible);
-	}
-
-	@Test
-	void testIsReversible_1() throws Exception {
-		boolean isReversible = isReversible("AB");
-		assertFalse(isReversible);
-	}
-
-
-
-	private String reverseByWord(String input) {
-		int j = input.length() - 1;
-
-		StringBuilder res = new StringBuilder();
-		StringBuilder sbInt = null;
-
-		while (j >= 0) {
-
-			if (null == sbInt) {
-				sbInt = new StringBuilder();
-			}
-
-			if (input.charAt(j) != ' ') {
-				sbInt.append(input.charAt(j));
-			} else {
-				res.append(sbInt.reverse().toString());
-				res.append(input.charAt(j));
-				sbInt = null;
-			}
-
-			j--;
-		}
-
-		if (sbInt.length() > 0) {
-			res.append(sbInt.reverse().toString());
-		}
-
-		return res.toString();
-	}
-
-
-
-	@Test
-	void testReversingByWords() {
-		String updatedString = reverseByWord("geeks quiz practice code");
-		assertEquals("code practice quiz geeks", updatedString);
-	}
-
-	@Test
-	void testReversingByWords_1() {
-		String updatedString = reverseByWord("getting good at coding needs a lot of practice");
-		assertEquals("practice of lot a needs coding at good getting", updatedString);
-	}
-
-
-
-	private String reverseEachWord(String input) {
-		// @formatter:off
+    private String reverseEachWord(String input) {
+        // @formatter:off
 		String collect = Arrays.asList(input.split(" "))
 			.stream()
 			.map(s -> new StringBuilder(s).reverse())
@@ -1481,744 +1420,709 @@ public class ArraysApi {
 		// @formatter:on
 
 
-		return collect;
-	}
+        return collect;
+    }
 
 
+    @Test
+    void testReversingEachWord() throws Exception {
+        String updatedString = reverseEachWord("geeks for geeks");
+        assertEquals("skeeg rof skeeg", updatedString);
+    }
 
-	@Test
-	void testReversingEachWord() throws Exception {
-		String updatedString = reverseEachWord("geeks for geeks");
-		assertEquals("skeeg rof skeeg", updatedString);
-	}
 
+    private String preserveSpacesAndResverse(String input) {
+        int j = input.length() - 1;
+        int i = 0;
 
+        StringBuilder sb = new StringBuilder();
 
-	private String preserveSpacesAndResverse(String input) {
-		int j = input.length() - 1;
-		int i = 0;
+        while (j >= 0 && i < input.length()) {
+            if (input.charAt(i) != ' ') {
+                if (input.charAt(j) != ' ') {
+                    sb.append(input.charAt(j));
+                    j--;
+                } else {
+                    j--;
+                    continue;
+                }
+            } else {
+                sb.append(input.charAt(i));
+            }
 
-		StringBuilder sb = new StringBuilder();
+            i++;
+        }
 
-		while (j >= 0 && i < input.length()) {
-			if (input.charAt(i) != ' ') {
-				if (input.charAt(j) != ' ') {
-					sb.append(input.charAt(j));
-					j--;
-				} else {
-					j--;
-					continue;
-				}
-			} else {
-				sb.append(input.charAt(i));
-			}
+        return sb.toString();
+    }
 
-			i++;
-		}
 
-		return sb.toString();
-	}
+    @Test
+    void testPreservingTheSpaces() throws Exception {
+        String newString = preserveSpacesAndResverse("abc de");
+        assertEquals("edc ba", newString);
+    }
+
+    @Test
+    void testPreservingTheSpaces_1() throws Exception {
+        String newString = preserveSpacesAndResverse("abc de fg");
+        assertEquals("gfe dc ba", newString);
+    }
 
+
+    private String ltNCharK(int n, int k) {
+        String res = "";
+        for (int i = 0; i < k; i++) {
+            res += Character.toString('a' + i);
+        }
+
+        for (int i = 0; i < n - k; i++) {
+            res += Character.toString('a' + i);
+        }
 
+        return res;
+    }
 
-	@Test
-	void testPreservingTheSpaces() throws Exception {
-		String newString = preserveSpacesAndResverse("abc de");
-		assertEquals("edc ba", newString);
-	}
 
-	@Test
-	void testPreservingTheSpaces_1() throws Exception {
-		String newString = preserveSpacesAndResverse("abc de fg");
-		assertEquals("gfe dc ba", newString);
-	}
+    @Test
+    void testLtNCharK() throws Exception {
+        String obtainedString = ltNCharK(5, 3);
+        assertEquals("abcab", obtainedString);
+    }
 
+    @Test
+    void testLtNCharK_1() throws Exception {
+        String obtainedString = ltNCharK(3, 2);
+        assertEquals("aba", obtainedString);
+    }
 
 
-	private String ltNCharK(int n, int k) {
-		String res = "";
-		for (int i = 0; i < k; i++) {
-			res += Character.toString('a' + i);
-		}
+    private int countAllTheWordsInTheString(String[] words, String stringToCheck) {
+        int wordsFound = 0;
 
-		for (int i = 0; i < n - k; i++) {
-			res += Character.toString('a' + i);
-		}
+        Set<String> hs = new HashSet<>();
+        for (String s : words) {
+            hs.add(s);
+        }
 
-		return res;
-	}
+        Pattern pattern = Pattern.compile("[a-zA-Z]+");
+        Matcher matcher = pattern.matcher(stringToCheck);
 
+        while (matcher.find()) {
+            if (hs.contains(matcher.group())) {
+                wordsFound++;
+            }
+        }
 
+        return wordsFound;
+    }
 
-	@Test
-	void testLtNCharK() throws Exception {
-		String obtainedString = ltNCharK(5, 3);
-		assertEquals("abcab", obtainedString);
-	}
 
-	@Test
-	void testLtNCharK_1() throws Exception {
-		String obtainedString = ltNCharK(3, 2);
-		assertEquals("aba", obtainedString);
-	}
+    @Test
+    void testCountAllTheWordsInTheString() throws Exception {
+        String[] words = {"welcome", "to", "geeks", "portal"};
+        String stringToCheck = "welcome to portal";
+
+        int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
+        assertEquals(3, allTheWords);
+    }
 
 
+    @Test
+    void testCountAllTheWordsInTheString_1() throws Exception {
+        String[] words = {"Save", "Water", "Save", "Yourself"};
+        String stringToCheck = "Save";
 
-	private int countAllTheWordsInTheString(String[] words, String stringToCheck) {
-		int wordsFound = 0;
+        int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
+        assertEquals(1, allTheWords);
+    }
 
-		Set<String> hs = new HashSet<>();
-		for (String s : words) {
-			hs.add(s);
-		}
 
-		Pattern pattern = Pattern.compile("[a-zA-Z]+");
-		Matcher matcher = pattern.matcher(stringToCheck);
+    private char decryptAndFindCharAtLocation(String input, int pos) {
+        int j = 0;
 
-		while (matcher.find()) {
-			if (hs.contains(matcher.group())) {
-				wordsFound++;
-			}
-		}
+        int repitionValue = 0;
+        StringBuilder expandedStringSb = new StringBuilder();
 
-		return wordsFound;
-	}
+        StringBuilder subString = new StringBuilder();
+        while (j < input.length()) {
+            if (!Character.isDigit(input.charAt(j))) {
+                subString.append(input.charAt(j));
+                if (repitionValue == 0) {
+                    repitionValue++;
+                }
+            } else {
+                int tempRepitionValue = 0;
+                if (j + 1 < input.length() && Character.isDigit(input.charAt(j + 1))) {
+                    int tens = Character.getNumericValue(input.charAt(j));
+                    int ones = Character.getNumericValue(input.charAt(j + 1));
 
+                    String number = String.valueOf(tens) + String.valueOf(ones);
+                    tempRepitionValue = Integer.valueOf(number) - 1;
+                    j++;
+                } else {
+                    tempRepitionValue = Character.getNumericValue(input.charAt(j)) - 1;
+                }
 
+                repitionValue += tempRepitionValue;
 
-	@Test
-	void testCountAllTheWordsInTheString() throws Exception {
-		String[] words = { "welcome", "to", "geeks", "portal" };
-		String stringToCheck = "welcome to portal";
+                for (int k = 0; k < repitionValue; k++) {
+                    expandedStringSb.append(subString);
+                }
+                repitionValue = 0;
+                subString.setLength(0);
+            }
 
-		int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
-		assertEquals(3, allTheWords);
-	}
+            j++;
+        }
 
+        return expandedStringSb.charAt(pos - 1);
+    }
 
 
-	@Test
-	void testCountAllTheWordsInTheString_1() throws Exception {
-		String[] words = { "Save", "Water", "Save", "Yourself" };
-		String stringToCheck = "Save";
+    @Test
+    void testDecryptAndFindCharAtLocation() throws Exception {
+        char foundChar = decryptAndFindCharAtLocation("ab2cd2", 5);
+        assertEquals('c', foundChar);
+    }
 
-		int allTheWords = countAllTheWordsInTheString(words, stringToCheck);
-		assertEquals(1, allTheWords);
-	}
 
+    @Test
+    void testDecryptAndFindCharAtLocation_1() throws Exception {
+        char foundChar = decryptAndFindCharAtLocation("ab4c2ed3", 9);
+        assertEquals('c', foundChar);
+    }
 
 
-	private char decryptAndFindCharAtLocation(String input, int pos) {
-		int j = 0;
+    @Test
+    void testDecryptAndFindCharAtLocation_2() throws Exception {
+        char foundChar = decryptAndFindCharAtLocation("ab4c12ed3", 21);
+        assertEquals('e', foundChar);
+    }
 
-		int repitionValue = 0;
-		StringBuilder expandedStringSb = new StringBuilder();
 
-		StringBuilder subString = new StringBuilder();
-		while (j < input.length()) {
-			if (!Character.isDigit(input.charAt(j))) {
-				subString.append(input.charAt(j));
-				if (repitionValue == 0) {
-					repitionValue++;
-				}
-			} else {
-				int tempRepitionValue = 0;
-				if (j + 1 < input.length() && Character.isDigit(input.charAt(j + 1))) {
-					int tens = Character.getNumericValue(input.charAt(j));
-					int ones = Character.getNumericValue(input.charAt(j + 1));
+    private boolean ocurrencesInHalves(String input) {
+        int[] counterArray = new int[26];
 
-					String number = String.valueOf(tens) + String.valueOf(ones);
-					tempRepitionValue = Integer.valueOf(number) - 1;
-					j++;
-				} else {
-					tempRepitionValue = Character.getNumericValue(input.charAt(j)) - 1;
-				}
+        int i = 0;
+        int j = input.length() - 1;
 
-				repitionValue += tempRepitionValue;
+        while (i < j) {
+            counterArray[input.charAt(i) - 'a']++;
+            counterArray[input.charAt(j) - 'a']--;
 
-				for (int k = 0; k < repitionValue; k++) {
-					expandedStringSb.append(subString);
-				}
-				repitionValue = 0;
-				subString.setLength(0);
-			}
+            i++;
+            j--;
+        }
 
-			j++;
-		}
+        for (int k = 0; k < counterArray.length; k++) {
+            if (counterArray[k] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-		return expandedStringSb.charAt(pos - 1);
-	}
 
+    @Test
+    void testOccurencesInHalves() throws Exception {
+        boolean occurenceFlag = ocurrencesInHalves("abccab");
+        assertTrue(occurenceFlag);
+    }
 
 
-	@Test
-	void testDecryptAndFindCharAtLocation() throws Exception {
-		char foundChar = decryptAndFindCharAtLocation("ab2cd2", 5);
-		assertEquals('c', foundChar);
-	}
+    @Test
+    void testOccurencesInHalves_1() throws Exception {
+        boolean occurenceFlag = ocurrencesInHalves("abbaab");
+        assertFalse(occurenceFlag);
+    }
 
 
+    private int checkSamePositionAsAlphabet(String input) {
+        int res = 0;
 
-	@Test
-	void testDecryptAndFindCharAtLocation_1() throws Exception {
-		char foundChar = decryptAndFindCharAtLocation("ab4c2ed3", 9);
-		assertEquals('c', foundChar);
-	}
+        int i = 0;
+        while (i < input.length()) {
+            if (i == input.charAt(i) - 'a' || i == input.charAt(i) - 'A') {
+                res++;
+            }
 
+            i++;
+        }
 
+        return res;
+    }
 
-	@Test
-	void testDecryptAndFindCharAtLocation_2() throws Exception {
-		char foundChar = decryptAndFindCharAtLocation("ab4c12ed3", 21);
-		assertEquals('e', foundChar);
-	}
 
+    @Test
+    void testCharactersInSamePositionAsAlphabet() throws Exception {
+        int samePostions = checkSamePositionAsAlphabet("abced");
+        assertEquals(3, samePostions);
+    }
 
 
-	private boolean ocurrencesInHalves(String input) {
-		int[] counterArray = new int[26];
+    @Test
+    void testCharactersInSamePositionAsAlphabet_1() throws Exception {
+        int samePostions = checkSamePositionAsAlphabet("ABcED");
+        assertEquals(3, samePostions);
+    }
 
-		int i = 0;
-		int j = input.length() - 1;
 
-		while (i < j) {
-			counterArray[input.charAt(i) - 'a']++;
-			counterArray[input.charAt(j) - 'a']--;
+    class SentenceInfo {
+        private int words = 0;
+        private int vowels = 0;
+        private int upperCase = 0;
+        private Map<Character, Integer> mapOfCharAndOccurence = new HashMap<Character, Integer>();
+
+        public int getWords() {
+            return words;
+        }
+
+        public void setWords(int words) {
+            this.words = words;
+        }
+
+        public int getVowels() {
+            return vowels;
+        }
+
+        public void setVowels(int vowels) {
+            this.vowels = vowels;
+        }
+
+        public int getUpperCase() {
+            return upperCase;
+        }
+
+        public void setUpperCase(int upperCase) {
+            this.upperCase = upperCase;
+        }
+
+        public Map<Character, Integer> getMapOfCharAndOccurence() {
+            return mapOfCharAndOccurence;
+        }
+
+        public void setMapOfCharAndOccurence(Map<Character, Integer> mapOfCharAndOccurence) {
+            this.mapOfCharAndOccurence = mapOfCharAndOccurence;
+        }
+
 
-			i++;
-			j--;
-		}
+        @Override
+        public String toString() {
+            return "SentenceInfo [words=" + words + ", vowels=" + vowels + ", upperCase=" + upperCase + ", mapOfCharAndOccurence=" + mapOfCharAndOccurence + "]";
+        }
+    }
 
-		for (int k = 0; k < counterArray.length; k++) {
-			if (counterArray[k] != 0) {
-				return false;
-			}
-		}
-		return true;
-	}
+
+    private SentenceInfo countingSetenceInfo(String sentence) {
+        int i = 0;
+        SentenceInfo sentenceInfo = new SentenceInfo();
 
+        Map<Character, Integer> occurenceMap = sentenceInfo.getMapOfCharAndOccurence();
 
+        while (i < sentence.length()) {
+            //char ocurrence updation
+            char currChar = sentence.charAt(i);
+            occurenceMap.put(currChar, occurenceMap.getOrDefault(currChar, 0) + 1);
 
-	@Test
-	void testOccurencesInHalves() throws Exception {
-		boolean occurenceFlag = ocurrencesInHalves("abccab");
-		assertTrue(occurenceFlag);
-	}
+            if (currChar == ' ' || currChar == '.') {
+                _updateWords(sentenceInfo);
+            }
 
+            _porcessVowelUpdate(sentenceInfo, currChar);
 
+            if (currChar >= 'A' && currChar <= 'Z') {
+                _updateUpperCase(sentenceInfo);
+            }
 
-	@Test
-	void testOccurencesInHalves_1() throws Exception {
-		boolean occurenceFlag = ocurrencesInHalves("abbaab");
-		assertFalse(occurenceFlag);
-	}
+            i++;
+        }
 
+        return sentenceInfo;
+    }
 
 
-	private int checkSamePositionAsAlphabet(String input) {
-		int res = 0;
+    private void _updateUpperCase(SentenceInfo sentenceInfo) {
+        sentenceInfo.setUpperCase(sentenceInfo.getUpperCase() + 1);
+    }
 
-		int i = 0;
-		while (i < input.length()) {
-			if (i == input.charAt(i) - 'a' || i == input.charAt(i) - 'A') {
-				res++;
-			}
 
-			i++;
-		}
+    private void _porcessVowelUpdate(SentenceInfo sentenceInfo, char currChar) {
+        switch (currChar) {
+            case 'A':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'E':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'I':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'O':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'U':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'a':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'e':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'i':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'o':
+                _updateVowels(sentenceInfo);
+                break;
+            case 'u':
+                _updateVowels(sentenceInfo);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    private void _updateWords(SentenceInfo sentenceInfo) {
+        sentenceInfo.setWords(sentenceInfo.getWords() + 1);
+    }
 
-		return res;
-	}
+
+    private void _updateVowels(SentenceInfo sentenceInfo) {
+        sentenceInfo.setVowels(sentenceInfo.getVowels() + 1);
+    }
+
 
+    @Test
+    void testCountingSentenceInfo() {
+        String sentence = "How Good GOD Is.";
+        SentenceInfo info = countingSetenceInfo(sentence);
+        System.out.println(info);
+    }
 
 
-	@Test
-	void testCharactersInSamePositionAsAlphabet() throws Exception {
-		int samePostions = checkSamePositionAsAlphabet("abced");
-		assertEquals(3, samePostions);
-	}
+    private Set<String> getAllTheSubstrings(String input) {
+        Set<String> allSubs = new TreeSet<>();
+
+        for (int i = 0; i < input.length(); i++) {
+            for (int j = i; j < input.length(); j++) {
+                allSubs.add(input.substring(i, j + 1));
+            }
+        }
+
+        return allSubs;
+    }
 
 
-
-	@Test
-	void testCharactersInSamePositionAsAlphabet_1() throws Exception {
-		int samePostions = checkSamePositionAsAlphabet("ABcED");
-		assertEquals(3, samePostions);
-	}
-
-
-	class SentenceInfo {
-		private int words = 0;
-		private int vowels = 0;
-		private int upperCase = 0;
-		private Map<Character, Integer> mapOfCharAndOccurence = new HashMap<Character, Integer>();
-
-		public int getWords() {
-			return words;
-		}
-
-		public void setWords(int words) {
-			this.words = words;
-		}
-
-		public int getVowels() {
-			return vowels;
-		}
-
-		public void setVowels(int vowels) {
-			this.vowels = vowels;
-		}
-
-		public int getUpperCase() {
-			return upperCase;
-		}
-
-		public void setUpperCase(int upperCase) {
-			this.upperCase = upperCase;
-		}
-
-		public Map<Character, Integer> getMapOfCharAndOccurence() {
-			return mapOfCharAndOccurence;
-		}
-
-		public void setMapOfCharAndOccurence(Map<Character, Integer> mapOfCharAndOccurence) {
-			this.mapOfCharAndOccurence = mapOfCharAndOccurence;
-		}
-
-
-
-		@Override
-		public String toString() {
-			return "SentenceInfo [words=" + words + ", vowels=" + vowels + ", upperCase=" + upperCase + ", mapOfCharAndOccurence=" + mapOfCharAndOccurence + "]";
-		}
-	}
-
-
-
-
-	private SentenceInfo countingSetenceInfo(String sentence) {
-		int i = 0;
-		SentenceInfo sentenceInfo = new SentenceInfo();
-
-		Map<Character, Integer> occurenceMap = sentenceInfo.getMapOfCharAndOccurence();
-
-		while (i < sentence.length()) {
-			//char ocurrence updation
-			char currChar = sentence.charAt(i);
-			occurenceMap.put(currChar, occurenceMap.getOrDefault(currChar, 0) + 1);
-
-			if (currChar == ' ' || currChar == '.') {
-				_updateWords(sentenceInfo);
-			}
-
-			_porcessVowelUpdate(sentenceInfo, currChar);
-
-			if (currChar >= 'A' && currChar <= 'Z') {
-				_updateUpperCase(sentenceInfo);
-			}
-
-			i++;
-		}
-
-		return sentenceInfo;
-	}
-
-
-
-	private void _updateUpperCase(SentenceInfo sentenceInfo) {
-		sentenceInfo.setUpperCase(sentenceInfo.getUpperCase() + 1);
-	}
-
-
-
-	private void _porcessVowelUpdate(SentenceInfo sentenceInfo, char currChar) {
-		switch (currChar) {
-		case 'A':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'E':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'I':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'O':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'U':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'a':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'e':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'i':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'o':
-			_updateVowels(sentenceInfo);
-			break;
-		case 'u':
-			_updateVowels(sentenceInfo);
-			break;
-		default:
-			break;
-		}
-	}
-
-
-
-	private void _updateWords(SentenceInfo sentenceInfo) {
-		sentenceInfo.setWords(sentenceInfo.getWords() + 1);
-	}
-
-
-
-	private void _updateVowels(SentenceInfo sentenceInfo) {
-		sentenceInfo.setVowels(sentenceInfo.getVowels() + 1);
-	}
-
-
-
-	@Test
-	void testCountingSentenceInfo() {
-		String sentence = "How Good GOD Is.";
-		SentenceInfo info = countingSetenceInfo(sentence);
-		System.out.println(info);
-	}
-
-
-
-	private Set<String> getAllTheSubstrings(String input) {
-		Set<String> allSubs = new TreeSet<>();
-
-		for (int i = 0; i < input.length(); i++) {
-			for (int j = i; j < input.length(); j++) {
-				allSubs.add(input.substring(i, j + 1));
-			}
-		}
-
-		return allSubs;
-	}
-
-
-
-	@Test
-	void testGetAllTheSubstrings() {
-		Set<String> substrings = getAllTheSubstrings("abcd");
-		assertEquals(10, substrings.size());
-		System.out.println(substrings);
-	}
-
-
-
-	private int serachMinSortedRotatedArray(int[] a) {
-		int h = a.length - 1;
-		int l = 0;
-
-		int searchResult = _binarySearchForMin(a, l, h);
-
-		if (searchResult != -1)
-			return searchResult;
-		else
-			throw new KataException("Cannot be found");
-	}
-
-
-
-	private int _binarySearchForMin(int[] a, int l, int h) {
-
-
-		int mid = (h + l) / 2;
-
-		while (l <= h) {
-			if (a[mid - 1] > a[mid] && (mid == a.length - 1 || a[mid] < a[mid + 1])) {
-				return a[mid];
-			} else if (a[mid] > a[mid - 1]) {
-				return _binarySearchForMin(a, mid + 1, h);
-			} else {
-				return _binarySearchForMin(a, l, mid - 1);
-			}
-		}
-		//means array was never rotated
-		return a[0];
-	}
-
-
-
-	@Test
-	void testSearchMinElementInSortedRotatedArray() throws Exception {
-		int[] a = { 5, 6, 1, 2, 3, 4 };
-		int minVal = serachMinSortedRotatedArray(a);
-		assertEquals(1, minVal);
-	}
-
-	@Test
-	void testSearchMinElementInSortedRotatedArray_1() throws Exception {
-		int[] a = { 3, 4, 5, 6, 1, 2 };
-		int minVal = serachMinSortedRotatedArray(a);
-		assertEquals(1, minVal);
-	}
-
-
-	@Test
-	void testSearchMinElementInSortedRotatedArray_3() throws Exception {
-		int[] a = { 1, 2, 3, 4, 5, 6 };
-		int minVal = serachMinSortedRotatedArray(a);
-		assertEquals(1, minVal);
-	}
-
-	@Test
-	void testSearchMinElementInSortedRotatedArray_4() throws Exception {
-		int[] a = { 2, 3, 4, 5, 6, 1 };
-		int minVal = serachMinSortedRotatedArray(a);
-		assertEquals(1, minVal);
-	}
-
-
-	@Test
-	void testSearchMinElementInSortedRotatedArray_5() throws Exception {
-		int[] a = { 45, 75, 99, 107, 108, 1, 22, 33 };
-		int minVal = serachMinSortedRotatedArray(a);
-		assertEquals(1, minVal);
-	}
-
-
-
-	private int findEqlibIdx(int[] a) {
-		int l = 0;
-		int h = a.length - 1;
-
-		int sumLow = 0;
-		int sumHigh = 0;
-
-		while (l < h) {
-			sumLow += a[l++];
-			sumHigh += a[h--];
-			if (sumHigh == sumLow) {
-				break;
-			}
-		}
-
-		return sumHigh == sumLow ? l : -1;
-	}
-
-
-
-	@Test
-	void testFindEqlibIdx() throws Exception {
-		int[] a = { -7, 1, 5, 2, -4, 3, 0 };
-		int idx = findEqlibIdx(a);
-		assertEquals(3, idx);
-	}
-
-	@Test
-	void testFindEqlibIdx_1() throws Exception {
-		int[] a = { 1, 2, 3 };
-		int idx = findEqlibIdx(a);
-		assertEquals(-1, idx);
-	}
-
-
-
-
-	private int[] insertInASortedArray(int[] a, int key, int valuesEndAt) {
-		int i = valuesEndAt;
-
-		while (i >= 0) {
-			if (a[i] < key) {
-				a[i + 1] = key;
-				break;
-			} else {
-				a[i + 1] = a[i];
-			}
-			i--;
-		}
-
-		return a;
-	}
-
-	@Test
-	void testInsertInASortedArray() throws Exception {
-		int[] a = { 1, 2, 4, 5, 6, -1, -1 };
-		a = insertInASortedArray(a, 3, 4);
-	}
-
-	private int[] segragateEvenOdd(int[] a) {
-		int oddIdx = 0;
-		int evenIdx = 0;
-
-		while (evenIdx < a.length && oddIdx < a.length) {
-			if (a[evenIdx] % 2 == 0) {
-				if (oddIdx != evenIdx && evenIdx != 0) {
-					int temp = a[oddIdx];
-					a[oddIdx] = a[evenIdx];
-					a[evenIdx] = temp;
-
-					oddIdx++;
-				}
-			}
-			evenIdx++;
-		}
-
-
-		return a;
-	}
-
-
-	@Test
-	void testSegragateEvenOdd() throws Exception {
-		int[] a = { 1, 9, 5, 3, 2, 6, 7, 11 };
-		a = segragateEvenOdd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-
-	private int[] moveNegativeValuesToEnd(int[] a) {
-		int i = 0;
-		int j = 0;
-
-		while (i < a.length && j < a.length - 1) {
-			if (a[i] < 0) {
-				j = i;
-				while (!(a[j] > 0) && j < a.length) {
-					j++;
-				}
-				int temp = a[i];
-				a[i] = a[j];
-				a[j] = temp;
-			}
-			i++;
-		}
-
-		return a;
-	}
-
-
-
-	@Test
-	void testMoveNegativeValuesToEnd() throws Exception {
-		int[] a = { 1, -1, 3, 2, -7, -5, 11, 6 };
-		a = moveNegativeValuesToEnd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-	@Test
-	void testMoveNegativeValuesToEnd_1() throws Exception {
-		int[] a = { 1, -12, 3 };
-		a = moveNegativeValuesToEnd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-	@Test
-	void testMoveNegativeValuesToEnd_2() throws Exception {
-		int[] a = { 1, -1, -4, -45, -64, 3 };
-		a = moveNegativeValuesToEnd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-	private int[] moveZerosToTheEnd(int[] a) {
-		int i = 0;
-		int j = 0;
-
-		while (i < a.length && j <= a.length - 1) {
-			if (a[i] == 0) {
-				j = i;
-				while (j < a.length && a[j] == 0) {
-					j++;
-				}
-
-				if (j < a.length) {
-					int temp = a[j];
-					a[j] = a[i];
-					a[i] = temp;
-				}
-			}
-
-			i++;
-		}
-
-		return a;
-	}
-
-
-	private int[] moveZerosToTheEnd_1(int[] a) {
-		int countOfNonZero = 0;
-		int i = 0;
-
-		while (i < a.length) {
-			if (a[i] != 0)
-				a[countOfNonZero++] = a[i];
-
-			i++;
-		}
-
-		while (countOfNonZero < a.length)
-			a[countOfNonZero++] = 0;
-
-		return a;
-	}
-
-
-	@Test
-	void testMoveZerosToTheEnd() throws Exception {
-		int[] a = { 1, 0, 5, 3, 23, 0, 34, 0, 4, 12 };
-
-		a = moveZerosToTheEnd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-
-	@Test
-	void testMoveZerosToTheEnd_1() throws Exception {
-		int[] a = { 1, 0, 0, 3, 4, 56 };
-
-		a = moveZerosToTheEnd_1(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-	@Test
-	void testMoveZerosToTheEnd_1_1() throws Exception {
-		int[] a = { 1, 0, 5, 3, 23, 0, 34, 0, 4, 12 };
-
-		a = moveZerosToTheEnd_1(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
-
-	@Test
-	void testMoveZerosToTheEnd_1_2() throws Exception {
-		int[] a = { 1, 0, 0, 3, 4, 56 };
-
-		a = moveZerosToTheEnd(a);
-		for (int i : a) {
-			System.out.print(i + ", ");
-		}
-	}
-
-
+    @Test
+    void testGetAllTheSubstrings() {
+        Set<String> substrings = getAllTheSubstrings("abcd");
+        assertEquals(10, substrings.size());
+        System.out.println(substrings);
+    }
+
+
+    private int serachMinSortedRotatedArray(int[] a) {
+        int h = a.length - 1;
+        int l = 0;
+
+        int searchResult = _binarySearchForMin(a, l, h);
+
+        if (searchResult != -1)
+            return searchResult;
+        else
+            throw new KataException("Cannot be found");
+    }
+
+
+    private int _binarySearchForMin(int[] a, int l, int h) {
+
+
+        int mid = (h + l) / 2;
+
+        while (l <= h) {
+            if (a[mid - 1] > a[mid] && (mid == a.length - 1 || a[mid] < a[mid + 1])) {
+                return a[mid];
+            } else if (a[mid] > a[mid - 1]) {
+                return _binarySearchForMin(a, mid + 1, h);
+            } else {
+                return _binarySearchForMin(a, l, mid - 1);
+            }
+        }
+        //means array was never rotated
+        return a[0];
+    }
+
+
+    @Test
+    void testSearchMinElementInSortedRotatedArray() throws Exception {
+        int[] a = {5, 6, 1, 2, 3, 4};
+        int minVal = serachMinSortedRotatedArray(a);
+        assertEquals(1, minVal);
+    }
+
+    @Test
+    void testSearchMinElementInSortedRotatedArray_1() throws Exception {
+        int[] a = {3, 4, 5, 6, 1, 2};
+        int minVal = serachMinSortedRotatedArray(a);
+        assertEquals(1, minVal);
+    }
+
+
+    @Test
+    void testSearchMinElementInSortedRotatedArray_3() throws Exception {
+        int[] a = {1, 2, 3, 4, 5, 6};
+        int minVal = serachMinSortedRotatedArray(a);
+        assertEquals(1, minVal);
+    }
+
+    @Test
+    void testSearchMinElementInSortedRotatedArray_4() throws Exception {
+        int[] a = {2, 3, 4, 5, 6, 1};
+        int minVal = serachMinSortedRotatedArray(a);
+        assertEquals(1, minVal);
+    }
+
+
+    @Test
+    void testSearchMinElementInSortedRotatedArray_5() throws Exception {
+        int[] a = {45, 75, 99, 107, 108, 1, 22, 33};
+        int minVal = serachMinSortedRotatedArray(a);
+        assertEquals(1, minVal);
+    }
+
+
+    private int findEqlibIdx(int[] a) {
+        int l = 0;
+        int h = a.length - 1;
+
+        int sumLow = 0;
+        int sumHigh = 0;
+
+        while (l < h) {
+            sumLow += a[l++];
+            sumHigh += a[h--];
+            if (sumHigh == sumLow) {
+                break;
+            }
+        }
+
+        return sumHigh == sumLow ? l : -1;
+    }
+
+
+    @Test
+    void testFindEqlibIdx() throws Exception {
+        int[] a = {-7, 1, 5, 2, -4, 3, 0};
+        int idx = findEqlibIdx(a);
+        assertEquals(3, idx);
+    }
+
+    @Test
+    void testFindEqlibIdx_1() throws Exception {
+        int[] a = {1, 2, 3};
+        int idx = findEqlibIdx(a);
+        assertEquals(-1, idx);
+    }
+
+
+    private int[] insertInASortedArray(int[] a, int key, int valuesEndAt) {
+        int i = valuesEndAt;
+
+        while (i >= 0) {
+            if (a[i] < key) {
+                a[i + 1] = key;
+                break;
+            } else {
+                a[i + 1] = a[i];
+            }
+            i--;
+        }
+
+        return a;
+    }
+
+    @Test
+    void testInsertInASortedArray() throws Exception {
+        int[] a = {1, 2, 4, 5, 6, -1, -1};
+        a = insertInASortedArray(a, 3, 4);
+    }
+
+    private int[] segragateEvenOdd(int[] a) {
+        int oddIdx = 0;
+        int evenIdx = 0;
+
+        while (evenIdx < a.length && oddIdx < a.length) {
+            if (a[evenIdx] % 2 == 0) {
+                if (oddIdx != evenIdx && evenIdx != 0) {
+                    int temp = a[oddIdx];
+                    a[oddIdx] = a[evenIdx];
+                    a[evenIdx] = temp;
+
+                    oddIdx++;
+                }
+            }
+            evenIdx++;
+        }
+
+
+        return a;
+    }
+
+
+    @Test
+    void testSegragateEvenOdd() throws Exception {
+        int[] a = {1, 9, 5, 3, 2, 6, 7, 11};
+        a = segragateEvenOdd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    private int[] moveNegativeValuesToEnd(int[] a) {
+        int i = 0;
+        int j = 0;
+
+        while (i < a.length && j < a.length - 1) {
+            if (a[i] < 0) {
+                j = i;
+                while (!(a[j] > 0) && j < a.length) {
+                    j++;
+                }
+                int temp = a[i];
+                a[i] = a[j];
+                a[j] = temp;
+            }
+            i++;
+        }
+
+        return a;
+    }
+
+
+    @Test
+    void testMoveNegativeValuesToEnd() throws Exception {
+        int[] a = {1, -1, 3, 2, -7, -5, 11, 6};
+        a = moveNegativeValuesToEnd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+    @Test
+    void testMoveNegativeValuesToEnd_1() throws Exception {
+        int[] a = {1, -12, 3};
+        a = moveNegativeValuesToEnd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    @Test
+    void testMoveNegativeValuesToEnd_2() throws Exception {
+        int[] a = {1, -1, -4, -45, -64, 3};
+        a = moveNegativeValuesToEnd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    private int[] moveZerosToTheEnd(int[] a) {
+        int i = 0;
+        int j = 0;
+
+        while (i < a.length && j <= a.length - 1) {
+            if (a[i] == 0) {
+                j = i;
+                while (j < a.length && a[j] == 0) {
+                    j++;
+                }
+
+                if (j < a.length) {
+                    int temp = a[j];
+                    a[j] = a[i];
+                    a[i] = temp;
+                }
+            }
+
+            i++;
+        }
+
+        return a;
+    }
+
+
+    private int[] moveZerosToTheEnd_1(int[] a) {
+        int i = 0;
+        int j = 0;
+        int zc = 0;
+        while (i < a.length) {
+            if (a[i] != 0) {
+                a[j] = a[i];
+                j++;
+            } else {
+                zc++;
+            }
+            i++;
+        }
+
+        while(zc>0){
+            a[j]=0;
+            j++;
+            zc--;
+        }
+
+        return a;
+    }
+
+
+    @Test
+    void testMoveZerosToTheEnd() throws Exception {
+        int[] a = {1, 0, 5, 3, 23, 0, 34, 0, 4, 12};
+
+        a = moveZerosToTheEnd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    @Test
+    void testMoveZerosToTheEnd_1() throws Exception {
+        int[] a = {1, 0, 0, 3, 4, 56};
+
+        a = moveZerosToTheEnd_1(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    @Test
+    void testMoveZerosToTheEnd_1_1() throws Exception {
+        int[] a = {1, 0, 5, 3, 23, 0, 34, 0, 4, 12};
+
+        a = moveZerosToTheEnd_1(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
+
+
+    @Test
+    void testMoveZerosToTheEnd_1_2() throws Exception {
+        int[] a = {1, 0, 0, 3, 4, 56};
+
+        a = moveZerosToTheEnd(a);
+        for (int i : a) {
+            System.out.print(i + ", ");
+        }
+    }
 
 
 }
