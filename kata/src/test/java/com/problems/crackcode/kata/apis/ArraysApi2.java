@@ -1549,27 +1549,27 @@ public class ArraysApi2 {
     private int[] quickSort(int[] ints) {
         int l = 0;
         int h = ints.length - 1;
-        _insertionSortHelper(l, h, ints);
+        _qSortHelper(l, h, ints);
         return ints;
     }
 
-    private void _insertionSortHelper(int l, int h, int[] a) {
+    private void _qSortHelper(int l, int h, int[] a) {
         if (l < h) {
-            int pi = _partition(l, h, a);
-            _insertionSortHelper(l, pi - 1, a);
-            _insertionSortHelper(pi + 1, h, a);
+            int pi = _partitionAsc(l, h, a);
+            _qSortHelper(l, pi - 1, a);
+            _qSortHelper(pi + 1, h, a);
         }
     }
 
-    private int _partition(int l, int h, int[] a) {
+    private int _partitionAsc(int l, int h, int[] a) {
         int pe = a[h];
         int i = l;
-        int k = -1;
+        int k = i - 1;
 
         while (i < h) {
             if (a[i] < pe) {
                 k++;
-                swap(a, i, k);
+                swap(a, k, i);
             }
             i++;
         }
