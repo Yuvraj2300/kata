@@ -875,18 +875,21 @@ public class ArraysApi2 {
     //If the array contains all non-positive numbers,
     //then a solution is any subarray of size 1 containing the maximal value of the array (or the empty subarray, if it is permitted).
     int findMaxSumOfSubArray(int[] a) {
+        int i = 0;
         int csum = 0;
         int msum = 0;
-        int i = 0;
+
         while (i < a.length) {
             csum += a[i];
             if (csum < 0)
                 csum = 0;
+
             if (msum < csum) {
                 msum = csum;
             }
             i++;
         }
+
         return msum;
     }
 

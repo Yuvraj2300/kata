@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class VirtusaTest {
+public class Random {
 
 	// @formatter:off
 	/**
