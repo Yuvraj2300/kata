@@ -2019,18 +2019,20 @@ public class ArraysApi2 {
     int[] moveAllZerosToEnd(int[] a) {
         int i = 0;
         int j = 0;
-
-        while (i < a.length) {
+        int zc = 0;
+        while (i < a.length && j < a.length) {
             if (a[i] != 0) {
                 a[j] = a[i];
                 j++;
+            } else {
+                zc++;
             }
             i++;
         }
-
-        while (j < a.length) {
+        while (j < a.length & zc > 0) {
             a[j] = 0;
             j++;
+            zc--;
         }
 
         return a;
