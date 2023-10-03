@@ -339,26 +339,84 @@ public class LinkedListApi {
 
 
     boolean checkPalindrome(LinkedListNode node) {
-        LinkedListNode start = node;
         LinkedListNode end = node;
-        Wrapper wrapper = new Wrapper(false);
-        return _checkPalindromeHelper(start, end) == null;
+        LinkedListNode start = node;
+
+        return _palindromeHelper(start, end) == null;
     }
 
-    private LinkedListNode _checkPalindromeHelper(LinkedListNode start, LinkedListNode end) {
-        if (end == null)
+    private LinkedListNode _palindromeHelper(LinkedListNode start, LinkedListNode end) {
+        if (end == null) {
             return start;
-
-
-        LinkedListNode nextStart = _checkPalindromeHelper(start, end.next);
-
-        if (nextStart.x != end.x) {
-            return nextStart;
-        } else {
-            return nextStart != null ? nextStart.next : null;
         }
+
+        LinkedListNode nextNode = _palindromeHelper(start, end.next);
+
+        if (end.x != nextNode.x) {
+            return nextNode;
+        }
+        return nextNode == null ? null : nextNode.next;
     }
 
+
+    //@formatter:off
+    /**
+     *
+     * below represents two linked lists that intersect with each other
+     * apparently (this is not understandable by me why) two intersecting LLs
+     * must end on the same node !!!
+     *
+     *  a->b->c->d->e->null
+     *        |
+     *  f->g->h
+     * */
+    //@formatter:on
+
+
+    LinkedListNode findTheIntersectionPoint(LinkedListNode n1, LinkedListNode n2) {
+        //u can use a set too, but let's do the college way
+
+        int l1 = findLtOfLl(n1);
+        int l2 = findLtOfLl(n2);
+
+        LinkedListNode longer = null;
+        LinkedListNode shorter = null;
+
+        //check if both lls end at the same node - can oo this in findLtOfLl method
+        // if they do - then stop the execution
+
+        longer = l1 > l2 ? n1 : n2;
+        shorter = l1 > l2 ? n2 : n1;
+
+        LinkedListNode offset = getLongerNodesOffsetPos(longer, Math.abs(l1 - l2));
+
+        while (offset != shorter) {
+            offset = offset.next;
+            shorter = shorter.next;
+        }
+
+        return offset;
+    }
+
+    private LinkedListNode getLongerNodesOffsetPos(LinkedListNode longer, int diff) {
+        while (diff > 0) {
+            if (longer == null) {
+                throw new RuntimeException("This is not possible !");
+            }
+            longer = longer.next;
+            diff--;
+        }
+        return longer;
+    }
+
+    int findLtOfLl(LinkedListNode node) {
+        int l = 0;
+        while (node != null) {
+            l++;
+            node = node.next;
+        }
+        return l;
+    }
 }
 
 

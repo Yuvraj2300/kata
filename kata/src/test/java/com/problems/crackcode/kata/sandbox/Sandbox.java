@@ -127,6 +127,7 @@ class Parent {
 class Child extends Parent {
     public Child() {
         System.out.println("Child Constructor Loading");
+        throw new RuntimeException("");
     }
 
     static {
