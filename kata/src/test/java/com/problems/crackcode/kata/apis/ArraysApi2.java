@@ -881,8 +881,7 @@ public class ArraysApi2 {
 
         while (i < a.length) {
             csum += a[i];
-            if (csum < 0)
-                csum = 0;
+            if (csum < 0) csum = 0;
 
             if (msum < csum) {
                 msum = csum;
@@ -1724,24 +1723,59 @@ public class ArraysApi2 {
 
 
     private int findSmallestMissingNo(int[] a, int m) {
+        if (a[0] != 0)
+            return 0;
+
         int l = 0;
         int h = a.length - 1;
-
-        if (a[0] != 0) return 0;
-
         while (l <= h) {
             int mid = l + (h - l) / 2;
-            if (mid == h) {
-                if (a[mid] != m - 1) {
-                    return a[mid] + 1;
-                } else {
-                    throw new RuntimeException("No Number was missing at all");
-                }
-            } else if (a[mid + 1] != a[mid] + 1) {
-                return a[mid] + 1;
-            } else {
-                l = mid + 1;
+
+            if (mid == a.length - 1 && a[mid] != m - 1) {
+                return m - 1;
             }
+
+            if (a[mid] != mid && a[mid - 1] != a[mid] - 1) {
+                return mid;
+            } else if (a[mid] == mid) {
+                l = mid + 1;
+            } else {
+                h = mid - 1;
+            }
+
+        }
+
+        throw new RuntimeException("No Number was missing at all");
+    }
+
+
+    @Test
+    @DisplayName("Test Find Smallest Missing Number")
+    void testFindSmallestMissingNumberItr() {
+        int op = findSmallestMissingNumber1(new int[]{0, 1, 2, 6, 9});
+        assertNotEquals(-1, op);
+        assertEquals(3, op);
+    }
+
+
+    @Test
+    @DisplayName("Test Find Smallest Missing Number")
+    void testFindSmallestMissingNumberItr1() {
+        int op = findSmallestMissingNumber1(new int[]{4, 5, 10, 11});
+        assertNotEquals(-1, op);
+        assertEquals(0, op);
+    }
+
+
+    int findSmallestMissingNumber1(int[] a) {
+        if (a[0] != 0) return 0;
+
+        int i = 1;
+        while (i < a.length) {
+            if (!(a[i] == a[i - 1] + 1)) {
+                return a[i - 1] + 1;
+            }
+            i++;
         }
         return -1;
     }
@@ -2310,20 +2344,19 @@ public class ArraysApi2 {
         int i = 0;
         while (i < a.length) {
             if (a[i] != -1 && a[i] != i) {
-                int temp = a[i];
-                while (a[temp] != -1 && a[temp] != temp) {
-                    int temp2 = a[temp];
-                    a[temp] = temp;
-                    temp = temp2;
+                int x = a[i];
+                while (x != -1 && a[x] != x) {
+                    int temp = a[x];
+                    a[x] = x;
+                    x = temp;
                 }
-                a[temp] = temp;
-
-                if (a[i] != i) {
-                    a[i] = -1;
-                }
+            }
+            if (a[i] != i) {
+                a[i] = -1;
             }
             i++;
         }
+
         return a;
     }
 
@@ -2639,6 +2672,45 @@ public class ArraysApi2 {
 
 
         return a;
+    }
+
+
+    @Test
+    @DisplayName("Test Majority Element Moore Algo")
+    void testMajorityElementMooreAlgo() {
+        int majEle = checkMajorityElementWithMooreAlgo(new int[]{3, 3, 4, 2, 4, 4, 2, 4, 4});
+        Assertions.assertEquals(4, majEle);
+    }
+
+    int checkMajorityElementWithMooreAlgo(int[] a) {
+        int i = 1;
+        int candIdx = 0;
+        int count = 1;
+
+        while (i < a.length) {
+            if (a[i] == a[candIdx]) {
+                count++;
+            } else {
+                count--;
+                if (count == 0) {
+                    candIdx = i;
+                    count = 1;
+                }
+            }
+            i++;
+        }
+
+        int finalCount = 0;
+        for (int j = 0; j < a.length; j++) {
+            if (a[j] == a[candIdx]) finalCount++;
+        }
+
+
+        if (finalCount > a.length / 2) {
+            return a[candIdx];
+        } else {
+            throw new RuntimeException("Oopsie Doopsie Not Found!");
+        }
     }
 
 

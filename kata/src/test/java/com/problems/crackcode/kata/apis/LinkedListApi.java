@@ -339,23 +339,25 @@ public class LinkedListApi {
 
 
     boolean checkPalindrome(LinkedListNode node) {
-        LinkedListNode end = node;
         LinkedListNode start = node;
+        LinkedListNode end = node;
 
-        return _palindromeHelper(start, end) == null;
+        start = _palindromeHelper(start, end);
+
+        return start == null ? true : false;
     }
 
     private LinkedListNode _palindromeHelper(LinkedListNode start, LinkedListNode end) {
-        if (end == null) {
+        if (end == null)
             return start;
-        }
 
         LinkedListNode nextNode = _palindromeHelper(start, end.next);
 
-        if (end.x != nextNode.x) {
+        if (nextNode.x == end.x) {
+            return nextNode.next;
+        } else {
             return nextNode;
         }
-        return nextNode == null ? null : nextNode.next;
     }
 
 
@@ -403,6 +405,7 @@ public class LinkedListApi {
             if (longer == null) {
                 throw new RuntimeException("This is not possible !");
             }
+
             longer = longer.next;
             diff--;
         }
@@ -416,6 +419,56 @@ public class LinkedListApi {
             node = node.next;
         }
         return l;
+    }
+
+
+    @Test
+    @DisplayName("Test Loop Detection and get the starting")
+    void testLoopDetectionAndGetTheStarting() {
+        // Create nodes for a linked list with a loop: 1 -> 2 -> 3 -> 4 -> 5 -> 3 (loop back to 3)
+        LinkedListNode head = new LinkedListNode(1);
+        LinkedListNode node2 = new LinkedListNode(2);
+        LinkedListNode node3 = new LinkedListNode(3);
+        LinkedListNode node4 = new LinkedListNode(4);
+        LinkedListNode node5 = new LinkedListNode(5);
+
+        head.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        // Create the loop by pointing the last node to node 3
+        node5.next = node3;
+
+        // Call the function to detect the loop and get the starting node
+        LinkedListNode loopStart = getTheLoopStartingAndDetectLoop(head);
+
+        // Assert that the loopStart node is the expected node (in this case, node 3)
+        Assertions.assertEquals(node3, loopStart);
+    }
+
+    private LinkedListNode getTheLoopStartingAndDetectLoop(LinkedListNode head) {
+        LinkedListNode slow = head;
+        LinkedListNode fast = head;
+
+        while (slow != null && fast != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            //loop detected
+            if (slow == fast) break;
+        }
+
+        if (slow == null || fast == null) {
+            throw new RuntimeException("No Loop was found");
+        }
+
+        slow = head;
+
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+
+        return fast;
     }
 }
 
@@ -458,8 +511,8 @@ class LinkedListNode {
         return Objects.hash(x);
     }
 
-    @Override
-    public String toString() {
-        return "LLN{" + "x=" + x + "}--->" + next;
-    }
+//    @Override
+//    public String toString() {
+//        return "LLN{" + "x=" + x + "}--->" + next;
+//    }
 }

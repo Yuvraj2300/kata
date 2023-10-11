@@ -32,25 +32,23 @@ public class StackApi3 {
 
 
     int[] findNGEs(int[] a) {
-        int[] nge = new int[a.length];
-
+        int[] op = new int[a.length];
+        int i = 1;
         Stack<Integer> st = new Stack<>();
         st.push(0);
-        int i = 1;
 
         while (i < a.length) {
             while (!st.isEmpty() && a[st.peek()] < a[i]) {
-                nge[st.pop()] = a[i];
+                op[st.pop()] = a[i];
             }
             st.push(i);
             i++;
         }
 
         while (!st.isEmpty()) {
-            nge[st.pop()] = -1;
+            op[st.pop()] = -1;
         }
-
-        return nge;
+        return op;
     }
 
 
@@ -255,28 +253,25 @@ public class StackApi3 {
         int maxArr = Integer.MIN_VALUE;
 
         while (i < a.length) {
-            if (st.isEmpty()) {
+            int ca = 0;
+            if (st.empty() || a[i] > a[st.peek()]) {
                 st.push(i);
                 i++;
-            } else if (a[i] > a[st.peek()]) {
-                st.push(i);
-                i++;
-            } else {
-                int h = a[st.pop()];
-                int arr = h * (st.isEmpty() ? i : i - st.peek() - 1);
-                if (arr > maxArr) {
-                    maxArr = arr;
-                }
+            } else if (a[i] < a[st.peek()]) {
+                int ht = a[st.pop()];
+                ca = st.isEmpty() ? i * ht : (i - st.peek() - 1) * ht;
+
+                maxArr = maxArr < ca ? ca : maxArr;
             }
         }
 
         while (!st.isEmpty()) {
-            int h = a[st.pop()];
-            int arr = h * (st.isEmpty() ? i - 1 : i - st.peek() - 1);
-            if (arr > maxArr) {
-                maxArr = arr;
-            }
+            int ca = 0;
+            int ht = a[st.pop()];
+            ca = st.isEmpty() ? i * ht : (i - st.peek() - 1) * ht;
+            maxArr = maxArr < ca ? ca : maxArr;
         }
+
 
         return maxArr;
     }
