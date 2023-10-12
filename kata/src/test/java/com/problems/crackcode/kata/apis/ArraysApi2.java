@@ -2282,25 +2282,24 @@ public class ArraysApi2 {
 
     int findTheMaxProfitInDayTrading(int[] a) {
         int[] ledger = new int[a.length];
-
-        int minPrice = a[0];
+        int buy = a[0];
         int i = 1;
         while (i < a.length) {
-            if (a[i] < minPrice) {
-                minPrice = a[i];
-            }
-            ledger[i] = Math.max(ledger[i - 1], a[i] - minPrice);
+            if (buy > a[i])
+                buy = a[i];
+
+            ledger[i] = Math.max(ledger[i - 1], a[i] - buy);
             i++;
         }
 
-        int maxPrice = a[a.length - 1];
         i = a.length - 2;
+        int sell = a[a.length - 1];
         while (i >= 0) {
-            if (a[i] > maxPrice) {
-                maxPrice = a[i];
+            if (sell < a[i]) {
+                sell = a[i];
             }
 
-            ledger[i] = Math.max(ledger[i + 1], ledger[i] + maxPrice - a[i]);
+            ledger[i] = Math.max(ledger[i + 1], ledger[i] + sell - a[i]);
             i--;
         }
 
