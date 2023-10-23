@@ -11,3 +11,4 @@ public interface Puzzle<P, M> {
 
     P applyMove(P pos, M move);
 }
+

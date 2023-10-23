@@ -42,12 +42,8 @@ public class StreamsAPI {
     private Map<Character, ? extends Number> stringArrayToFrqMap(String[] a) {
 
         // @formatter:off
-        Map<Character,Long> collect = Arrays.stream(a)
-				.flatMap(s->s.chars().mapToObj(c->(char)c))
-				.collect(Collectors.groupingBy(
-						Function.identity(),
-						Collectors.counting()
-				));
+        Map<Character,Long> collect = Arrays.stream(a).flatMap(s->s.chars().mapToObj(c->(char)c))
+                .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()));
 		// @formatter:on
 
         return collect;
@@ -65,7 +61,7 @@ public class StreamsAPI {
 
     int getSumOfEvenNumbers(int[] a) {
         // @formatter:off
-		int sum = Arrays.stream(a).filter(i->i%2==0).sum();
+        int sum = Arrays.stream(a).filter(i->i%2==0).sum();
 		// @formatter:on
         return sum;
     }
@@ -77,7 +73,7 @@ public class StreamsAPI {
         //Write a program that takes a list of strings and returns a list of the lengths of the strings in descending order using streams.
         int[] sortedByLength = findLengthOfStringSortInDesc(new String[]{"Hello", "World1", "One"});
 
-        Arrays.stream(sortedByLength).forEach(s -> System.out.println(s + ", "));
+        Arrays.stream(sortedByLength).forEach(s -> System.out.print(s + ", "));
     }
 
 
@@ -85,8 +81,8 @@ public class StreamsAPI {
         // @formatter:off
         int[] ints = Arrays.stream(a)
                 .map(s->s.length())
-                .sorted(Comparator.comparingInt(i->(int)i).reversed())
-                .mapToInt(i->i)
+                .sorted((s1,s2)->s2-s1)
+                .mapToInt(i->(int)i)
                 .toArray();
 		// @formatter:on
 
@@ -98,20 +94,22 @@ public class StreamsAPI {
     @DisplayName("Test Get Student's Average")
     void testGetStudentAverage() {
         //Write a program that takes a map of student names and LIST OF grades and returns a map of student names and average grades using streams.
-        Map<String, Double> james = Collections.singletonMap("James", 73.33333333333333);
+        Map<String, Double> jamesExpected = Collections.singletonMap("James", 73.33333333333333);
         Map<String, Double> avgScore = findAvgGrades(Collections.singletonMap("James", Arrays.asList(50, 80, 90)));
 
         Assertions.assertTrue(avgScore.containsKey("James"));
         Assertions.assertTrue(avgScore.get("James") instanceof Double);
         Assertions.assertNotNull(avgScore.get("James"));
-        Assertions.assertEquals(james.get("James"), avgScore.get("James"));
+        Assertions.assertEquals(jamesExpected.get("James"), avgScore.get("James"));
     }
 
 
     Map<String, Double> findAvgGrades(Map<String, List<Integer>> mapOfStudentNameGrades) {
         // @formatter:off
         Map<String,Double> collect = mapOfStudentNameGrades.entrySet().stream()
-                    .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().stream().collect(Collectors.averagingInt(i->i))));
+                .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().stream().collect(Collectors.averagingDouble(
+                        i->i
+                ))));
 		// @formatter:on
 
         return collect;
@@ -131,10 +129,12 @@ public class StreamsAPI {
     String findTheMostFrequentWord(String[] a) {
         // @formatter:off
         String s = Arrays.stream(a)
-                .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
-                .entrySet().stream()
-                .sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
-                .findFirst().get().getKey();
+                    .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+                    .entrySet().stream()
+                    .sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
+                    .map(e->e.getKey())
+                    .findFirst()
+                    .get();
 		// @formatter:on
         return s;
     }

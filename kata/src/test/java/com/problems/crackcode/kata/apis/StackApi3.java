@@ -36,9 +36,8 @@ public class StackApi3 {
         int i = 1;
         Stack<Integer> st = new Stack<>();
         st.push(0);
-
         while (i < a.length) {
-            while (!st.isEmpty() && a[st.peek()] < a[i]) {
+            while (!st.isEmpty() && a[i] > a[st.peek()]) {
                 op[st.pop()] = a[i];
             }
             st.push(i);
@@ -48,6 +47,7 @@ public class StackApi3 {
         while (!st.isEmpty()) {
             op[st.pop()] = -1;
         }
+
         return op;
     }
 

@@ -145,19 +145,17 @@ public class ArraysApi2 {
 
     //Since the array can have multiple equilib indeices, we will consider the first one from the left
     int getEquilibIndex(int[] a) {
-        int lsum = 0;
         int rsum = 0;
-        int tsum = 0;
         for (int i = 0; i < a.length; i++) {
-            tsum += a[i];
+            rsum += a[i];
         }
-        rsum = tsum;
+
+        int lsum = 0;
         int i = 0;
         while (i < a.length) {
             rsum -= a[i];
-            if (lsum == rsum) {
-                return i;
-            }
+            if (lsum == rsum) return i;
+
             lsum += a[i];
             i++;
         }
@@ -1504,22 +1502,32 @@ public class ArraysApi2 {
         assertArrayEquals(expected, op);
     }
 
+    @Test
+    @DisplayName("Test Make A of I as I")
+    void testMakeAOfIAsI_2() {
+        int[] expected = {-1, 1, -1, 3,};
+        int[] op = makeAofIAsI(new int[]{-1, -1, 3, 1});
+        assertArrayEquals(expected, op);
+    }
+
     int[] makeAofIAsI(int[] a) {
         int i = 0;
         while (i < a.length) {
-            if (a[i] != -1 && a[i] != i) {
-                if (a[a[i]] == -1) {
-                    a[a[i]] = a[i];
-                    a[i] = -1;
-                    i++;
-                } else {
-                    int temp = a[i];
-                    a[i] = a[a[i]];
-                    a[temp] = temp;
+            if (a[i] != i && a[i] != -1) {
+                int x = a[i];
+                while (a[x] != -1 && a[x] != x) {
+                    int temp = a[x];
+                    a[x] = x;
+                    x = temp;
                 }
-            } else {
-                i++;
+                if (a[x] == -1) {
+                    a[x] = x;
+                }
+                if (a[i] != i) {
+                    a[i] = -1;
+                }
             }
+            i++;
         }
         return a;
     }
@@ -1723,8 +1731,7 @@ public class ArraysApi2 {
 
 
     private int findSmallestMissingNo(int[] a, int m) {
-        if (a[0] != 0)
-            return 0;
+        if (a[0] != 0) return 0;
 
         int l = 0;
         int h = a.length - 1;
@@ -2239,6 +2246,21 @@ public class ArraysApi2 {
         _sortedChecker(a, b);
     }
 
+
+    @Test
+    @DisplayName("Test Sort Two Sorted Arrays Without Using Space")
+    void testSortTwoSortedArraysWithoutUsingSpace1() {
+        int[] a = {1, 5, 9, 10, 15, 20};
+        int[] b = {2, 3, 8, 13};
+        sortTwoSortedArraysWithoutUsingSpaceAtAll(a, b);
+
+        Arrays.stream(a).forEach(i -> System.out.print(i + ", "));
+        System.out.println();
+        Arrays.stream(b).forEach(i -> System.out.print(i + ", "));
+
+        _sortedChecker(a, b);
+    }
+
     private void _sortedChecker(int[]... a) {
         for (int[] arr : a) {
             int[] copy = Arrays.copyOf(arr, arr.length);
@@ -2251,14 +2273,17 @@ public class ArraysApi2 {
     void sortTwoSortedArraysWithoutUsingSpaceAtAll(int[] a, int[] b) {
         int j = b.length - 1;
         while (j >= 0) {
-            int i = a.length - 2;
-            int last = a[a.length - 1];
-            while (i >= 0 && a[i] > b[j]) {
-                a[i + 1] = a[i];
-                i--;
+            int i = a.length - 1;
+            if (a[i] > b[j]) {
+                int temp = a[a.length - 1];
+                int k = i - 1;
+                while (k >= 0 && b[j] < a[k]) {
+                    a[k + 1] = a[k];
+                    k--;
+                }
+                a[k + 1] = b[j];
+                b[j] = temp;
             }
-            a[i + 1] = b[j];
-            b[j] = last;
             j--;
         }
     }
@@ -2285,8 +2310,7 @@ public class ArraysApi2 {
         int buy = a[0];
         int i = 1;
         while (i < a.length) {
-            if (buy > a[i])
-                buy = a[i];
+            if (buy > a[i]) buy = a[i];
 
             ledger[i] = Math.max(ledger[i - 1], a[i] - buy);
             i++;
@@ -2477,20 +2501,20 @@ public class ArraysApi2 {
 
     void reorderAsPerMapping(int[] a, int[] idx) {
         int i = 0;
-        while (i < a.length) {
-            if (i != idx[i]) {
-                while (i != idx[i]) {
-                    int mapping = idx[idx[i]];
-                    int temp = a[idx[i]];
+        int j = 0;
+        while (i < a.length && j < idx.length) {
+            while (idx[j] != j) {
+                int t1 = a[idx[j]];
+                int t2 = idx[idx[j]];
 
-                    a[idx[i]] = a[i];
-                    idx[idx[i]] = idx[i];
+                a[idx[j]] = a[i];
+                idx[idx[j]] = idx[j];
 
-                    idx[i] = mapping;
-                    a[i] = temp;
-                }
+                a[i] = t1;
+                idx[j] = t2;
             }
             i++;
+            j++;
         }
     }
 
@@ -2712,6 +2736,47 @@ public class ArraysApi2 {
         }
     }
 
+
+    @Test
+    void testMaxSumInContiguousSubArray() throws Exception {
+        int[] a = {1, -2, 1, 1, -2, 1};
+        assertEquals(2, findMaxSumInContiguousSubArray(a));
+    }
+
+
+    @Test
+    void testMaxSumInContiguousSubArray_1() throws Exception {
+        int[] a = {1, 0, 1, 1, -2, 1};
+        assertEquals(3, findMaxSumInContiguousSubArray(a));
+    }
+
+
+    @Test
+    void testMaxSumInContiguousSubArray_2() throws Exception {
+        int[] a = {-2, -3, 4, -1, -2, 1, 5, -3};
+        assertEquals(7, findMaxSumInContiguousSubArray(a));
+    }
+
+
+    int findMaxSumInContiguousSubArray(int[] a) {
+        int i = 0;
+        int csum = 0;
+        int msum = 0;
+
+        while (i < a.length) {
+            csum += a[i];
+            if (csum < 0) {
+                csum = 0;
+            }
+
+            if (msum < csum) {
+                msum = csum;
+            }
+            i++;
+        }
+
+        return msum;
+    }
 
     //	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
 
