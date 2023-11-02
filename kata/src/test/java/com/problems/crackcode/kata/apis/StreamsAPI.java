@@ -129,12 +129,13 @@ public class StreamsAPI {
     String findTheMostFrequentWord(String[] a) {
         // @formatter:off
         String s = Arrays.stream(a)
-                    .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
-                    .entrySet().stream()
-                    .sorted((e1,e2)->Math.toIntExact(e2.getValue()-e1.getValue()))
-                    .map(e->e.getKey())
-                    .findFirst()
-                    .get();
+               .collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+               .entrySet().stream()
+               .sorted((e1,e2)->   Math.toIntExact(e2.getValue()-e1.getValue()))
+               .map(Map.Entry::getKey)
+               .findFirst()
+               .orElse("-1");
+
 		// @formatter:on
         return s;
     }
@@ -151,12 +152,13 @@ public class StreamsAPI {
 
     int findTheSecondGreatestNumber(int[] a) {
         // @formatter:off
-        int integer = Arrays.stream(a)
-                .mapToObj(Integer::valueOf)
-                .sorted(Comparator.comparingInt(i->(int)i).reversed())
-                .skip(1)
-                .findFirst()
-                .orElse(-1);
+        Integer integer = Arrays.stream(a)
+               .mapToObj(Integer::valueOf)
+               .sorted(Comparator.reverseOrder())
+               .skip(1)
+               .findFirst()
+               .orElse(-1);
+
 		// @formatter:on
         return integer;
     }
@@ -173,7 +175,11 @@ public class StreamsAPI {
 
     int findTheSecondSmallestValue(int[] a) {
         // @formatter:off
-		return Arrays.stream(a).sorted().skip(1).findFirst().orElse(-1);
+	return	Arrays.stream(a)
+                .sorted()
+                .skip(1)
+                .findFirst()
+                .orElse(-1);
 		// @formatter:on
 
     }
@@ -188,12 +194,12 @@ public class StreamsAPI {
 
 
     int getTheSumOfTheSquaresOfTheNums(int[] a) {
-        // @formatter:off
-		    return Arrays.stream(a)
-                    .mapToObj(Integer::valueOf)
-                    .map(i->(int)Math.pow(i,2))
-                    .reduce(0,(x,y)->x+y);
-		// @formatter:on
+        //@formatter:off
+        double sum = Arrays.stream(a)
+            .mapToDouble(i->Math.pow(i,2))
+            .sum();
+   //@formatter:on
+        return (int) sum;
     }
 
     @Test
@@ -208,8 +214,8 @@ public class StreamsAPI {
 
     Map<String, Integer> getStringsToLengthMap(String[] s) {
         // @formatter:off
-		return Arrays.stream(s).collect(Collectors.toMap(Function.identity(),str->str.length()));
-		// @formatter:on
+		return  Arrays.stream(s).collect(Collectors.toMap(Function.identity(),st->st.length()));
+        // @formatter:on
     }
 
 
@@ -246,7 +252,9 @@ public class StreamsAPI {
 
     int getTheProductOfNumbers(int[] a) {
         // @formatter:off
-		return Arrays.stream(a).reduce(1,(x,y)->x*y);
+		return Arrays.stream(a).reduce(
+                1,(x,y)->x*y
+        );
 		// @formatter:on
     }
 

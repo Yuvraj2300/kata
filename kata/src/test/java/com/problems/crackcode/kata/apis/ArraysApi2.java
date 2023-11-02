@@ -1439,13 +1439,12 @@ public class ArraysApi2 {
 
     int[] rotateArray(int[] a, int d) {
         while (d > 0) {
-            int first = a[0];
-            int i = 0;
+            int i = 1;
+            int frst = a[0];
             while (i < a.length) {
-                if (i != a.length - 1) {
-                    a[i] = a[i + 1];
-                } else {
-                    a[i] = first;
+                a[i - 1] = a[i];
+                if (i == a.length - 1) {
+                    a[i] = frst;
                 }
                 i++;
             }
@@ -1556,27 +1555,26 @@ public class ArraysApi2 {
     private int[] quickSort(int[] ints) {
         int l = 0;
         int h = ints.length - 1;
-        _qSortHelper(l, h, ints);
+        _quickSortHelper(ints, l, h);
         return ints;
     }
 
-    private void _qSortHelper(int l, int h, int[] a) {
+    private void _quickSortHelper(int[] ints, int l, int h) {
         if (l < h) {
-            int pi = _partitionAsc(l, h, a);
-            _qSortHelper(l, pi - 1, a);
-            _qSortHelper(pi + 1, h, a);
+            int pIdx = _partitionAsc(l, h, ints);
+            _quickSortHelper(ints, l, pIdx - 1);
+            _quickSortHelper(ints, pIdx + 1, h);
         }
     }
 
     private int _partitionAsc(int l, int h, int[] a) {
-        int pe = a[h];
+        int pEle = a[h];
+        int k = l - 1;
         int i = l;
-        int k = i - 1;
-
         while (i < h) {
-            if (a[i] < pe) {
+            if (a[i] < pEle) {
                 k++;
-                swap(a, k, i);
+                swap(a, i, k);
             }
             i++;
         }
@@ -1603,36 +1601,25 @@ public class ArraysApi2 {
 
 
     int[] swapNegativesPositives(int[] a) {
-        int l = 0;
-        int h = a.length - 1;
-        //assuming h is the partition value always
-
         int i = 0;
-        int k = l - 1;
-        while (i < h) {
+        int k = -1;
+        //partition
+        while (i < a.length) {
             if (a[i] < 0) {
                 k++;
                 swap(a, k, i);
             }
             i++;
         }
-        //bring the partition element at it's right position
-        swap(a, k + 1, h);
-        int pi = -1;
-        //this is to make sure that you do not end up swapping a negative value
-        //as we are partitioning on the basis of a[i]<0 and not using element at the pivot
-        if (a[k + 1] < 0) {
-            pi = k + 2;
-        } else {
-            pi = k + 1;
-        }
-        //all values at and beyond pi should be positive now
+
+        //ptr to positive part's starting
+        int j = k + 1;
 
         i = 0;
-        while (i < a.length) {
-            if (a[i] < 0 && pi <= h) {
-                swap(a, i + 1, pi);
-                pi++;
+        while (i < j && j < a.length) {
+            if (a[i] < 0) {
+                swap(a, i + 1, j);
+                j++;
             }
             i++;
         }
@@ -1768,9 +1755,28 @@ public class ArraysApi2 {
     @Test
     @DisplayName("Test Find Smallest Missing Number")
     void testFindSmallestMissingNumberItr1() {
-        int op = findSmallestMissingNumber1(new int[]{4, 5, 10, 11});
+        int op = findSmallestMissingNumberBinSrch(new int[]{4, 5, 10, 11});
         assertNotEquals(-1, op);
         assertEquals(0, op);
+    }
+
+    int findSmallestMissingNumberBinSrch(int[] a) {
+        if (a[0] != 0)
+            return 0;
+
+        int l = 0;
+        int h = a.length - 1;
+        while (l <= h) {
+            int mid = l + (h - l) / 2;
+            if (mid < h && a[mid + 1] != a[mid] + 1) {
+                return a[mid] + 1;
+            } else if (a[mid] != mid) {
+                h = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return -1;
     }
 
 
@@ -2060,22 +2066,17 @@ public class ArraysApi2 {
     int[] moveAllZerosToEnd(int[] a) {
         int i = 0;
         int j = 0;
-        int zc = 0;
-        while (i < a.length && j < a.length) {
+        while (i < a.length) {
             if (a[i] != 0) {
                 a[j] = a[i];
                 j++;
-            } else {
-                zc++;
             }
             i++;
         }
-        while (j < a.length & zc > 0) {
+        while (j < a.length) {
             a[j] = 0;
             j++;
-            zc--;
         }
-
         return a;
     }
 
@@ -2762,20 +2763,69 @@ public class ArraysApi2 {
         int i = 0;
         int csum = 0;
         int msum = 0;
-
         while (i < a.length) {
             csum += a[i];
-            if (csum < 0) {
-                csum = 0;
-            }
+            if (csum < 0) csum = 0;
 
-            if (msum < csum) {
-                msum = csum;
-            }
+            if (msum < csum) msum = csum;
+
             i++;
         }
-
         return msum;
+    }
+
+
+    @Test
+    @DisplayName("Test Max Sum In Given Sub Array")
+    void testMaxSumInGivenSubArray() {
+        int maxSum = findMaxSumInGivenSubALt(new int[]{1, 4, 2, 10, 23, 3, 1, 0, 20}, 4);
+        Assertions.assertEquals(39, maxSum);
+    }
+
+
+    @Test
+    @DisplayName("Test Max Sum In Given Sub Array")
+    void testMaxSumInGivenSubArray1() {
+        int maxSum = findMaxSumInGivenSubALt(new int[]{100, 200, 300, 400}, 2);
+        Assertions.assertEquals(700, maxSum);
+    }
+
+
+    @Test
+    @DisplayName("Test Max Sum In Given Sub Array")
+    void testMaxSumInGivenSubArray2() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> findMaxSumInGivenSubALt(new int[]{2, 3}, 3)
+        );
+    }
+
+    int findMaxSumInGivenSubALt(int[] a, int k) {
+
+        if (k > a.length)
+            throw new IllegalArgumentException("Bad Input");
+
+        int mSum = 0;
+        int cSum = 0;
+        int i = 0;
+        int x = 0;
+        int j = 0;
+        while (i < a.length) {
+            while (x < k) {
+                cSum += a[i];
+                x++;
+                i++;
+            }
+            if (x >= k) {
+                cSum -= a[j];
+                j++;
+                cSum += a[i];
+            }
+            mSum = Math.max(mSum, cSum);
+
+            i++;
+        }
+        return mSum;
     }
 
     //	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :

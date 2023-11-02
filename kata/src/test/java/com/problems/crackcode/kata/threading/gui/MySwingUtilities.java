@@ -5,10 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.*;
 
 public class MySwingUtilities {
-    private final static ExecutorService es = Executors.newSingleThreadExecutor(new MySwingThread());
-    private static volatile Thread swingThread;
+    private static Thread swingThread;
+    private static ExecutorService es = Executors.newSingleThreadExecutor(new SingleThreadFactory());
 
-    private static class MySwingThread implements ThreadFactory {
+    private static class SingleThreadFactory implements ThreadFactory {
+
         @Override
         public Thread newThread(@NotNull Runnable r) {
             swingThread = new Thread(r);
@@ -16,12 +17,13 @@ public class MySwingUtilities {
         }
     }
 
-    public static boolean isEventDispatchThread() {
+    static boolean isEventDispatchThread() {
         return Thread.currentThread() == swingThread;
     }
 
+    //fire and forget
     public static void invokeLater(Runnable task) {
-        es.submit(task);
+        es.execute(task);
     }
 
     public static void invokeAndWait(Runnable task) {
