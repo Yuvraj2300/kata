@@ -2276,14 +2276,15 @@ public class ArraysApi2 {
         while (j >= 0) {
             int i = a.length - 1;
             if (a[i] > b[j]) {
-                int temp = a[a.length - 1];
+                int last = a[a.length - 1];
                 int k = i - 1;
-                while (k >= 0 && b[j] < a[k]) {
+
+                while (b[j] < a[k]) {
                     a[k + 1] = a[k];
                     k--;
                 }
                 a[k + 1] = b[j];
-                b[j] = temp;
+                b[j] = last;
             }
             j--;
         }
@@ -2827,6 +2828,77 @@ public class ArraysApi2 {
         }
         return mSum;
     }
+
+    @Test
+    @DisplayName("Test Find the missing number")
+    void testFindTheMissingNumber() {
+        int theMissingNumber = findTheMissingNumber(new int[]{1, 2, 4, 6, 3, 7, 8});
+        Assertions.assertEquals(5, theMissingNumber);
+    }
+
+    @Test
+    @DisplayName("Test Find the missing number")
+    void testFindTheMissingNumber1() {
+        int theMissingNumber = findTheMissingNumber(new int[]{1, 2, 3, 5});
+        Assertions.assertEquals(4, theMissingNumber);
+    }
+
+    int findTheMissingNumber(int[] a) {
+        int max = 0;
+        int csum = 0;
+        int esum = 0;
+        int i = 0;
+
+        while (i < a.length) {
+            max = Math.max(max, a[i]);
+            csum += a[i];
+            i++;
+        }
+
+        int x = 0;
+        while (x < max) {
+            esum += (x + 1);
+            x++;
+        }
+
+        return esum - csum;
+    }
+
+    @Test
+    @DisplayName("Test Sort 1 to N")
+    void testSort1ToN() {
+        int[] expected = new int[]{1, 2, 3, 4, 5, 6};
+        int[] op = sort1toN(new int[]{3, 2, 5, 6, 1, 4});
+        Assertions.assertArrayEquals(expected, op);
+    }
+
+
+    @Test
+    @DisplayName("Test Sort 1 to N")
+    void testSort1ToN1() {
+        int[] expected = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] op = sort1toN(new int[]{10, 7, 9, 2, 8, 3, 5, 4, 6, 1});
+        Assertions.assertArrayEquals(expected, op);
+    }
+
+
+    int[] sort1toN(int[] a) {
+        int i = 0;
+        while (i < a.length) {
+            if (a[i] != i + 1) {
+                int x = a[i];
+                while (a[x - 1] != x) {
+                    int temp = a[x - 1];
+                    a[x - 1] = x;
+                    x = temp;
+                }
+            }
+            i++;
+        }
+
+        return a;
+    }
+
 
     //	##### BELOW QUESTIONS ARE FROM THE GOD OF GODs - LEETCODE :
 

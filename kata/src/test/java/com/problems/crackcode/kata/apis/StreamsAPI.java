@@ -280,10 +280,13 @@ public class StreamsAPI {
     //Write a program that takes a stream of strings and returns the longest string that starts with the letter ‘a’.
     String getTheLongestStringStartsWithA(String[] a) {
         // @formatter:off
-		String op = Arrays.stream(a)
-				.filter(str->str.startsWith("a"))
-				.sorted((s1,s2)->s2.length()-s1.length())
-				.findFirst().orElse("-1");
+        String op = Arrays.stream(a)
+                .filter(s->s.startsWith("a"))
+                .collect(Collectors.toMap(Function.identity(),s->s.length()))
+                .entrySet().stream()
+                .sorted((e1,e2)->e2.getValue()-e1.getValue())
+                .findFirst()
+                .get().getKey();
 		// @formatter:on
 
         return op;
