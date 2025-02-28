@@ -1,0 +1,72 @@
+@Configuration
+Security COnfig{
+    Should give a ean of type SecurityFilterChain
+     where we can add method and give lambda for
+     matchers
+
+     // this is a bean in spring security
+     UserDetailService userDetailsService(){}
+}
+
+To get security context u should do this in a spring app
+
+Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+
+like this
+@RestController
+@RequestMapping("/secure")
+public class SecureController {
+
+    @GetMapping("/user")
+    public String getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return "Logged in as: " + auth.getName() + " with roles: " + auth.getAuthorities();
+    }
+
+
+ Auth context is unique to a thraed if it must be passed to a new thraed then use ThraedLocal or passit like this
+
+ Here main passes context to a new thraed
+
+
+ import org.springframework.security.core.context.SecurityContext;
+ import org.springframework.security.core.context.SecurityContextHolder;
+
+ public class SecurityContextPropagation {
+     public static void main(String[] args) {
+         SecurityContext securityContext = SecurityContextHolder.getContext();
+
+         new Thread(() -> {
+             SecurityContextHolder.setContext(securityContext); // Manually set security context in new thread
+             System.out.println("Inside new thread: " + SecurityContextHolder.getContext().getAuthentication());
+         }).start();
+     }
+ }
+
+
+ How Security Context is Stored
+ SecurityContextHolder uses ThreadLocal storage by default, meaning the context is stored per-thread.
+
+ 🔹 ThreadLocal Storage
+ Every request gets its own thread.
+ SecurityContextHolder.getContext() retrieves the context tied to the current thread.
+ java
+ Copy
+ Edit
+ private static final ThreadLocal<SecurityContext> contextHolder = new ThreadLocal<>();
+
+ public static SecurityContext getContext() {
+     SecurityContext ctx = contextHolder.get();
+     if (ctx == null) {
+         ctx = createEmptyContext();
+         contextHolder.set(ctx);
+     }
+     return ctx;
+ }
+ Once the request is processed, Spring clears the security context to prevent leaks.
+ 4. What Happens in Subsequent Requests?
+ The client sends JSESSIONID (session token) in each request.
+ SecurityContextPersistenceFilter restores the security context from the session.
+ Authentication is reloaded into SecurityContextHolder.getContext().
+ The request is processed using the authenticated user.

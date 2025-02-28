@@ -1,0 +1,81 @@
+### **1. Canary Deployment vs. A/B Testing**
+- **Canary Deployment**: Deploys a new version of a service to a small subset of users before rolling it out to everyone. If no issues arise, the rollout continues. Example: 5% of users get v2, while 95% remain on v1.
+- **A/B Testing**: Runs two (or more) versions **simultaneously** for different users to test which performs better. It’s mainly used for UI/UX or feature experiments.
+
+**Key Difference**:
+- **Canary** → Focuses on deployment safety.
+- **A/B Testing** → Focuses on user behavior and analytics.
+
+---
+
+### **2. mTLS vs. TLS**
+- **TLS (Transport Layer Security)** → Encrypts communication between client and server (one-way authentication). Example: A browser verifying a website’s SSL certificate.
+- **mTLS (Mutual TLS)** → Both client and server authenticate each other using certificates (two-way authentication). Used for **zero-trust security** in service meshes like Istio.
+
+**Key Difference**:
+- **TLS** → Only the client verifies the server.
+- **mTLS** → Both client and server verify each other.
+
+---
+
+### **3. Rate Limiting vs. API Throttling**
+- **Rate Limiting** → Restricts the number of requests a client can make in a given time. Example: **Max 100 requests per minute per user**.
+- **API Throttling** → Slows down or temporarily rejects excess requests to prevent system overload. Example: If too many requests are made, responses may be delayed instead of rejected outright.
+
+**Key Difference**:
+- **Rate Limiting** → Sets a hard limit.
+- **Throttling** → Dynamically slows down traffic when needed.
+
+---
+
+### **4. Simple Circuit Breaker Implementation (Using Resilience4j)**
+A **circuit breaker** prevents repeated failures by stopping requests to an unhealthy service and retrying later.
+
+```java
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MyService {
+
+    private static final String CB_NAME = "myCircuitBreaker";
+
+    @CircuitBreaker(name = CB_NAME, fallbackMethod = "fallbackResponse")
+    public String callUnstableService() {
+        if (Math.random() < 0.5) { // Simulate failure 50% of the time
+            throw new RuntimeException("Service is down!");
+        }
+        return "Success!";
+    }
+
+    public String fallbackResponse(Exception e) {
+        return "Fallback response: Service unavailable.";
+    }
+}
+```
+
+**How It Works:**
+1. If `callUnstableService()` fails repeatedly, the circuit **opens** (stops calls).
+2. After some time, it **half-opens** (tests if the service is back).
+3. If successful, it **closes** (resumes normal calls).
+
+---
+
+Would you like me to expand on any of these topics or provide more examples? 🚀
+
+
+
+Java coding
+    concepts
+    - OOPS and SOLID
+    -   Standalone
+    Multithreading -
+    Hands on Kafka
+    DB knowdlege Oracle Cassandra
+    Linux - UNIX and Shell
+    Java REST
+    Collections
+
+Spring Boot
+Hibernate
+DS & Algo

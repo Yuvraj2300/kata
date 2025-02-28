@@ -18,493 +18,617 @@ import org.junit.platform.commons.util.StringUtils;
 public class StringApi {
 
 
-	class Pairing {
-		char a;
-		char b;
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getEnclosingInstance().hashCode();
-			result = prime * result + Objects.hash(a, b);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (!(obj instanceof Pairing))
-				return false;
-			Pairing other = (Pairing) obj;
-
-			return a == other.a && b == other.b;
-		}
-
-		private StringApi getEnclosingInstance() {
-			return StringApi.this;
-		}
-
-
-	}
-
-	public int alternate(String input) {
-
-		Set<Character> charsToRemove = new HashSet<>();
-
-		//to remove when
-		Character charToRemove = null;
-		//case 1 :a character repeats it self consecutively
-		for (int i = 0; i < input.length(); i++) {
-			char currChar = input.charAt(i);
-
-			int j = i + 1;
-			if (j < input.length()) {
-				if (currChar == input.charAt(j)) {
-					charsToRemove.add(currChar);
-				}
-			}
-			//case 2  : a character that does not occur again ?
-		}
-
-		System.out.println(charsToRemove);
-
-		return 0;
-	}
-
-	@Test
-	void testAlternate() {
-		int count = alternate("abaacdabd");
-		assertEquals(4, count);
-	}
-
-	private int getMaxVowels(String S1, String S2, int K) {
-		//this is default OUTPUT. You can change it.
-		int result = -404;
-
-		//write your Logic here:
-		Set<Character> vowelsSet = new HashSet<>();
-		vowelsSet.add('a');
-		vowelsSet.add('e');
-		vowelsSet.add('i');
-		vowelsSet.add('o');
-		vowelsSet.add('u');
+    class Pairing {
+        char a;
+        char b;
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getEnclosingInstance().hashCode();
+            result = prime * result + Objects.hash(a, b);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (!(obj instanceof Pairing))
+                return false;
+            Pairing other = (Pairing) obj;
+
+            return a == other.a && b == other.b;
+        }
+
+        private StringApi getEnclosingInstance() {
+            return StringApi.this;
+        }
+
+
+    }
+
+    public int alternate(String input) {
+
+        Set<Character> charsToRemove = new HashSet<>();
+
+        //to remove when
+        Character charToRemove = null;
+        //case 1 :a character repeats it self consecutively
+        for (int i = 0; i < input.length(); i++) {
+            char currChar = input.charAt(i);
+
+            int j = i + 1;
+            if (j < input.length()) {
+                if (currChar == input.charAt(j)) {
+                    charsToRemove.add(currChar);
+                }
+            }
+            //case 2  : a character that does not occur again ?
+        }
+
+        System.out.println(charsToRemove);
+
+        return 0;
+    }
+
+    @Test
+    void testAlternate() {
+        int count = alternate("abaacdabd");
+        assertEquals(4, count);
+    }
+
+    private int getMaxVowels(String S1, String S2, int K) {
+        //this is default OUTPUT. You can change it.
+        int result = -404;
+
+        //write your Logic here:
+        Set<Character> vowelsSet = new HashSet<>();
+        vowelsSet.add('a');
+        vowelsSet.add('e');
+        vowelsSet.add('i');
+        vowelsSet.add('o');
+        vowelsSet.add('u');
+
+        int operationsPerformed = 0;
+        int vowelsInS1 = 0;
+        int i = 0;
+        int j = 0;
+
+        char[] s1Arr = S1.toCharArray();
+        char[] s2Arr = S2.toCharArray();
+
+        while (i < s1Arr.length) {
+            if (!vowelsSet.contains(s1Arr[i])) {
+                while (j < s2Arr.length && operationsPerformed <= K) {
+                    if (vowelsSet.contains(s2Arr[j])) {
+                        char temp = s2Arr[j];
+                        s2Arr[j] = s1Arr[i];
+                        s1Arr[i] = temp;
+
+                        vowelsInS1++;
+                        operationsPerformed++;
+                        break;
+                    }
+                    j++;
+                }
+            } else {
+                vowelsInS1++;
+            }
+            i++;
+        }
+        return vowelsInS1;
+    }
 
-		int operationsPerformed = 0;
-		int vowelsInS1 = 0;
-		int i = 0;
-		int j = 0;
 
-		char[] s1Arr = S1.toCharArray();
-		char[] s2Arr = S2.toCharArray();
+    @Test
+    void testMaxVowels() throws Exception {
+        int maxVowelsinS1 = getMaxVowels("abc", "aeiou", 5);
+        assertEquals(3, maxVowelsinS1);
+    }
 
-		while (i < s1Arr.length) {
-			if (!vowelsSet.contains(s1Arr[i])) {
-				while (j < s2Arr.length && operationsPerformed <= K) {
-					if (vowelsSet.contains(s2Arr[j])) {
-						char temp = s2Arr[j];
-						s2Arr[j] = s1Arr[i];
-						s1Arr[i] = temp;
 
-						vowelsInS1++;
-						operationsPerformed++;
-						break;
-					}
-					j++;
-				}
-			} else {
-				vowelsInS1++;
-			}
-			i++;
-		}
-		return vowelsInS1;
-	}
+    @Test
+    void testMaxVowels_1() throws Exception {
+        int maxVowelsinS1 = getMaxVowels("zzzzz", "zzzzz", 5);
+        assertEquals(0, maxVowelsinS1);
+    }
 
 
-	@Test
-	void testMaxVowels() throws Exception {
-		int maxVowelsinS1 = getMaxVowels("abc", "aeiou", 5);
-		assertEquals(3, maxVowelsinS1);
-	}
+    @Test
+    void testMaxVowels_2() throws Exception {
+        int maxVowelsinS1 = getMaxVowels("abcdeigh", "aeiou", 3);
+        assertEquals(7, maxVowelsinS1);
+    }
 
 
-	@Test
-	void testMaxVowels_1() throws Exception {
-		int maxVowelsinS1 = getMaxVowels("zzzzz", "zzzzz", 5);
-		assertEquals(0, maxVowelsinS1);
-	}
+    private Boolean findIfTwoStringsAreAnagrams(String s1, String s2) {
+        int[] freq = new int[26];
+        int i = 0;
+        while (i < s1.length()) {
+            freq[s1.charAt(i) - 'a']++;
+        }
 
+        while (i < s2.length()) {
+            freq[s2.charAt(i) - 'a']--;
+        }
+        for (int count : freq) {
+            if (count > 0) {
+                return false;
+            }
+        }
+        return false;
+    }
 
-	@Test
-	void testMaxVowels_2() throws Exception {
-		int maxVowelsinS1 = getMaxVowels("abcdeigh", "aeiou", 3);
-		assertEquals(7, maxVowelsinS1);
-	}
+    private Boolean checkPanagram(String input) {
+        char[] charArray = input.toLowerCase().replaceAll(" ", "").toCharArray();
+        boolean[] boolArray = new boolean[26];
 
+        int i = 0;
+        while (i < charArray.length) {
 
+            if (boolArray[charArray[i] - 'a'] != true) {
+                boolArray[charArray[i] - 'a'] = true;
+            }
 
-	private Boolean checkPanagram(String input) {
-		char[] charArray = input.toLowerCase().replaceAll(" ", "").toCharArray();
-		boolean[] boolArray = new boolean[26];
+            i++;
+        }
 
-		int i = 0;
-		while (i < charArray.length) {
+        for (boolean b : boolArray) {
+            if (!b) {
+                return false;
+            }
+        }
 
-			if (boolArray[charArray[i] - 'a'] != true) {
-				boolArray[charArray[i] - 'a'] = true;
-			}
+        return true;
+    }
 
-			i++;
-		}
 
-		for (boolean b : boolArray) {
-			if (!b) {
-				return false;
-			}
-		}
+    @Test
+    void testPanagram() throws Exception {
+        String input = "The quick brown fox jumps over the lazy dog";
+        assertTrue(checkPanagram(input));
+    }
 
-		return true;
-	}
 
+    @Test
+    void testPanagram_1() throws Exception {
+        String input = "The quick brown fox jumps over the dog";
+        assertFalse(checkPanagram(input));
+    }
 
 
-	@Test
-	void testPanagram() throws Exception {
-		String input = "The quick brown fox jumps over the lazy dog";
-		assertTrue(checkPanagram(input));
-	}
+    private void sortStringOfCharacters(String string) {
+        int i = 0;
+        int[] alphOcrr = new int[26];
 
+        while (i < string.length()) {
+            alphOcrr[string.charAt(i) - 'a']++;
+            i++;
+        }
 
 
-	@Test
-	void testPanagram_1() throws Exception {
-		String input = "The quick brown fox jumps over the dog";
-		assertFalse(checkPanagram(input));
-	}
+        for (int j = 0; j < alphOcrr.length; j++) {
+            if (alphOcrr[j] > 0) {
+                for (int k = 0; k < alphOcrr[j]; k++) {
+                    System.out.print((char) (j + 'a') + ", ");
+                }
+            }
+        }
 
 
+    }
 
-	private void sortStringOfCharacters(String string) {
-		int i = 0;
-		int[] alphOcrr = new int[26];
+    private void sortStringOfCharactersMergeSort(String input) {
+        char[] a = input.toCharArray();
 
-		while (i < string.length()) {
-			alphOcrr[string.charAt(i) - 'a']++;
-			i++;
-		}
+        _mergeSortOnCharArray(a);
+    }
 
+    private void _mergeSortOnCharArray(char[] a) {
+        int l = 0;
+        int h = a.length - 1;
+        _mergeSortOnCharHelper(a, l, h);
+    }
 
-		for (int j = 0; j < alphOcrr.length; j++) {
-			if (alphOcrr[j] > 0) {
-				for (int k = 0; k < alphOcrr[j]; k++) {
-					System.out.print((char) (j + 'a') + ", ");
-				}
-			}
-		}
 
+    private void _mergeSortOnCharHelper(char[] a, int l, int h) {
+        if (l < h) {
+            int mid = (h + l) / 2;
 
-	}
+            _mergeSortOnCharHelper(a, l, mid);
+            _mergeSortOnCharHelper(a, mid + 1, h);
+            //merge
+            _merge(a, l, h, mid);
 
-	private void sortStringOfCharactersMergeSort(String input) {
-		char[] a = input.toCharArray();
+        }
+    }
 
-		_mergeSortOnCharArray(a);
-	}
+    private void _merge(char[] a, int l, int h, int mid) {
+        int splitSize1 = mid - l + 1;
+        int splitSize2 = h - mid;
 
-	private void _mergeSortOnCharArray(char[] a) {
-		int l = 0;
-		int h = a.length - 1;
-		_mergeSortOnCharHelper(a, l, h);
-	}
+        char[] split1 = new char[splitSize1];
+        char[] split2 = new char[splitSize2];
 
+        for (int i = 0; i < split1.length; i++) {
+            split1[i] = a[l + i];
+        }
 
+        for (int i = 0; i < split2.length; i++) {
+            split2[i] = a[mid + 1 + i];
+        }
 
-	private void _mergeSortOnCharHelper(char[] a, int l, int h) {
-		if (l < h) {
-			int mid = (h + l) / 2;
+        int i = 0;
+        int j = 0;
 
-			_mergeSortOnCharHelper(a, l, mid);
-			_mergeSortOnCharHelper(a, mid + 1, h);
-			//merge
-			_merge(a, l, h, mid);
+        int p = l;
 
-		}
-	}
+        while (i < splitSize1 && j < splitSize2) {
+            if (a[p] < split1[i]) {
+                a[p] = split1[i];
+                i++;
+            } else {
+                a[p] = split2[j];
+                j++;
+            }
+            p++;
+        }
 
-	private void _merge(char[] a, int l, int h, int mid) {
-		int splitSize1 = mid - l + 1;
-		int splitSize2 = h - mid;
 
-		char[] split1 = new char[splitSize1];
-		char[] split2 = new char[splitSize2];
+        while (i < splitSize1) {
+            a[p] = split1[i];
+            p++;
+            i++;
+        }
 
-		for (int i = 0; i < split1.length; i++) {
-			split1[i] = a[l + i];
-		}
 
-		for (int i = 0; i < split2.length; i++) {
-			split2[i] = a[mid + 1 + i];
-		}
+        while (j < splitSize2) {
+            a[p] = split2[j];
+            p++;
+            i++;
+        }
+    }
 
-		int i = 0;
-		int j = 0;
 
-		int p = l;
+    @Test
+    void testSortStringOfCharacters() throws Exception {
+        sortStringOfCharacters("bbccdefbbaa");
+        //		sortStringOfCharactersMergeSort("bbccdefbbaa");
+    }
 
-		while (i < splitSize1 && j < splitSize2) {
-			if (a[p] < split1[i]) {
-				a[p] = split1[i];
-				i++;
-			} else {
-				a[p] = split2[j];
-				j++;
-			}
-			p++;
-		}
 
+    private List<String> sortByWordsLength(List<String> listOfWords) {
+        // TODO Auto-generated method stub
+        listOfWords.sort(Comparator.comparing(s -> s.length()));
+        return listOfWords;
+    }
 
-		while (i < splitSize1) {
-			a[p] = split1[i];
-			p++;
-			i++;
-		}
 
+    @Test
+    void testSortByWordsLength() throws Exception {
+        List<String> listOfWords = new ArrayList<>();
+        listOfWords.add("going");
+        listOfWords.add("I");
+        listOfWords.add("going");
+        listOfWords.add("am");
+        listOfWords.add("to");
+        listOfWords.add("Santorni");
 
-		while (j < splitSize2) {
-			a[p] = split2[j];
-			p++;
-			i++;
-		}
-	}
+        List<String> sortedListOfWords = sortByWordsLength(listOfWords);
+    }
 
 
+    private int findInAnArrayOfStrings(String[] a, String toFind) {
+        int i = 0;
+        int j = 0;
 
-	@Test
-	void testSortStringOfCharacters() throws Exception {
-		sortStringOfCharacters("bbccdefbbaa");
-		//		sortStringOfCharactersMergeSort("bbccdefbbaa");
-	}
+        while (i < a.length) {
+            if (!StringUtils.isBlank(a[i])) {
+                if (toFind.equals(a[i]))
+                    return j;
+            }
 
+            j++;
+            i++;
+        }
 
 
-	private List<String> sortByWordsLength(List<String> listOfWords) {
-		// TODO Auto-generated method stub
-		listOfWords.sort(Comparator.comparing(s -> s.length()));
-		return listOfWords;
-	}
+        return -1;
+    }
 
 
+    @Test
+    void testFindInAnArrayOfStrings() throws Exception {
+        String toFind = "quiz";
+        String[] array = org.assertj.core.util.Arrays.array("for", "", "quiz");
+        int position = findInAnArrayOfStrings(array, toFind);
+        assertEquals(2, position);
+    }
 
-	@Test
-	void testSortByWordsLength() throws Exception {
-		List<String> listOfWords = new ArrayList<>();
-		listOfWords.add("going");
-		listOfWords.add("I");
-		listOfWords.add("going");
-		listOfWords.add("am");
-		listOfWords.add("to");
-		listOfWords.add("Santorni");
 
-		List<String> sortedListOfWords = sortByWordsLength(listOfWords);
-	}
+    @Test
+    void testFindInAnArrayOfStrings_1() throws Exception {
+        String toFind = "quiz";
+        String[] array = org.assertj.core.util.Arrays.array("for", "", "", "", "geeks", "ide", "", "practice", "", "", "quiz", "", "");
+        int position = findInAnArrayOfStrings(array, toFind);
+        assertEquals(10, position);
+    }
 
 
+    private int findInAnArrayOfStringsBinSearch(String[] a, String toFind) {
+        int l = 0;
+        int h = a.length - 1;
 
-	private int findInAnArrayOfStrings(String[] a, String toFind) {
-		int i = 0;
-		int j = 0;
+        return _binarySearchToFindTheRequiredString(a, toFind, l, h);
+    }
 
-		while (i < a.length) {
-			if (!StringUtils.isBlank(a[i])) {
-				if (toFind.equals(a[i]))
-					return j;
-			}
 
-			j++;
-			i++;
-		}
+    private int _binarySearchToFindTheRequiredString(String[] a, String toFind, int l, int h) {
+        if (l < h) {
+            int mid = (h + l) / 2;
 
+            int midToUse = mid;
 
-		return -1;
-	}
+            while (StringUtils.isBlank(a[midToUse])) {
+                midToUse--;
+            }
 
+            if (toFind.equals(a[midToUse])) {
+                return midToUse;
+            } else if (a[midToUse].length() < toFind.length()) {
+                return _binarySearchToFindTheRequiredString(a, toFind, mid + 1, h);
+            } else {
+                return _binarySearchToFindTheRequiredString(a, toFind, l, mid);
+            }
 
+        } else {
+            return -1;
+        }
+    }
 
-	@Test
-	void testFindInAnArrayOfStrings() throws Exception {
-		String toFind = "quiz";
-		String[] array = org.assertj.core.util.Arrays.array("for", "", "quiz");
-		int position = findInAnArrayOfStrings(array, toFind);
-		assertEquals(2, position);
-	}
 
+    private String reverseString(String s) {
+        int i = 0;
+        int j = s.length() - 1;
 
+        char[] a = s.toCharArray();
 
-	@Test
-	void testFindInAnArrayOfStrings_1() throws Exception {
-		String toFind = "quiz";
-		String[] array = org.assertj.core.util.Arrays.array("for", "", "", "", "geeks", "ide", "", "practice", "", "", "quiz", "", "");
-		int position = findInAnArrayOfStrings(array, toFind);
-		assertEquals(10, position);
-	}
+        while (i < j) {
+            char temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+            i++;
+            j--;
+        }
 
 
+        return String.valueOf(a);
+    }
 
 
+    @Test
+    void testReverseString() throws Exception {
+        String s = "geeks";
+        String rev = reverseString(s);
+        assertEquals("skeeg", rev);
+    }
 
-	private int findInAnArrayOfStringsBinSearch(String[] a, String toFind) {
-		int l = 0;
-		int h = a.length - 1;
 
-		return _binarySearchToFindTheRequiredString(a, toFind, l, h);
-	}
+    @Test
+    void testReverseString_1() throws Exception {
+        String s = "yuvraj";
+        String rev = reverseString(s);
+        assertEquals("jarvuy", rev);
+    }
 
 
+    private List<String> printAllRotationsOfString(String string) {
+        List<String> listToReturn = new ArrayList<>();
 
-	private int _binarySearchToFindTheRequiredString(String[] a, String toFind, int l, int h) {
-		if (l < h) {
-			int mid = (h + l) / 2;
+        char[] a = string.toCharArray();
+        int rotations = string.length();
+        int i = 0;
 
-			int midToUse = mid;
+        while (i < rotations) {
+            int j = 0;
+            char firstChar = a[j];
 
-			while (StringUtils.isBlank(a[midToUse])) {
-				midToUse--;
-			}
+            while (j < a.length) {
+                if (j == a.length - 1)
+                    a[j] = firstChar;
+                else
+                    a[j] = a[j + 1];
 
-			if (toFind.equals(a[midToUse])) {
-				return midToUse;
-			} else if (a[midToUse].length() < toFind.length()) {
-				return _binarySearchToFindTheRequiredString(a, toFind, mid + 1, h);
-			} else {
-				return _binarySearchToFindTheRequiredString(a, toFind, l, mid);
-			}
+                j++;
+            }
+            listToReturn.add(String.valueOf(a));
+            i++;
+        }
 
-		} else {
-			return -1;
-		}
-	}
+        return listToReturn;
+    }
 
 
-
-	private String reverseString(String s) {
-		int i = 0;
-		int j = s.length() - 1;
-
-		char[] a = s.toCharArray();
-
-		while (i < j) {
-			char temp = a[i];
-			a[i] = a[j];
-			a[j] = temp;
-			i++;
-			j--;
-		}
-
-
-		return String.valueOf(a);
-	}
-
-
-
-	@Test
-	void testReverseString() throws Exception {
-		String s = "geeks";
-		String rev = reverseString(s);
-		assertEquals("skeeg", rev);
-	}
-
-
-
-	@Test
-	void testReverseString_1() throws Exception {
-		String s = "yuvraj";
-		String rev = reverseString(s);
-		assertEquals("jarvuy", rev);
-	}
-
-
-
-	private List<String> printAllRotationsOfString(String string) {
-		List<String> listToReturn = new ArrayList<>();
-
-		char[] a = string.toCharArray();
-		int rotations = string.length();
-		int i = 0;
-
-		while (i < rotations) {
-			int j = 0;
-			char firstChar = a[j];
-
-			while (j < a.length) {
-				if (j == a.length - 1)
-					a[j] = firstChar;
-				else
-					a[j] = a[j + 1];
-
-				j++;
-			}
-			listToReturn.add(String.valueOf(a));
-			i++;
-		}
-
-		return listToReturn;
-	}
-
-
-
-	@Test
-	void testPrintAllRotations() throws Exception {
-		List<String> roations = printAllRotationsOfString("geeks");
-		for (String rotation : roations) {
-			System.out.println(rotation);
-		}
-	}
-
-
-	@Test
-	void testPrintAllRotations_1() throws Exception {
-		List<String> roations = printAllRotationsOfString("abc");
-		for (String rotation : roations) {
-			System.out.println(rotation);
-		}
-	}
-
-
-
-	private int countWordsInAGivenString(String[] words, String input) {
-		int foundCount = 0;
-
-		Set<String> setOfWords = Arrays.stream(words).map(String::toLowerCase).collect(Collectors.toSet());
-		String[] tokens = input.split(" ");
-
-		for (String token : tokens) {
-			token = token.toLowerCase();
-			token = token.replaceAll("[^A-Za-z0-9]", "");
-			if (setOfWords.contains(token))
-				foundCount++;
-		}
-
-		return foundCount;
-	}
-
-
-
-	@Test
-	void testCountWordsInAGivenString() throws Exception {
-		String[] words = { "welcome", "to", "geeks", "portal" };
-		int foundWords = countWordsInAGivenString(words, "geeksforgeeks is a computer science portal for geeks.");
-		assertEquals(2, foundWords);
-	}
-
-
-
-	@Test
-	void testCountWordsInAGivenString_1() throws Exception {
-		String[] words = { "Save", "Water", "Save", "Yourself" };
-		int foundWords = countWordsInAGivenString(words, "Save");
-		assertEquals(1, foundWords);
-	}
+    @Test
+    void testPrintAllRotations() throws Exception {
+        List<String> roations = printAllRotationsOfString("geeks");
+        for (String rotation : roations) {
+            System.out.println(rotation);
+        }
+    }
+
+
+    @Test
+    void testPrintAllRotations_1() throws Exception {
+        List<String> roations = printAllRotationsOfString("abc");
+        for (String rotation : roations) {
+            System.out.println(rotation);
+        }
+    }
+
+
+    private int countWordsInAGivenString(String[] words, String input) {
+        int foundCount = 0;
+
+        Set<String> setOfWords = Arrays.stream(words).map(String::toLowerCase).collect(Collectors.toSet());
+        String[] tokens = input.split(" ");
+
+        for (String token : tokens) {
+            token = token.toLowerCase();
+            token = token.replaceAll("[^A-Za-z0-9]", "");
+            if (setOfWords.contains(token))
+                foundCount++;
+        }
+
+        return foundCount;
+    }
+
+
+    @Test
+    void testCountWordsInAGivenString() throws Exception {
+        String[] words = {"welcome", "to", "geeks", "portal"};
+        int foundWords = countWordsInAGivenString(words, "geeksforgeeks is a computer science portal for geeks.");
+        assertEquals(2, foundWords);
+    }
+
+
+    @Test
+    void testCountWordsInAGivenString_1() throws Exception {
+        String[] words = {"Save", "Water", "Save", "Yourself"};
+        int foundWords = countWordsInAGivenString(words, "Save");
+        assertEquals(1, foundWords);
+    }
+
+    @Test
+    void testFindindIndexesForPattern() {
+        List<Integer> indexes = findIndexesIfStringContainsGivenPattern("abcab", "ab");
+        assertEquals(List.of(0, 3), indexes);
+    }
+
+    @Test
+    void testFindindIndexesForPattern_1() {
+        List<Integer> indexes = findIndexesIfStringContainsGivenPattern("aabaacaadaabaaba", "aaba");
+        assertEquals(List.of(0, 9, 12), indexes);
+    }
+
+
+    List<Integer> findIndexesIfStringContainsGivenPattern(String s, String pattern) {
+        char[] a = s.toCharArray();
+        char[] b = pattern.toCharArray();
+
+        List<Integer> op = new ArrayList<>();
+        int[] lps = constructLPS(pattern);
+
+        int i = 0;
+        int j = 0;
+
+        while (i < a.length) {
+            if (j >= b.length) {
+                op.add(i - j);
+                j = lps[j - 1];
+            }
+            if (a[i] == b[j]) {
+                i++;
+                j++;
+            } else {
+                if (j == 0) i++;
+                else j = lps[j - 1];
+            }
+        }
+        if (j >= b.length) {
+            op.add(i - j);
+        }
+        return op;
+    }
+
+    @Test
+    void testConstructingTheLPS() {
+        String pattern = "aaba";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 1, 0, 1};
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testRepeatingCharacters() {
+        String pattern = "aaaa";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 1, 2, 3};  // Continuous prefix-suffix match
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testAlternateCharacters() {
+        String pattern = "ababab";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 0, 1, 2, 3, 4};  // Alternating prefix-suffix match
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testPatternWithNoRepetitions() {
+        String pattern = "abcdef";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 0, 0, 0, 0, 0};  // No prefix-suffix matches at all
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testComplexPattern() {
+        String pattern = "abacab";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 0, 1, 0, 1, 2};  // Prefixes "a", "ab", "aba", and "abac"
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testComplexPatternWithOverlap() {
+        String pattern = "abcdabcabcd";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 0, 0, 0, 1, 2, 3, 1, 2, 3, 4};  // Overlapping parts of "abcd"
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testSingleCharacterPattern() {
+        String pattern = "a";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0};  // Single character has no prefix-suffix match
+        assertArrayEquals(expected, obtained);
+    }
+
+    @Test
+    void testTwoCharacterPattern() {
+        String pattern = "aa";
+        int[] obtained = constructLPS(pattern);
+        int[] expected = {0, 1};  // "a" is both prefix & suffix
+        assertArrayEquals(expected, obtained);
+    }
+
+    int[] constructLPS(String pattern) {
+        int[] lps = new int[pattern.length()];
+        lps[0] = 0;
+        char[] a = pattern.toCharArray();
+        int k = 0;
+        int i = 1;
+        while (i < a.length) {
+            if (a[i] == a[k]) {
+                lps[i] = k + 1;
+                i++;
+                k++;
+            } else {
+                if (k != 0) {
+                    k = lps[k - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return lps;
+    }
 
 }
 

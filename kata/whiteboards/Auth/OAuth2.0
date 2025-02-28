@@ -1,0 +1,22 @@
+Basically the flow for OAuth 2.0 is.
+
+(1) Client → API Gateway → OAuth Server (Auth Service) → Issues Access Token & Refresh Token
+(2) Client sends Access Token → API Gateway validates it → Calls Microservice
+(3) Microservice extracts user roles/permissions from the token and enforces authorization.
+
+
+Detailed -
+
+1️⃣ Client Logs In
+
+Sends credentials to the API Gateway.
+The API Gateway forwards the request to the OAuth Authorization Server (Spring Authorization Server).
+OAuth Server issues an Access Token & Refresh Token.
+2️⃣ Client Calls API Gateway with Access Token
+
+Sends the Access Token in the request.
+API Gateway validates the token (either locally or by calling the OAuth Server).
+3️⃣ API Gateway Forwards the Request to Microservices
+
+If the token is valid, the API Gateway forwards the request with the token to the target microservice.
+Microservices extract user roles & permissions from the token to enforce RBAC or ACLs.

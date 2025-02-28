@@ -1,0 +1,29 @@
+Ambiguity in interfaces methods
+    incase a class extends two interfaces and interfaces have default methods then what ?
+    what about overiidable methods
+
+In between Autoboxed integer and normal integer whihc one to use for hibernate doman calss if it is a PK ?
+Integer or int ?
+
+What is OOM error and how to solve it ? How do you know what classs or refercce is causint the OO<M eror
+
+Collections
+- Unsorted lsitm, wI want to serach and delete which would be faster linked list or arraylsiit
+- hTHere is an array of strings and I want to objtain an arraylist of Strings, what is the best optimal way, loop or any other ?
+
+Kafka -
+- Withdrwal to nodes
+- Desponsito to nodes
+should happen to one microservies , basically how do u avoid data inconsistennceis in Kafka env
+What kind of Data structure would u use ????
+
+Spring -
+Env mei specific beansh
+How does autoconfigure work really, like I can add a dependency and then it should just load beans like JPA
+
+    Multithreading -
+    What is threadlocal ?
+        How to pass threadLocal from a parent thread to a child thraed ?
+
+    what is volatile ??
+        What are CPU caches ? are they related to volatile ?
